@@ -23,6 +23,11 @@ const routes = [
         component: ()=>import('../views/Items.vue'),
       },
       {
+        path: 'messages',
+        name: 'messages',
+        component: ()=>import('../views/Message.vue'),
+      },
+      {
         path: '',
         redirect: 'profile',
       }

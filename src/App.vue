@@ -1,5 +1,5 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import {  RouterView } from 'vue-router'
 
 // import { test } from '@/api';
 import { onMounted } from 'vue';

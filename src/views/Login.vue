@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref,onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
@@ -89,6 +89,9 @@ function goToForgot() {
 function goToRegister() {
   router.push("/register");
 }
+onMounted(()=>{
+  // router.push("/home/items");
+})
 </script>
 
 <style scoped>

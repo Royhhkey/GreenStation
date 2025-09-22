@@ -22,23 +22,6 @@
         <a-form-item label="邮箱" name="email" :rules="rules.email">
           <a-input v-model:value="form.email" placeholder="请输入邮箱" />
         </a-form-item>
-
-        <a-form-item label="手机号" name="phone" :rules="rules.phone">
-            <a-input v-model:value="form.phone" placeholder="请输入手机号" />
-        </a-form-item>
-
-        <a-form-item label="年级" name="grade" :rules="rules.grade">
-            <a-input v-model:value="form.grade" placeholder="请输入年级" />
-        </a-form-item>
-        <a-form-item label="专业" name="zy" :rules="rules.zy">
-            <a-input v-model:value="form.zy" placeholder="请输入专业" />
-        </a-form-item>
-
-        <a-form-item label="寝室号" name="dorm" :rules="rules.QSH">
-            <a-input v-model:value="form.QSH" placeholder="请输入寝室号" />
-        </a-form-item>
-
-
         
         <a-form-item label="密码" name="password" :rules="rules.password">
           <a-input-password v-model:value="form.password" placeholder="请输入密码" />
@@ -82,11 +65,8 @@ const form = reactive({
   username: "",
   password: "",
   confirmPassword: "",
-  phone: "",
-  grade: "",
-  zy: "",
-  QSH: "",
   captcha: "",
+  xh: "",
 });
 
 const rules = {
@@ -98,10 +78,6 @@ const rules = {
   username: [{ required: true, message: "请输入用户名" }],
   password: [{ required: true, message: "请输入密码" }],
   captcha: [{ required: true, message: "请输入验证码" }],
-  phone: [{ required: true, message: "请输入手机号" }],
-  grade: [{ required: true, message: "请输入年级" }],
-  zy: [{ required: true, message: "请输入专业" }],
-  QSH: [{ required: true, message: "请输入寝室号" }],
   confirmPassword: [
     { required: true, message: "请确认密码" },
     {
@@ -149,34 +125,13 @@ const handleRegister = async () => {
     .validate()
     .then(async () => {
         console.log("register123123");
-
-      //         // 只传递有值的字段
-      // const filteredForm = Object.fromEntries(
-      //   Object.entries({
-      //     email: form.email,
-      //     username: form.username,
-      //     password: form.password,
-      //     code: form.captcha,
-      //     XH: form.xh,
-      //     phone: form.phone,
-      //     grade: form.grade,
-      //     ZY: form.zy,
-      //     QSH: form.QSH
-      //   }).filter(([_, value]) => value !== null && value !== undefined && value !== '')
-      // );
-      //    const { data } = await register(filteredForm);
-
         const {data} = await register(
             {
             email: form.email,
             username: form.username,
             password: form.password,
             code: form.captcha,
-            XH: form.xh,
-            phone: form.phone,
-            grade: form.grade,
-            ZY: form.zy,
-            QSH: form.QSH
+            xh: form.xh
             }
         );
         if (data.code !== "01") {
