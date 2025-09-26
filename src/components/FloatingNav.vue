@@ -30,16 +30,16 @@ const navItems = [
     route: '/home/items'
   },
   {
-    key: 'profile',
-    text: '我的',
-    icon: UserOutlined,
-    route: '/home/profile'
-  },
-  {
     key: 'messages',
     text: '消息',
     icon: MessageOutlined,
     route: '/home/messages'
+  },
+  {
+    key: 'profile',
+    text: '我的',
+    icon: UserOutlined,
+    route: '/home/profile'
   }
 ];
 

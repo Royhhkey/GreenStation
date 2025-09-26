@@ -8,33 +8,36 @@
       
       enter-button
     />
-    <div class="category-list">
-      <a-checkbox-group 
-        v-model:value="selectedTypes" 
-        class="checkbox-group"
-      >
-        <a-tag
-          v-for="(category, index) in categories"
-          :key="category.value"
-          :class="[
-            'category-tag', 
-            `category-${index}`,
-            { active: selectedTypes.includes(category.value) }
-          ]"
-          @click="toggleCategory(category.value)"
-        >
-          {{ category.label }}
-        </a-tag>
-        <a-button type="primary" class="category-expand-btn">
-          展开
-        </a-button>
-      </a-checkbox-group>
-    </div>
+      <div class="category-list">
+        <a-checkbox-group v-model:value="selectedTypes" class="checkbox-group">
+          <a-tag
+            v-for="(category, index) in categories"
+            :key="category.value"
+            :class="[
+              'category-tag',
+              { active: selectedTypes.includes(category.value) }
+            ]"
+            @click="toggleCategory(category.value)"
+          >
+            {{ category.label }}
+          </a-tag>
+          <!-- <a-button
+            v-if="categories.length > maxShow"
+            type="primary"
+            class="category-expand-btn"
+            @click="showAll = !showAll"
+          >
+            {{ showAll ? '收起' : '展开' }}
+          </a-button> -->
+        </a-checkbox-group>
+      </div>
   </div>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
+const showAll = ref(false)
+const maxShow = 8 // 默认显示8个
 
 const props = defineProps({
   categories: {

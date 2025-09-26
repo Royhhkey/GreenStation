@@ -90,7 +90,7 @@ function goToRegister() {
   router.push("/register");
 }
 onMounted(()=>{
-  // router.push("/home/items");
+  router.push("/home/items");
 })
 </script>
 

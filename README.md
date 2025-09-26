@@ -1,37 +1,58 @@
 # TradePlatform
 
-#### 介绍
-二手交易平台
+## 项目概述
+这是一个基于Vue.js的前端项目，使用Vue 3 Composition API和Vite构建工具开发。
 
-#### 软件架构
-软件架构说明
+## 环境要求
+在运行本项目前，请确保您的开发环境满足以下要求：
 
+- Node.js (版本 14.0 或更高)
+- npm (版本 6.0 或更高) 或 yarn (版本 1.22 或更高)
+- Git
 
-#### 安装教程
+## 快速开始
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+### 1. 克隆项目
+```bash
+git clone https://gitee.com/roy-123/trade-platform.git
+cd TradePlatform
 
-#### 使用说明
+```
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+### 2. 安装依赖
 
-#### 参与贡献
+``` bash
+# 使用 npm
+npm install
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+# 或使用 yarn
+yarn install
 
+# 或使用 pnpm
+pnpm install
+```
 
-#### 特技
+### 4.启动开发服务器
+``` bash
+# 使用 npm
+npm run dev
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+# 或使用 yarn
+yarn dev
+
+# 或使用 pnpm
+pnpm dev
+```
+### 5.项目结构
+``` text
+src/
+├── assets/          # 静态资源（图片、样式等）
+├── components/      # 可复用组件
+├── views/           # 页面组件
+├── router/          # 路由配置
+├── store/           # 状态管理（Vuex/Pinia）
+├── utils/           # 工具函数
+├── api/             # API接口
+├── styles/          # 全局样式
+└── main.js          # 应用入口文件
+```
