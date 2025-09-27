@@ -22,37 +22,36 @@
         <a-form-item label="邮箱" name="email" :rules="rules.email">
           <a-input v-model:value="form.email" placeholder="请输入邮箱" />
         </a-form-item>
-
-        <a-form-item label="手机号" name="phone" :rules="rules.phone">
-            <a-input v-model:value="form.phone" placeholder="请输入手机号" />
-        </a-form-item>
-
-        <a-form-item label="年级" name="grade" :rules="rules.grade">
-            <a-input v-model:value="form.grade" placeholder="请输入年级" />
-        </a-form-item>
-        <a-form-item label="专业" name="zy" :rules="rules.zy">
-            <a-input v-model:value="form.zy" placeholder="请输入专业" />
-        </a-form-item>
-
-        <a-form-item label="寝室号" name="dorm" :rules="rules.QSH">
-            <a-input v-model:value="form.QSH" placeholder="请输入寝室号" />
-        </a-form-item>
-
-
-        
-        <a-form-item label="密码" name="password" :rules="rules.password">
-          <a-input-password v-model:value="form.password" placeholder="请输入密码" />
-        </a-form-item>
-        <a-form-item label="确认密码" name="confirmPassword" :rules="rules.confirmPassword">
-          <a-input-password v-model:value="form.confirmPassword" placeholder="请再次输入密码" />
-        </a-form-item>
-        <a-form-item label="验证码" name="captcha" :rules="rules.captcha" >
+                <a-form-item label="验证码" name="captcha" :rules="rules.captcha" >
             <div class="captcha-container">
                 <a-input v-model:value="form.captcha" placeholder="请输入验证码" />
                 <a-button type="primary" class="captcha-btn"  @click="HandesendCode"  :disabled="countdown > 0">   
                      {{ countdown > 0 ? countdown + 's后重新发送' : '获取验证码' }}
                 </a-button>
             </div>
+        </a-form-item>
+
+        <a-form-item label="手机号" name="phone" :rules="rules.phone">
+            <a-input v-model:value="form.phone" placeholder="请输入手机号" />
+        </a-form-item>
+
+                <a-form-item label="密码" name="password" :rules="rules.password">
+          <a-input-password v-model:value="form.password" placeholder="请输入密码" />
+        </a-form-item>
+        <a-form-item label="确认密码" name="confirmPassword" :rules="rules.confirmPassword">
+          <a-input-password v-model:value="form.confirmPassword" placeholder="请再次输入密码" />
+        </a-form-item>
+
+
+        <a-form-item label="年级" name="grade" :rules="rules.grade">
+            <a-input v-model:value="form.grade" placeholder="请输入年级" />
+        </a-form-item>
+        <a-form-item label="专业" name="zy" :rules="rules.zy">
+            <a-input v-model:value="form.zy" placeholder="请填写专业" />
+        </a-form-item>
+
+        <a-form-item label="寝室号" name="dorm" :rules="rules.QSH">
+            <a-input v-model:value="form.QSH" placeholder="请填写寝室号" />
         </a-form-item>
         <a-form-item>
           <a-button type="primary" html-type="submit" block class="register-btn" >注册</a-button>
@@ -99,9 +98,9 @@ const rules = {
   password: [{ required: true, message: "请输入密码" }],
   captcha: [{ required: true, message: "请输入验证码" }],
   phone: [{ required: true, message: "请输入手机号" }],
-  grade: [{ required: true, message: "请输入年级" }],
-  zy: [{ required: true, message: "请输入专业" }],
-  QSH: [{ required: true, message: "请输入寝室号" }],
+  grade: [{  message: "请输入年级" }],
+  zy: [{  message: "请输入专业" }],
+  QSH: [{ message: "请输入寝室号" }],
   confirmPassword: [
     { required: true, message: "请确认密码" },
     {

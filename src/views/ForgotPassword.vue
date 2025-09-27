@@ -16,9 +16,6 @@
                 <a-form-item label="邮箱" name="email" :rules="rules.email">
                 <a-input v-model:value="form.email" placeholder="请输入邮箱" />
                 </a-form-item>
-                <a-form-item label="新密码" name="password" :rules="rules.password">
-                <a-input v-model:value="form.password" placeholder="请输入新密码" />
-                </a-form-item>
                 <a-form-item label="验证码" name="code" :rules="rules.code" class="code-form-item">
                       <div class="code-container">
                         <a-input v-model:value="form.code" placeholder="请输入验证码" />
@@ -27,6 +24,10 @@
                         </a-button>
                       </div>
                 </a-form-item>
+                <a-form-item label="新密码" name="password" :rules="rules.password">
+                <a-input v-model:value="form.password" placeholder="请输入新密码" />
+                </a-form-item>
+
             
                 <a-form-item v-if="showSubmit">
                 <a-button type="primary" html-type="submit" block>提交</a-button>
@@ -53,14 +54,14 @@ const form = reactive({
 
 const rules = {
   email: [
-    { required: true, message: "请输入邮箱", trigger: "blur" },
-    { type: "email", message: "请输入有效的邮箱地址", trigger: ["blur", "change"] },
+    { required: true, message: "请输入邮箱"},
+    { type: "email", message: "请输入有效的邮箱地址", trigger:  "change"},
   ],
   code: [
-    { required: true, message: "请输入验证码", trigger: "blur" },
+    { required: true, message: "请输入验证码", },
   ],
   password: [
-    { required: true, message: "请输入新密码", trigger: "blur" },
+    { required: true, message: "请输入新密码"},
   ],
 };
 
