@@ -175,10 +175,7 @@ watch(
   align-items: center;
 }
 
-.code-container .ant-input {
 
-  /* flex: 1; */
-}
 
 .code-container .ant-btn {
   width: 100px;

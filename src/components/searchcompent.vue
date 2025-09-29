@@ -96,16 +96,28 @@ watch(selectedTypes, () => {
   flex-direction: column;
   gap: 16px;
   padding: 16px;
-  width: 100%;
+  width: 96%;
   margin: 0 auto;
   position: fixed;
-  /* top: ; */
-  top :8.524vh;
-  left: 10px;
+  top: 0; /* 贴顶 */
+  margin-top:56px; /* 向下微调 */
   z-index: 100;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
+/* .search-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  width:98%;
+  margin: 0 auto;
+  position: fixed;
+
+  z-index: 100;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+} */
 .search-input{
     width: 90%;
     height: 6vh
@@ -284,6 +296,8 @@ watch(selectedTypes, () => {
 @media (max-width: 768px) {
   .search-box {
     padding: 8px;
+    /* top: 5px; */
+    /* margin-top: 56px; */
   }
   
   .checkbox-group {

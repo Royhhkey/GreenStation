@@ -58,33 +58,36 @@ const handleClick = (key) => {
 <style scoped>
 .floating-nav {
   position: fixed;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
   background: #fff;
   border-radius: 24px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-  padding: 12px 8px;
+  padding: 8px 16px;
   transition: all 0.3s;
+  width: 90%;
+  max-width: 400px;
 }
 
 .nav-items {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  flex-direction: row;
+  justify-content: space-around;
+  gap: 0;
 }
-
 
 .nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8px;
+  padding: 12px 0;
   cursor: pointer;
   transition: all 0.3s;
   border-radius: 12px;
   position: relative;
+  flex: 1;
 }
 
 /* 选中状态的样式 */
@@ -92,25 +95,13 @@ const handleClick = (key) => {
   background: #e6f7ff;
 }
 
-/* .nav-item.active::after {
-  content: '';
-  position: absolute;
-  right: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 70%;
-  background: #1890ff;
-  border-radius: 2px;
-} */
-
 .nav-item.active .nav-icon,
 .nav-item.active .nav-text {
   color: #1890ff;
 }
 
 .nav-icon {
-  font-size: 24px;
+  font-size: 20px;
   margin-bottom: 4px;
   color: #666;
 }
@@ -129,26 +120,24 @@ const handleClick = (key) => {
   color: #1890ff;
 }
 
+/* 移动端适配 */
 @media (max-width: 768px) {
   .floating-nav {
-    right: 50%;
-    left: 50%;
-    top: auto;
     bottom: 10px;
-    transform: translateX(-50%);
-    border-radius: 20px;
-    padding: 8px 4px;
-    width: 95vw;
-    max-width: 400px;
+    width: 95%;
+    padding: 6px 12px;
   }
-  .nav-items {
-    flex-direction: row;
-    justify-content: space-around;
-    gap: 0;
-  }
+  
   .nav-item {
-    flex: 1;
-    padding: 8px 0;
+    padding: 10px 0;
+  }
+  
+  .nav-icon {
+    font-size: 18px;
+  }
+  
+  .nav-text {
+    font-size: 10px;
   }
 }
 </style>

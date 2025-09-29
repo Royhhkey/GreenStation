@@ -4,22 +4,14 @@
       <a-layout-header class="header">
         <div class="logo">校园二手交易平台</div>
         <a-button type="text" @click="logout">
-             <LogoutOutlined  style="color: #fff;"/>
+          <LogoutOutlined style="color: #fff;" />
         </a-button>
       </a-layout-header>
       <a-layout>
-              <FloatingNav />
+        <!-- 只有在非聊天页面才显示底部导航 -->
+        <FloatingNav v-if="!isChatPage" />
 
-        <!-- <a-layout-sider width="200" class="menu-sider">
-          <a-menu
-            mode="inline"
-            :selectedKeys="[selectedKey]"
-            @click="handleMenuSelect"
-            :items="menuItems"
-          />
-        </a-layout-sider> -->
         <a-layout-content class="content">
-          <!-- <Myserach/> -->
           <router-view />
         </a-layout-content>
       </a-layout>
@@ -28,11 +20,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import FloatingNav from '@/components/FloatingNav.vue'
-
-import {LogoutOutlined} from '@ant-design/icons-vue'
+import { LogoutOutlined } from '@ant-design/icons-vue'
 
 const router = useRouter();
 const route = useRoute();
@@ -44,6 +35,11 @@ const menuItems = [
 
 const selectedKey = computed(() => {
   return route.path.startsWith("/home/items") ? "/home/items" : "/home/profile";
+});
+
+// 判断当前是否为聊天页面
+const isChatPage = computed(() => {
+  return route.path.startsWith('/home/chat/');
 });
 
 function logout() {
@@ -62,6 +58,7 @@ function handleMenuSelect({ key }) {
   flex-direction: column;
   background: #eaf2ff;
 }
+
 .header {
   background-color: #2c3e8f;
   color: white;
@@ -72,12 +69,14 @@ function handleMenuSelect({ key }) {
   height: 56px;
   min-width: 0;
 }
+
 .logo {
   font-weight: bold;
   font-size: 18px;
   color: white;
   white-space: nowrap;
 }
+
 .menu-sider {
   background-color: #ffffff;
   min-width: 160px;
@@ -85,6 +84,7 @@ function handleMenuSelect({ key }) {
   width: 18vw;
   transition: width 0.2s;
 }
+
 .content {
   padding: 20px;
   background-color: white;
@@ -92,18 +92,20 @@ function handleMenuSelect({ key }) {
   overflow: auto;
   flex: 1;
 }
+
 @media (max-width: 768px) {
   .menu-sider {
     min-width: 60px;
     width: 60px;
     max-width: 80px;
   }
+
   .logo {
     font-size: 14px;
   }
+
   .content {
     padding: 8px;
   }
 }
-
 </style>

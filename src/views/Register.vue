@@ -16,8 +16,8 @@
         <a-form-item label="用户名" name="username" :rules="rules.username">
             <a-input v-model:value="form.username" placeholder="请输入用户名" />
          </a-form-item>
-        <a-form-item label="学号" name="xh" :rules="rules.xh">
-            <a-input v-model:value="form.xh" placeholder="请输入学号" />
+        <a-form-item label="学号" name="XH" :rules="rules.XH">
+            <a-input v-model:value="form.XH" placeholder="请输入学号" />
          </a-form-item>
         <a-form-item label="邮箱" name="email" :rules="rules.email">
           <a-input v-model:value="form.email" placeholder="请输入邮箱" />
@@ -80,6 +80,7 @@ const form = reactive({
   email: "",
   username: "",
   password: "",
+  XH: "",
   confirmPassword: "",
   phone: "",
   grade: "",
@@ -93,7 +94,7 @@ const rules = {
     { required: true, message: "请输入邮箱"},
     { type: "email", message: "请输入有效的邮箱地址"},
   ],
-  xh: [{ required: true, message: "请输入学号" }],
+  XH: [{ required: true, message: "请输入学号" }],
   username: [{ required: true, message: "请输入用户名" }],
   password: [{ required: true, message: "请输入密码" }],
   captcha: [{ required: true, message: "请输入验证码" }],
@@ -156,7 +157,7 @@ const handleRegister = async () => {
       //     username: form.username,
       //     password: form.password,
       //     code: form.captcha,
-      //     XH: form.xh,
+      //     XH: form.XH,
       //     phone: form.phone,
       //     grade: form.grade,
       //     ZY: form.zy,
@@ -171,7 +172,7 @@ const handleRegister = async () => {
             username: form.username,
             password: form.password,
             code: form.captcha,
-            XH: form.xh,
+            XH: form.XH,
             phone: form.phone,
             grade: form.grade,
             ZY: form.zy,

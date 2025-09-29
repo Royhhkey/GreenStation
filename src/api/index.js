@@ -46,3 +46,11 @@ export const  resetPassword = (data)=>{
         data
     })
 }
+
+export const  getproducts = (data)=>{
+    return request({
+        url: '/api/products/?q=手机',
+        method: 'get',
+        data
+    })
+}

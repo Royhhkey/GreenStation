@@ -61,8 +61,8 @@ const form = reactive({
 const loginForm = ref(null);
 
 const rules = {
-  username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
-  password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+  username: [{ required: true, message: "请输入用户名"}],
+  password: [{ required: true, message: "请输入密码"}],
 };
 
 const handleLogin =  async() => {
@@ -75,11 +75,15 @@ const handleLogin =  async() => {
         message.error(data.msg);
         return;
   }
-  authStore.setAuth(data.data)
+  console.log(data.data);
+  // authStore.setAuth(data.data)
 //   console.log(authStore);
+  authStore.saveUserInfo(
+      data.data.user,  // 用户信息
+      data.data.token  // token
+  )
   message.success("登录成功");
   router.push("/home/items");
-
 };
 
 function goToForgot() {

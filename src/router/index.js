@@ -28,6 +28,11 @@ const routes = [
         component: ()=>import('../views/Message.vue'),
       },
       {
+        path: 'chat/:id',  // 新增聊天路由
+        name: 'chat',
+        component: () => import('../components/ChatWindow.vue'),
+      },
+      {
         path: '',
         redirect: 'profile',
       }
@@ -43,6 +48,7 @@ const routes = [
     name: 'register',
     component: () => import('../views/Register.vue'),
   },
+  
 ]
 
 const router = createRouter({
@@ -51,4 +57,22 @@ const router = createRouter({
   routes,
 })
 
+// // 路由守卫
+// router.beforeEach((to, from, next) => {
+//   const authStore = useAuthStore()
+  
+//   if (to.meta.requiresAuth && !authStore.checkAuth()) {
+//     // 如果需要登录但未登录，跳转到登录页
+//     next('/login')
+//   } else if (to.path === '/login' && authStore.checkAuth()) {
+//     // 如果已登录但访问登录页，跳转到首页
+//     next('/')
+//   } else {
+//     next()
+//   }
+// })
+
+
 export default router
+
+
