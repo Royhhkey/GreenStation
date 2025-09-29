@@ -3,7 +3,6 @@
     <div class="chat-header">
       <div class="back-button" @click="backToList">
         <left-outlined />
-  
       </div>
       <div class="chat-user-info">
         <div class="avatar">
@@ -15,13 +14,10 @@
         </div>
       </div>
       <div class="chat-actions">
-        <a-button type="text" shape="circle">
-          <phone-outlined />
+        <a-button type="text" shape="circle" class="action-btn">
+          <search-outlined />
         </a-button>
-        <a-button type="text" shape="circle">
-          <video-camera-outlined />
-        </a-button>
-        <a-button type="text" shape="circle">
+        <a-button type="text" shape="circle" class="action-btn">
           <more-outlined />
         </a-button>
       </div>
@@ -35,40 +31,105 @@
           class="message-bubble"
           :class="{
             'message-sent': message.isSent,
-            'message-received': !message.isSent
+            'message-received': !message.isSent,
+            'message-image-type': message.type === 'image'
           }"
         >
-          <div class="message-content">
-            <div class="message-text">{{ message.content }}</div>
-            <div class="message-time">{{ formatMessageTime(message.time) }}</div>
+          <!-- 对方头像（只在接收消息时显示，且不是图片消息） -->
+          <div v-if="!message.isSent && message.type !== 'image'" class="message-avatar">
+            <img :src="chat.avatar" :alt="chat.name" />
+          </div>
+          
+          <div class="message-content-wrapper">
+            <!-- 昵称（只在群聊或接收消息时显示，且不是图片消息） -->
+            <div v-if="!message.isSent && message.showName && message.type !== 'image'" class="message-sender">
+              {{ message.senderName || chat.name }}
+            </div>
+            
+            <div class="message-content" :class="{'image-content': message.type === 'image'}">
+              <!-- 文本消息 -->
+              <div v-if="message.type === 'text'" class="message-text">
+                {{ message.content }}
+              </div>
+              
+              <!-- 图片消息 -->
+              <div v-else-if="message.type === 'image'" class="message-image">
+                <img 
+                  :src="message.content" 
+                  :alt="message.alt || '图片'"
+                  @click="previewImage(message.content)"
+                />
+              </div>
+            </div>
+            
+            <div class="message-time" :class="{'image-time': message.type === 'image'}">
+              {{ formatMessageTime(message.time) }}
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="chat-input-area">
-      <div class="input-tools">
-        <a-button type="text" shape="circle">
-          <plus-outlined />
-        </a-button>
-        <a-button type="text" shape="circle" @click="chooseImage">
-          <picture-outlined />
-        </a-button>
+    <!-- 图片预览模态框 - 修复警告 -->
+    <a-modal 
+      v-model:open="previewVisible" 
+      :footer="null"
+      width="40%"
+      style="top: 20px;"
+      @cancel="previewVisible = false"
+    >
+      <img :src="previewImageUrl" style="width: 100%;" />
+    </a-modal>
 
+    <div class="chat-input-area">
+      <!-- 工具栏 -->
+      <div class="input-tools">
+        <a-button type="text" shape="circle" class="tool-btn">
+          <smile-outlined />
+        </a-button>
+        <a-upload
+          :before-upload="beforeUpload"
+          :show-upload-list="false"
+          accept="image/*"
+          multiple
+        >
+          <a-button type="text" shape="circle" class="tool-btn">
+            <folder-open-outlined />
+          </a-button>
+        </a-upload>
+        <a-button type="text" shape="circle" class="tool-btn">
+          <more-outlined />
+        </a-button>
       </div>
+
+      <!-- 图片预览区域 -->
+      <div v-if="uploadedImages.length > 0" class="image-preview-area">
+        <div class="preview-images">
+          <div v-for="(image, index) in uploadedImages" :key="index" class="preview-item">
+            <img :src="image.url" />
+            <div class="preview-actions">
+              <close-outlined @click="removeImage(index)" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 输入区域 -->
       <div class="input-container">
         <a-textarea
           v-model:value="newMessage"
-          placeholder="输入消息..."
+          placeholder="有事Q我～"
           :rows="1"
           :auto-size="{ minRows: 1, maxRows: 4 }"
           @press-enter="sendMessage"
+          class="message-input"
         />
         <a-button
           type="primary"
           shape="circle"
-          :disabled="!newMessage.trim()"
+          :disabled="!newMessage.trim() && uploadedImages.length === 0"
           @click="sendMessage"
+          class="send-btn"
         >
           <send-outlined />
         </a-button>
@@ -80,82 +141,87 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
+import { message } from 'ant-design-vue';
 import {
   LeftOutlined,
-  PhoneOutlined,
-  VideoCameraOutlined,
+  SearchOutlined,
   MoreOutlined,
-  PlusOutlined,
-  PictureOutlined,
-  FileImageOutlined,
-  SendOutlined
+  SmileOutlined,
+  FolderOpenOutlined,
+  SendOutlined,
+  CloseOutlined
 } from '@ant-design/icons-vue';
 
 const router = useRouter();
 
-// 从路由参数获取聊天ID
+// 聊天数据
 const chatId = parseInt(router.currentRoute.value.params.id);
-
-// 新消息内容
 const newMessage = ref('');
-
-// 聊天容器引用
 const chatContainer = ref(null);
+const previewVisible = ref(false);
+const previewImageUrl = ref('');
 
-// 模拟聊天数据（实际应该从API获取）
+// 上传的图片
+const uploadedImages = ref([]);
+
+// 聊天数据
 const chat = ref({
   id: chatId,
-  name: '用户',
+  name: '第三',
   avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
   messages: []
 });
 
-// 根据ID加载聊天数据
+// 加载聊天数据
 const loadChatData = () => {
-  // 模拟数据 - 实际应该从API获取
   const chatData = {
     1: {
       id: 1,
-      name: '张三',
+      name: '第三',
       avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
       messages: [
         {
           id: 1,
-          content: '你好，这个商品还在吗？',
-          time: new Date(Date.now() - 1000 * 60 * 10),
-          isSent: false
+          content: '这个商品在任何时间',
+          type: 'text',
+          time: new Date(Date.now() - 1000 * 60 * 35),
+          isSent: false,
+          showName: true,
+          senderName: '第三'
         },
         {
           id: 2,
-          content: '还在的，你需要吗？',
+          content: '价格是吗？',
+          type: 'text',
+          time: new Date(Date.now() - 1000 * 60 * 25),
+          isSent: false,
+          showName: true,
+          senderName: '注'
+        },
+        {
+          id: 3,
+          content: '好的，我考虑一下',
+          type: 'text',
           time: new Date(Date.now() - 1000 * 60 * 8),
           isSent: true
-        }
-      ]
-    },
-    2: {
-      id: 2,
-      name: '李四',
-      avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-      messages: [
+        },
         {
-          id: 1,
-          content: '价格可以便宜点吗？',
-          time: new Date(Date.now() - 1000 * 60 * 60),
-          isSent: false
-        }
-      ]
-    },
-    3: {
-      id: 3,
-      name: '王五',
-      avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
-      messages: [
+          id: 4,
+          content: '没问题',
+          type: 'text',
+          time: new Date(Date.now() - 1000 * 60 * 5),
+          isSent: false,
+          showName: true,
+          senderName: 'Zero'
+        },
         {
-          id: 1,
-          content: '什么时候可以交易？',
-          time: new Date(Date.now() - 1000 * 60 * 60 * 3),
-          isSent: false
+          id: 5,
+          content: '了解了',
+          type: 'text',
+          time: new Date(Date.now() - 1000 * 60 * 2),
+          isSent: false,
+          showName: true,
+          senderName: 'regionv5@30'
         }
       ]
     }
@@ -171,7 +237,13 @@ const loadChatData = () => {
 
 // 格式化消息时间
 const formatMessageTime = (time) => {
-  return new Date(time).toLocaleTimeString('zh-CN', {
+  const messageTime = new Date(time);
+  const now = new Date();
+  const diffMinutes = Math.floor((now - messageTime) / (1000 * 60));
+  
+  if (diffMinutes < 1) return '刚刚';
+  else if (diffMinutes < 60) return `${diffMinutes}分钟前`;
+  else return messageTime.toLocaleTimeString('zh-CN', {
     hour: '2-digit',
     minute: '2-digit'
   });
@@ -182,40 +254,114 @@ const backToList = () => {
   router.push('/home/messages');
 };
 
-// 发送消息
-const sendMessage = () => {
-  if (!newMessage.value.trim()) return;
-  
-  const newMsg = {
-    id: chat.value.messages.length + 1,
-    content: newMessage.value.trim(),
-    time: new Date(),
-    isSent: true
+// 图片上传前的处理
+const beforeUpload = (file) => {
+  const isImage = file.type.startsWith('image/');
+  if (!isImage) {
+    message.error('只能上传图片文件!');
+    return false;
+  }
+
+  const isLt5M = file.size / 1024 / 1024 < 5;
+  if (!isLt5M) {
+    message.error('图片大小不能超过5MB!');
+    return false;
+  }
+
+  // 预览图片
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    uploadedImages.value.push({
+      file: file,
+      url: e.target.result,
+      name: file.name
+    });
   };
-  
-  chat.value.messages.push(newMsg);
-  newMessage.value = '';
-  
+  reader.readAsDataURL(file);
+
+  return false;
+};
+
+// 移除图片
+const removeImage = (index) => {
+  uploadedImages.value.splice(index, 1);
+};
+
+// 预览图片
+const previewImage = (imageUrl) => {
+  previewImageUrl.value = imageUrl;
+  previewVisible.value = true;
+};
+
+// 发送消息
+const sendMessage = async () => {
+  // 发送文本消息
+  if (newMessage.value.trim()) {
+    const textMsg = {
+      id: chat.value.messages.length + 1,
+      content: newMessage.value.trim(),
+      type: 'text',
+      time: new Date(),
+      isSent: true
+    };
+    
+    chat.value.messages.push(textMsg);
+    newMessage.value = '';
+  }
+
+  // 发送图片消息
+  if (uploadedImages.value.length > 0) {
+    for (const image of uploadedImages.value) {
+      const imageUrl = await simulateImageUpload(image);
+      
+      const imageMsg = {
+        id: chat.value.messages.length + 1,
+        content: imageUrl,
+        type: 'image',
+        alt: image.name,
+        time: new Date(),
+        isSent: true
+      };
+      
+      chat.value.messages.push(imageMsg);
+    }
+    uploadedImages.value = [];
+  }
+
   // 滚动到底部
   nextTick(() => {
     scrollToBottom();
   });
-  
+
   // 模拟对方回复
-  setTimeout(() => {
-    const replyMsg = {
-      id: chat.value.messages.length + 1,
-      content: '收到，谢谢！',
-      time: new Date(Date.now() + 2000),
-      isSent: false
-    };
-    
-    chat.value.messages.push(replyMsg);
-    
-    nextTick(() => {
-      scrollToBottom();
-    });
-  }, 2000);
+  if (newMessage.value.trim() || uploadedImages.value.length > 0) {
+    setTimeout(() => {
+      const replyMsg = {
+        id: chat.value.messages.length + 1,
+        content: '收到，谢谢！',
+        type: 'text',
+        time: new Date(Date.now() + 2000),
+        isSent: false,
+        showName: true,
+        senderName: '第三'
+      };
+      
+      chat.value.messages.push(replyMsg);
+      
+      nextTick(() => {
+        scrollToBottom();
+      });
+    }, 2000);
+  }
+};
+
+// 模拟图片上传到服务器
+const simulateImageUpload = async (image) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(image.url);
+    }, 500);
+  });
 };
 
 // 滚动到底部
@@ -239,15 +385,16 @@ onMounted(() => {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: white;
+  background: #f5f5f5;
 }
 
 .chat-header {
-  padding: 12px 16px;
+  padding: 8px 16px;
   border-bottom: 1px solid #e8e8e8;
   display: flex;
   align-items: center;
   background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .back-button {
@@ -255,11 +402,13 @@ onMounted(() => {
   align-items: center;
   cursor: pointer;
   margin-right: 16px;
-  color: #1890ff;
+  color: #666;
+  font-size: 14px;
 }
 
-.back-button span {
-  margin-left: 4px;
+.back-button :deep(.anticon) {
+  font-size: 16px;
+  margin-right: 4px;
 }
 
 .chat-user-info {
@@ -269,11 +418,12 @@ onMounted(() => {
 }
 
 .chat-user-info .avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
   overflow: hidden;
   margin-right: 12px;
+  background: #f0f0f0;
 }
 
 .chat-user-info .avatar img {
@@ -286,109 +436,291 @@ onMounted(() => {
   font-size: 16px;
   margin-bottom: 2px;
   font-weight: 600;
+  color: #000;
 }
 
 .user-info .status {
   font-size: 12px;
-  color: #52c41a;
+  color: #666;
 }
 
 .chat-actions {
   display: flex;
-  gap: 8px;
+  gap: 4px;
+}
+
+.action-btn, .tool-btn {
+  color: #666;
+  width: 32px;
+  height: 32px;
+}
+
+.action-btn:hover, .tool-btn:hover {
+  background: #f0f0f0;
+  color: #333;
 }
 
 .chat-container {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
-  background-color: #f0f2f5;
+  padding: 0;
+  background: #f5f5f5;
 }
 
 .chat-messages {
   display: flex;
   flex-direction: column;
+  padding: 16px;
   gap: 16px;
 }
 
 .message-bubble {
   display: flex;
-  max-width: 70%;
+  max-width: 80%;
+  gap: 8px;
 }
 
 .message-sent {
   align-self: flex-end;
+  flex-direction: row-reverse;
 }
 
 .message-received {
   align-self: flex-start;
 }
 
-.message-content {
-  background: white;
-  padding: 12px 16px;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+.message-image-type {
+  align-items: flex-end;
 }
 
-.message-sent .message-content {
-  background: #1890ff;
-  color: white;
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f0f0f0;
+}
+
+.message-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.message-content-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-sender {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+  margin-left: 8px;
+}
+
+.message-sent .message-sender {
+  margin-left: 0;
+  margin-right: 8px;
+  text-align: right;
+}
+
+.message-content:not(.image-content) {
+  background: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  position: relative;
+}
+
+.message-sent .message-content:not(.image-content) {
+  background: #3f9db5;
+  border-bottom-right-radius: 2px;
+}
+
+.message-received .message-content:not(.image-content) {
+  border-bottom-left-radius: 2px;
+}
+
+.message-content.image-content {
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  max-width: 200px;
 }
 
 .message-text {
-  margin-bottom: 4px;
+  margin-bottom: 0;
   word-wrap: break-word;
+  line-height: 1.4;
+  font-size: 14px;
+  color: white;
+}
+
+.message-received .message-text {
+  color: #000;
+}
+
+.message-image img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: block;
+}
+
+.message-image img:hover {
+  transform: scale(1.02);
 }
 
 .message-time {
   font-size: 11px;
   color: #999;
+  margin-top: 4px;
   text-align: right;
 }
 
-.message-sent .message-time {
-  color: rgba(255, 255, 255, 0.8);
+.message-received .message-time {
+  text-align: left;
+  margin-left: 8px;
+}
+
+.message-time.image-time {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  margin: 0;
+}
+
+.message-content.image-content {
+  position: relative;
 }
 
 .chat-input-area {
   border-top: 1px solid #e8e8e8;
-  padding: 16px;
   background: white;
+  padding: 0;
 }
 
 .input-tools {
+  padding: 8px 16px;
   display: flex;
   gap: 8px;
-  margin-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.image-preview-area {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.preview-images {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.preview-item {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #e8e8e8;
+}
+
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-actions {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  font-size: 10px;
 }
 
 .input-container {
+  padding: 12px 16px;
   display: flex;
   gap: 12px;
   align-items: flex-end;
 }
 
-.input-container :deep(.ant-input) {
+.message-input {
   flex: 1;
+  border-radius: 6px;
+  border: 1px solid #e8e8e8;
+  resize: none;
 }
 
-/* 响应式设计 */
+.message-input:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.send-btn {
+  background: #07c160;
+  border-color: #07c160;
+  width: 36px;
+  height: 36px;
+}
+
+.send-btn:hover {
+  background: #06ae56;
+  border-color: #06ae56;
+}
+
+.send-btn:disabled {
+  background: #f0f0f0;
+  border-color: #d9d9d9;
+  color: #bfbfbf;
+}
+
 @media (max-width: 768px) {
   .chat-header {
     padding: 8px 12px;
   }
   
-  .chat-container {
+  .chat-messages {
     padding: 12px;
   }
   
   .message-bubble {
-    max-width: 85%;
+    max-width: 90%;
   }
   
-  .chat-input-area {
-    padding: 12px;
+  .input-tools,
+  .image-preview-area,
+  .input-container {
+    padding: 8px 12px;
+  }
+  
+  .preview-item {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .message-content.image-content {
+    max-width: 180px;
   }
 }
 </style>

@@ -13,7 +13,7 @@
         class="items-container"
         @scroll="handleScroll"
       >
-        <a-list :grid="gridConfig" :data-source="displayItems">
+        <a-list :grid="gridConfig" :data-source="items">
           <template #renderItem="{ item }">
             <a-list-item>
               <a-card 
@@ -30,28 +30,28 @@
                     loading="lazy"
                   />
                   <div class="item-category-tag">
-                    {{ getCategoryLabel(item.category) }}
+                    {{ getCategoryLabel(item.categoryId) }}
                   </div>
                 </div>
                 <div class="item-info">
                   <h4 class="item-title" :title="item.title">{{ item.title }}</h4>
                   <p class="item-price">￥{{ item.price }}</p>
                   <div class="item-meta">
-                    <span class="item-location">{{ item.location }}</span>
+                    <!-- <span class="item-location">{{ item.location }}</span> -->
                     <span class="item-time">{{ formatTime(item.createTime) }}</span>
                   </div>
                 </div>
                 <div class="item-actions">
                   <a-button 
-                    type="primary" 
                     size="small" 
                     class="buy-btn" 
-                    @click.stop="buyItem(item)"
+                    @click.stop="viewItemDetail(item)"
                   >
-                    <template #icon><ShoppingCartOutlined /></template>
-                    购买
+                    <template #icon><ReadOutlined  /></template>
+                    详情
                   </a-button>
                   <a-button 
+                    type="primary" 
                     size="small" 
                     class="contact-btn"
                     @click.stop="contactSeller(item)"
@@ -72,19 +72,26 @@
         </div>
         
         <!-- 没有更多数据提示 -->
-        <div v-if="noMoreData && displayItems.length > 0" class="no-more-container">
+        <div v-if="noMoreData && items.length > 0" class="no-more-container">
           <a-divider>
             <smile-outlined />
             <span class="no-more-text">已经到底了，没有更多商品了</span>
           </a-divider>
         </div>
-        
+        <!-- 商品详情弹窗 -->
+        <ProductDetailModal
+          :visible="detailModalVisible"
+          :product-data="selectedProduct"
+          :categories="categories"
+          @update:visible="handleDetailModalVisibleChange"
+          @contact-seller="handleContactSeller"
+        />
         <!-- 空状态 -->
-        <div v-if="!loading && displayItems.length === 0" class="empty-container">
+        <!-- <div v-if="!loading && displayItems.length === 0" class="empty-container">
           <a-empty description="暂无商品数据">
             <a-button type="primary" @click="resetSearch">重新加载</a-button>
           </a-empty>
-        </div>
+        </div> -->
       </div>
     </div>
     
@@ -96,19 +103,26 @@
 <script setup>
 import { ref, reactive, computed, onMounted, nextTick } from "vue";
 import { message, Modal } from "ant-design-vue";
-import { ShoppingCartOutlined, MessageOutlined, SmileOutlined } from '@ant-design/icons-vue';
+import { ReadOutlined , MessageOutlined, SmileOutlined } from '@ant-design/icons-vue';
 import Myserach from '@/components/searchcompent.vue';
+import ProductDetailModal from '@/components/ProductDetailModal.vue'; // 引入详情组件
+import {replaceUrlRegex,removeEmptyProperties,objectToString,formatTime} from '@/utils'
 import {getproducts} from '@/api'
+
+// 详情弹窗相关
+const detailModalVisible = ref(false);
+const selectedProduct = ref(null);
+
 // 商品类别配置
 const categories = [
-  { label: '全部', value: 'all' },
-  { label: '学习用品', value: 'study' },
-  { label: '生活用品', value: 'life' },
-  { label: '电子产品', value: 'electronic' },
-  { label: '美妆护肤', value: 'makeup' },
-  { label: '服装鞋包', value: 'clothing' },
-  { label: '食品饮料', value: 'food' },
-  { label: '其他', value: 'others' },
+  { label: '全部', value: '' },
+  { label: '学习用品', value: '4' },
+  { label: '生活用品', value: '5' },
+  { label: '电子产品', value: '6' },
+  { label: '美妆护肤', value: '7' },
+  { label: '服装鞋包', value: '8' },
+  { label: '食品饮料', value: '9' },
+  { label: '其他', value: '10' },
 ];
 
 // 响应式数据
@@ -116,12 +130,14 @@ const items = ref([]);
 const loading = ref(false);
 const noMoreData = ref(false);
 const currentPage = ref(1);
-const pageSize = ref(12);
-const totalItems = ref(12);
+const pageSize = ref(10);
 const searchParams = reactive({
   keyword: '',
-  category: 'all'
+  category: ''
 });
+
+// const searchTimeout = ref(null);
+const isSearching = ref(false);
 
 // 滚动容器引用
 const scrollContainer = ref(null);
@@ -140,102 +156,87 @@ const gridConfig = ref({
   xxl: 4
 });
 
-// 计算属性：过滤后的显示项目
-const displayItems = computed(() => {
-  let filtered = items.value;
-  
-  if (searchParams.keyword) {
-    const keyword = searchParams.keyword.toLowerCase();
-    filtered = filtered.filter(item => 
-      item.title.toLowerCase().includes(keyword) ||
-      item.description.toLowerCase().includes(keyword)
-    );
-  }
-  
-  if (searchParams.category !== 'all') {
-    filtered = filtered.filter(item => item.category === searchParams.category);
-  }
-  
-  return filtered;
+
+// 创建类别映射表
+const categoryMap = computed(() => {
+  const map = {};
+  categories.forEach(cat => {
+    map[cat.value] = cat.label;
+  });
+  return map;
 });
 
-// 根据值获取类别标签
+// 使用映射表查找
 const getCategoryLabel = (value) => {
-  const category = categories.find(cat => cat.value === value);
-  return category ? category.label : '其他';
+  if (value === null || value === undefined) return '其他';
+  
+  const stringValue = String(value).trim();
+  return categoryMap.value[stringValue] || '其他';
 };
 
-// 格式化时间
-const formatTime = (timestamp) => {
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diff = now - date;
+
+// 防抖函数
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), delay);
+  };
+};
+
+// 实际的搜索执行函数
+const executeSearch = async (params) => {
+  isSearching.value = true;
   
-  if (diff < 24 * 60 * 60 * 1000) {
-    return date.toLocaleTimeString('zh-CN', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
-  } else if (diff < 7 * 24 * 60 * 60 * 1000) {
-    const days = Math.floor(diff / (24 * 60 * 60 * 1000));
-    return `${days}天前`;
-  } else {
-    return date.toLocaleDateString('zh-CN');
+  try {
+    searchParams.keyword = params.keyword || '';
+    searchParams.category = params.types || '';
+    if (searchParams.category !== '') {
+      searchParams.category = searchParams.category.join(','); 
+    }
+    
+    console.log('执行搜索，参数:', searchParams);
+    items.value = [];
+    currentPage.value = 1;
+    noMoreData.value = false;
+    
+    await loadMore();
+  } finally {
+    isSearching.value = false;
   }
 };
+
+// 创建防抖版本的搜索函数（1000ms 延迟）
+const debouncedSearch = debounce(executeSearch, 1000);
 
 // 处理搜索
 const handleSearch = (params) => {
-  searchParams.keyword = params.keyword || '';
-  searchParams.category = params.types || 'all';
+  console.log('handleSearch', params);
   
-  items.value = [];
-  currentPage.value = 1;
-  noMoreData.value = false;
+  // 如果正在搜索，显示提示
+  if (isSearching.value) {
+    console.log('正在搜索中，请稍候...');
+  }
   
-  loadMore();
+  debouncedSearch(params);
 };
 
 // 重置搜索
 const resetSearch = () => {
   searchParams.keyword = '';
-  searchParams.category = 'all';
+  searchParams.category = '';
   items.value = [];
   currentPage.value = 1;
   noMoreData.value = false;
   loadMore();
 };
-
-// 查看商品详情
+// 处理详情弹窗显示状态变化
+const handleDetailModalVisibleChange = (visible) => {
+  detailModalVisible.value = visible;
+};// 查看商品详情
 const viewItemDetail = (item) => {
-  Modal.info({
-    title: item.title,
-    width: 600,
-    content: `
-      <div style="text-align: center; margin-bottom: 20px;">
-        <img src="${item.image}" alt="${item.title}" style="max-width: 100%; max-height: 300px;" />
-      </div>
-      <p><strong>价格：</strong>￥${item.price}</p>
-      <p><strong>类别：</strong>${getCategoryLabel(item.category)}</p>
-      <p><strong>位置：</strong>${item.location}</p>
-      <p><strong>描述：</strong>${item.description}</p>
-      <p><strong>发布时间：</strong>${new Date(item.createTime).toLocaleString()}</p>
-    `,
-    okText: '关闭'
-  });
-};
-
-// 购买商品
-const buyItem = (item) => {
-  Modal.confirm({
-    title: '确认购买',
-    content: `您确定要购买「${item.title}」吗？价格：￥${item.price}`,
-    okText: '确认购买',
-    cancelText: '取消',
-    onOk() {
-      message.success(`购买成功！您已购买 ${item.title}`);
-    }
-  });
+  selectedProduct.value = item;
+  detailModalVisible.value = true;
 };
 
 // 联系卖家
@@ -243,60 +244,7 @@ const contactSeller = (item) => {
   message.info(`请联系卖家：${item.seller || '未知卖家'}`);
 };
 
-// 生成模拟数据
-const generateMockData = (count, startId = 1) => {
-  const mockTitles = {
-    study: ['高等数学教材', '英语四级词汇', '考研政治笔记', '编程入门教程', '学术论文写作指南'],
-    life: ['保温杯', '台灯', '收纳箱', '床上小桌', '瑜伽垫'],
-    electronic: ['二手iPhone', '笔记本电脑', '蓝牙耳机', '机械键盘', '平板电脑'],
-    makeup: ['口红', '面膜', '防晒霜', '眼影盘', '粉底液'],
-    clothing: ['卫衣', '牛仔裤', '运动鞋', '羽绒服', '连衣裙'],
-    food: ['速溶咖啡', '方便面', '小零食', '能量饮料', '饼干'],
-    others: ['自行车', '吉他', '画板', '健身器材', '盆栽']
-  };
-  
-  const locations = ['教学楼A区', '宿舍楼B栋', '图书馆', '食堂门口', '运动场'];
-  const sellers = ['张三', '李四', '王五', '赵六', '钱七'];
-  
-  return Array.from({ length: count }, (_, index) => {
-    const id = startId + index;
-    const categoryKeys = Object.keys(mockTitles).filter(key => key !== 'all');
-    const category = categoryKeys[Math.floor(Math.random() * categoryKeys.length)];
-    const titles = mockTitles[category];
-    const title = titles[Math.floor(Math.random() * titles.length)];
-    
-    return {
-      id,
-      title: `${title} ${id}`,
-      price: Math.floor(Math.random() * 500) + 10,
-      image: `https://picsum.photos/300/200?random=${id}`,
-      category,
-      description: `这是${title}的详细描述，商品状况良好，欢迎前来查看。`,
-      location: locations[Math.floor(Math.random() * locations.length)],
-      seller: sellers[Math.floor(Math.random() * sellers.length)],
-      createTime: Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000
-    };
-  });
-};
 
-// 模拟API请求
-const fetchItems = async (page, size) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  const startIndex = (page - 1) * size;
-  
-  if (startIndex >= totalItems.value) {
-    return { items: [], hasMore: false };
-  }
-  
-  const endIndex = Math.min(startIndex + size, totalItems.value);
-  const count = endIndex - startIndex;
-  
-  return {
-    items: generateMockData(count, startIndex + 1),
-    hasMore: endIndex < totalItems.value
-  };
-};
 
 // 手动滚动处理
 const handleScroll = () => {
@@ -318,6 +266,7 @@ const handleScroll = () => {
   }
 };
 
+
 // 加载更多数据
 const loadMore = async () => {
   if (loading.value || noMoreData.value) {
@@ -326,18 +275,59 @@ const loadMore = async () => {
   }
   
   loading.value = true;
-  console.log(`开始加载第 ${currentPage.value} 页数据...`);
+  // console.log(`开始加载第 ${currentPage.value} 页数据...`);
   
   try {
-    const result = await fetchItems(currentPage.value, pageSize.value);
-    
-    if (result.items.length > 0) {
-      items.value.push(...result.items);
-      currentPage.value++;
-      console.log(`成功加载 ${result.items.length} 条数据，当前总数: ${items.value.length}`);
+
+    let obj = {
+      page: currentPage.value,
+      page_size: pageSize.value,
+      q: searchParams.keyword,
+      category: searchParams.category,
     }
-    
-    noMoreData.value = !result.hasMore;
+    obj = removeEmptyProperties(obj);
+    const str = objectToString(obj);
+    console.log(str);
+
+
+    const {data} = await getproducts(str);
+    // console.log('data',data);
+    if(data.code=='01'){
+       let result = data.data.results;
+       
+        const processedResult = result.map((item, index) => {
+
+            const { username, id } = item.user || {};
+
+            // 处理 price 和 image 字段
+            const price = item.price !== null ? parseFloat(item.price) : null;
+            const image = item.image !== null ? replaceUrlRegex(item.image) : "https://eo-oss.roy22.xyz/secondHand/image.png"
+            // const useavatar = item.user?.avatar !== null ? replaceUrlRegex(item.user.avatar) : "https://eo-oss.roy22.xyz/secondHand/avatar.png"
+
+
+            return {
+                id: item.id,
+                title: item.name,
+                price: price,
+                description: item.description,
+                // isSold: item.is_sold,
+                createTime: item.created_at,
+                categoryId: item.category_info.cid,
+                categoryName: item.category_info.cname,
+                user: {
+                    id: id,
+                    username: username,
+                    // avatar: useavatar
+                },
+                image: image
+            };
+        });
+      console.log('processedResult',processedResult);
+      items.value.push(...processedResult);
+      currentPage.value++;
+      noMoreData.value = items.value.length >= data.data.count;
+    }
+
     
     if (noMoreData.value) {
       console.log('所有数据已加载完毕');
@@ -352,17 +342,9 @@ const loadMore = async () => {
   }
 };
 
-const test = async()=>{
-  const res = await getproducts({
-    q:'手机',
-  });
-  console.log("21321",res);
-  console.log(res.data);
-}
 
 // 初始化加载数据
 onMounted(() => {
-  test();
   loadMore();
   
   // 确保容器样式正确应用

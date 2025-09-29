@@ -34,10 +34,10 @@ const props = defineProps({
   categories: {
     type: Array,
     default: () => [
-      { label: '全部', value: 'all' },
-      { label: '书籍', value: 'book' },
-      { label: '电子产品', value: 'electronics' },
-      { label: '其他', value: 'others' }
+      // { label: '全部', value: 'all' },
+      // { label: '书籍', value: 'book' },
+      // { label: '电子产品', value: 'electronics' },
+      // { label: '其他', value: 'others' }
     ]
   }
 })
@@ -45,25 +45,25 @@ const props = defineProps({
 const emit = defineEmits(['search'])
 
 const searchKeyword = ref('')
-const selectedTypes = ref(['all'])
+const selectedTypes = ref([''])
 
 const toggleCategory = (value) => {
   const index = selectedTypes.value.indexOf(value)
   
-  if (value === 'all') {
+  if (value === '') {
     // 点击"全部"时的逻辑
-    if (selectedTypes.value.includes('all')) {
+    if (selectedTypes.value.includes('')) {
       // 如果已经选中"全部"，则取消选中所有
       selectedTypes.value = []
     } else {
       // 如果未选中"全部"，则只选中"全部"
-      selectedTypes.value = ['all']
+      selectedTypes.value = ['']
     }
   } else {
     // 点击其他分类时的逻辑
     if (index === -1) {
       // 添加新分类
-      selectedTypes.value = selectedTypes.value.filter(type => type !== 'all')
+      selectedTypes.value = selectedTypes.value.filter(type => type !== '')
       selectedTypes.value.push(value)
     } else {
       // 移除已选分类
@@ -72,7 +72,7 @@ const toggleCategory = (value) => {
     
     // 如果没有选中任何分类，自动选中"全部"
     if (selectedTypes.value.length === 0) {
-      selectedTypes.value = ['all']
+      selectedTypes.value = ['']
     }
   }
 }

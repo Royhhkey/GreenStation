@@ -94,6 +94,9 @@ function goToRegister() {
   router.push("/register");
 }
 onMounted(()=>{
+  if(authStore.isAuthenticated){
+    router.push("/home/items");
+  }
   // router.push("/home/items");
 })
 </script>

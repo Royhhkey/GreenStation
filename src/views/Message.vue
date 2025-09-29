@@ -20,14 +20,17 @@
         <div class="avatar">
           <img :src="chat.avatar" :alt="chat.name" />
         </div>
-        <div class="message-info">
-          <div class="message-header">
+        <div class="message-content">
+          <div class="message-top">
             <span class="name">{{ chat.name }}</span>
             <span class="time">{{ formatTime(chat.lastTime) }}</span>
           </div>
-          <div class="message-preview">
+          <div class="message-bottom">
             <span class="last-message">{{ chat.lastMessage }}</span>
-            <a-badge v-if="chat.unreadCount > 0" :count="chat.unreadCount" />
+            <div class="message-badges">
+              <a-badge v-if="chat.unreadCount > 0" :count="chat.unreadCount" class="unread-badge" />
+              <span v-if="chat.mute" class="mute-icon">🔇</span>
+            </div>
           </div>
         </div>
       </div>
@@ -42,31 +45,52 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const searchKeyword = ref('');
 
-// 模拟消息数据
+// 模拟消息数据 - 根据你提供的截图样式调整
 const chats = ref([
   {
     id: 1,
-    name: '张三',
+    name: '持剑行山雪',
     avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    lastMessage: '你好，这个商品还在吗？',
+    lastMessage: '收到！',
     lastTime: new Date(Date.now() - 1000 * 60 * 5),
-    unreadCount: 2
+    unreadCount: 0,
+    mute: false
   },
   {
     id: 2,
-    name: '李四',
-    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-    lastMessage: '价格可以便宜点吗？',
-    lastTime: new Date(Date.now() - 1000 * 60 * 30),
-    unreadCount: 0
+    name: 'Toriko',
+    avatar: 'https://randomuser.me/api/portraits/men/2.jpg',
+    lastMessage: '[事项提醒]',
+    lastTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25), // 8-31
+    unreadCount: 0,
+    mute: true
   },
   {
     id: 3,
-    name: '王五',
+    name: '裤衩114514',
     avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
-    lastMessage: '什么时候可以交易？',
-    lastTime: new Date(Date.now() - 1000 * 60 * 60 * 2),
-    unreadCount: 1
+    lastMessage: '[表情]',
+    lastTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 33), // 8-23
+    unreadCount: 0,
+    mute: false
+  },
+  {
+    id: 4,
+    name: '八荒88',
+    avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
+    lastMessage: '[表情]',
+    lastTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 69), // 7-22
+    unreadCount: 0,
+    mute: false
+  },
+  {
+    id: 5,
+    name: '35岁带4娃画稿宝妈日常',
+    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+    lastMessage: '笑死我了',
+    lastTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 162), // 4-20
+    unreadCount: 3,
+    mute: false
   }
 ]);
 
@@ -82,17 +106,32 @@ const filteredChats = computed(() => {
   ).sort((a, b) => new Date(b.lastTime) - new Date(a.lastTime));
 });
 
-// 格式化时间显示
+// 格式化时间显示 - 改为QQ样式
 const formatTime = (time) => {
   const now = new Date();
   const messageTime = new Date(time);
-  const diff = now - messageTime;
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const messageDate = new Date(messageTime.getFullYear(), messageTime.getMonth(), messageTime.getDate());
+  const diffDays = Math.floor((today - messageDate) / (1000 * 60 * 60 * 24));
   
-  if (diff < 60 * 1000) return '刚刚';
-  else if (diff < 60 * 60 * 1000) return `${Math.floor(diff / (60 * 1000))}分钟前`;
-  else if (diff < 24 * 60 * 60 * 1000) return `${Math.floor(diff / (60 * 60 * 1000))}小时前`;
-  else if (diff < 7 * 24 * 60 * 60 * 1000) return `${Math.floor(diff / (24 * 60 * 60 * 1000))}天前`;
-  else return messageTime.toLocaleDateString('zh-CN');
+  if (diffDays === 0) {
+    // 今天显示具体时间
+    return messageTime.toLocaleTimeString('zh-CN', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false 
+    });
+  } else if (diffDays === 1) {
+    return '昨天';
+  } else if (diffDays === 2) {
+    return '前天';
+  } else if (diffDays < 7) {
+    const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+    return `周${weekdays[messageTime.getDay()]}`;
+  } else {
+    // 超过一周显示月日
+    return `${messageTime.getMonth() + 1}-${messageTime.getDate()}`;
+  }
 };
 
 // 搜索处理
@@ -123,50 +162,45 @@ const goToChat = (chatId) => {
   background: white;
 }
 
-
-
-/* .message-header {
-  padding: 16px;
-  border-bottom: 1px solid #e8e8e8;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  position: sticky;
-  top: 0; 
-  z-index: 1000;
-  flex-shrink: 0; 
-} */
-
 .message-header h2 {
   margin: 0;
   color: #333;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .message-list {
   flex: 1;
   overflow-y: auto;
+  background: #f5f5f5;
 }
 
 .message-item {
   display: flex;
-  padding: 16px;
+  padding: 12px 16px;
+  background: white;
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
+  position: relative;
 }
 
 .message-item:hover {
-  background-color: #fafafa;
+  background-color: #f8f8f8;
+}
+
+.message-item:active {
+  background-color: #e6e6e6;
 }
 
 .avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
   overflow: hidden;
   margin-right: 12px;
   flex-shrink: 0;
+  background: #f0f0f0;
 }
 
 .avatar img {
@@ -175,30 +209,39 @@ const goToChat = (chatId) => {
   object-fit: cover;
 }
 
-.message-info {
+.message-content {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.message-header {
+.message-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .name {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 16px;
-  color: #333;
+  color: #000;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  margin-right: 8px;
 }
 
 .time {
   font-size: 12px;
   color: #999;
+  flex-shrink: 0;
 }
 
-.message-preview {
+.message-bottom {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -214,18 +257,63 @@ const goToChat = (chatId) => {
   margin-right: 8px;
 }
 
+.message-badges {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.unread-badge {
+  :deep(.ant-badge-count) {
+    background: #ff3b30;
+    box-shadow: none;
+    min-width: 18px;
+    height: 18px;
+    line-height: 18px;
+    font-size: 11px;
+  }
+}
+
+.mute-icon {
+  font-size: 12px;
+  color: #999;
+}
+
+/* 分割线样式 */
+.message-item::after {
+  content: '';
+  position: absolute;
+  left: 76px;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: #f0f0f0;
+}
+
+.message-item:last-child::after {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .message-header {
     padding: 12px;
   }
   
   .message-item {
-    padding: 12px;
+    padding: 10px 12px;
   }
   
   .avatar {
     width: 44px;
     height: 44px;
+  }
+  
+  .name {
+    font-size: 15px;
+  }
+  
+  .last-message {
+    font-size: 13px;
   }
 }
 </style>

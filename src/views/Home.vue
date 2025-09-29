@@ -24,7 +24,8 @@ import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import FloatingNav from '@/components/FloatingNav.vue'
 import { LogoutOutlined } from '@ant-design/icons-vue'
-
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 const router = useRouter();
 const route = useRoute();
 
@@ -43,6 +44,7 @@ const isChatPage = computed(() => {
 });
 
 function logout() {
+  authStore.clearUserInfo()
   router.push("/");
 }
 
