@@ -13,7 +13,7 @@ import router from './router'
 const app = createApp(App)
 
 app.use(createPinia())
-app.use(Antd)
+app.use(Antd,{ locale: zhCN })
 
 app.use(router)
 

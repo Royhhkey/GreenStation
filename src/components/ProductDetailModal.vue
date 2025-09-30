@@ -7,6 +7,7 @@
     @cancel="handleCancel"
     @update:open="handleOpenChange"
     class="product-detail-modal"
+    wrap-class-name="detail-modal-wrap"
   >
     <div class="product-detail-content" v-if="productDetail">
       <!-- 商品图片区域 -->
@@ -24,12 +25,9 @@
       <div class="info-section">
         <!-- 标题和价格 -->
         <div class="basic-info">
-          <h1 class="product-title">{{ productDetail.title }}</h1>
+          <!-- <h1 class="product-title">{{ productDetail.title }}</h1> -->
           <div class="price-section">
             <span class="price">￥{{ productDetail.price }}</span>
-            <!-- <span class="original-price" v-if="productDetail.originalPrice">
-              原价：￥{{ productDetail.originalPrice }}
-            </span> -->
           </div>
         </div>
 
@@ -41,15 +39,10 @@
                 {{ productDetail.categoryName || getCategoryLabel(productDetail.categoryId) }}
               </a-tag>
             </a-descriptions-item>
-            <!-- <a-descriptions-item label="商品状态">
-              <a-tag :color="productDetail.isSold ? 'red' : 'green'">
-                {{ productDetail.isSold ? '已售出' : '在售中' }}
-              </a-tag>
-            </a-descriptions-item> -->
             <a-descriptions-item label="发布时间" :span="1">
               {{ formatTime(productDetail.createTime) }}
             </a-descriptions-item>
-            <a-descriptions-item label="卖家信息" :span="1">
+            <a-descriptions-item label="卖家用户名" :span="1">
               {{ productDetail.user?.username || '未知卖家' }}
             </a-descriptions-item>
           </a-descriptions>
@@ -59,7 +52,7 @@
         <div class="description-section">
           <h3 class="section-title">商品描述</h3>
           <div class="description-content">
-            <p>{{ productDetail.description || '暂无详细描述' }}</p>
+            <p class="description-text">{{ productDetail.description || '暂无详细描述' }}</p>
           </div>
         </div>
 
@@ -74,20 +67,7 @@
           >
             <template #icon><MessageOutlined /></template>
             联系卖家
-            <!-- {{ productDetail.isSold ? '商品已售出' : '联系卖家' }} -->
           </a-button>
-          
-          <!-- <a-button 
-            size="large" 
-            class="favorite-btn"
-            @click="toggleFavorite"
-          >
-            <template #icon>
-              <HeartOutlined v-if="!isFavorite" />
-              <HeartFilled v-else style="color: #ff4d4f" />
-            </template>
-            {{ isFavorite ? '已收藏' : '收藏商品' }}
-          </a-button> -->
         </div>
       </div>
     </div>
@@ -215,7 +195,7 @@ watch(() => props.visible, (newVisible) => {
 <style scoped>
 .product-detail-modal :deep(.ant-modal-body) {
   padding: 0;
-  max-height: 70vh;
+  max-height: 60vh;
   overflow-y: auto;
 }
 
@@ -224,12 +204,15 @@ watch(() => props.visible, (newVisible) => {
   grid-template-columns: 1fr 1fr;
   gap: 24px;
   padding: 0;
+  min-height: 0;
 }
 
 .image-section {
   padding: 20px;
   background: #fafafa;
   border-radius: 8px 0 0 8px;
+  display: flex;
+  flex-direction: column;
 }
 
 .main-image {
@@ -241,6 +224,7 @@ watch(() => props.visible, (newVisible) => {
   background: white;
   border-radius: 8px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .main-image img {
@@ -254,11 +238,15 @@ watch(() => props.visible, (newVisible) => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
 }
 
 .basic-info {
   border-bottom: 1px solid #f0f0f0;
   padding-bottom: 16px;
+  flex-shrink: 0;
 }
 
 .product-title {
@@ -267,6 +255,8 @@ watch(() => props.visible, (newVisible) => {
   margin-bottom: 12px;
   color: #333;
   line-height: 1.4;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 .price-section {
@@ -281,14 +271,9 @@ watch(() => props.visible, (newVisible) => {
   color: #ff4d4f;
 }
 
-.original-price {
-  font-size: 14px;
-  color: #999;
-  text-decoration: line-through;
-}
-
 .attributes {
   margin: 16px 0;
+  flex-shrink: 0;
 }
 
 :deep(.ant-descriptions-item-label) {
@@ -297,6 +282,11 @@ watch(() => props.visible, (newVisible) => {
 
 .description-section {
   margin: 16px 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .section-title {
@@ -304,6 +294,7 @@ watch(() => props.visible, (newVisible) => {
   font-weight: 600;
   margin-bottom: 12px;
   color: #333;
+  flex-shrink: 0;
 }
 
 .description-content {
@@ -312,6 +303,43 @@ watch(() => props.visible, (newVisible) => {
   border-radius: 6px;
   line-height: 1.6;
   color: #666;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.description-text {
+  margin: 0;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  line-height: 1.6;
+  flex: 1;
+  overflow-y: auto;
+  max-height: 200px; /* 移除最大高度限制 */
+  padding-right: 4px;
+}
+
+/* 自定义描述文本的滚动条 */
+.description-text::-webkit-scrollbar {
+  width: 4px;
+}
+
+.description-text::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.description-text::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.description-text::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 .action-buttons {
@@ -320,10 +348,14 @@ watch(() => props.visible, (newVisible) => {
   margin-top: auto;
   padding-top: 20px;
   border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  background: white;
+  z-index: 1;
 }
 
-.contact-btn,
-.favorite-btn {
+.contact-btn {
   flex: 1;
   height: 44px;
   font-size: 16px;
@@ -345,7 +377,26 @@ watch(() => props.visible, (newVisible) => {
   color: #999;
 }
 
-/* 响应式设计 */
+/* 响应式设计 - 平板 */
+@media (max-width: 1024px) {
+  .product-detail-content {
+    gap: 20px;
+  }
+  
+  .image-section {
+    padding: 16px;
+  }
+  
+  .info-section {
+    padding: 16px 16px 16px 0;
+  }
+  
+  .main-image {
+    height: 280px;
+  }
+}
+
+/* 响应式设计 - 移动端 */
 @media (max-width: 768px) {
   .product-detail-content {
     grid-template-columns: 1fr;
@@ -362,19 +413,175 @@ watch(() => props.visible, (newVisible) => {
   }
   
   .main-image {
-    height: 250px;
+    height: 220px;
+    max-height: 40vh;
   }
   
   .product-title {
     font-size: 18px;
+    margin-bottom: 8px;
   }
   
   .price {
     font-size: 20px;
   }
   
+  .attributes {
+    margin: 12px 0;
+  }
+  
+  .description-section {
+    margin: 12px 0;
+  }
+  
+  .section-title {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+  
+  .description-content {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .description-text {
+    font-size: 14px;
+  }
+  
+  .action-buttons {
+    gap: 8px;
+    padding-top: 16px;
+    position: sticky;
+    bottom: 0;
+    background: white;
+  }
+  
+  .contact-btn{
+    height: 40px;
+    font-size: 14px;
+  }
+}
+
+/* 超小屏幕手机 */
+@media (max-width: 480px) {
+  .image-section {
+    padding: 12px;
+  }
+  
+  .info-section {
+    padding: 12px;
+  }
+  
+  .main-image {
+    height: 180px;
+  }
+  
+  .product-title {
+    font-size: 16px;
+  }
+  
+  .price {
+    font-size: 18px;
+  }
+  
   .action-buttons {
     flex-direction: column;
+  }
+  
+  .contact-btn{
+    height: 38px;
+  }
+}
+
+/* 横屏手机优化 */
+@media (max-width: 768px) and (orientation: landscape) {
+  .main-image {
+    height: 150px;
+  }
+}
+
+/* 当描述内容很少时的样式 */
+.description-text:empty::before {
+  content: "暂无详细描述";
+  color: #999;
+  font-style: italic;
+}
+</style>
+
+<style>
+/* 全局样式，用于修改 Ant Design Modal 的样式 */
+.detail-modal-wrap .ant-modal {
+  margin: 20px auto;
+}
+
+.detail-modal-wrap .ant-modal-content {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.detail-modal-wrap .ant-modal-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 移动端 Modal 样式调整 */
+@media (max-width: 768px) {
+  .detail-modal-wrap .ant-modal {
+    width: 85vw !important;
+    max-width: 85vw;
+    margin: 10px auto;
+    max-height: 90vh;
+  }
+  
+  .detail-modal-wrap .ant-modal-content {
+    border-radius: 12px;
+    max-height: 90vh;
+  }
+  
+  .detail-modal-wrap .ant-modal-header {
+    padding: 12px 16px;
+    flex-shrink: 0;
+  }
+  
+  .detail-modal-wrap .ant-modal-title {
+    font-size: 16px;
+  }
+  
+  .detail-modal-wrap .ant-modal-close {
+    top: 12px;
+    right: 16px;
+  }
+  
+  .detail-modal-wrap .ant-modal-body {
+    max-height: calc(90vh - 55px);
+    overflow-y: auto;
+  }
+}
+
+/* 超小屏幕进一步优化 */
+@media (max-width: 480px) {
+  .detail-modal-wrap .ant-modal {
+    width: 88vw !important;
+    max-width: 88vw;
+    margin: 5px auto;
+  }
+  
+  .detail-modal-wrap .ant-modal-content {
+    border-radius: 8px;
+  }
+}
+
+/* 横屏手机优化 */
+@media (max-width: 768px) and (orientation: landscape) {
+  .detail-modal-wrap .ant-modal {
+    max-height: 85vh;
+  }
+  
+  .detail-modal-wrap .ant-modal-body {
+    max-height: calc(85vh - 55px);
   }
 }
 </style>

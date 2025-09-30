@@ -103,7 +103,8 @@ watch(selectedTypes, () => {
   margin-top:56px; /* 向下微调 */
   z-index: 100;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+  border-radius: 10%;
 }
 /* .search-box {
   display: flex;

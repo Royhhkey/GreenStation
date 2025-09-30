@@ -3,6 +3,7 @@ import {  RouterView } from 'vue-router'
 
 // import { test } from '@/api';
 import { onMounted } from 'vue';
+import locale from 'ant-design-vue/es/locale-provider';
 
 onMounted(async()=>{
   // const res = await test();
@@ -12,7 +13,10 @@ onMounted(async()=>{
 </script>
 
 <template>
-    <RouterView></RouterView>
+  <a-config-provide locale="zh_CN">
+      <RouterView></RouterView>
+  </a-config-provide>
+   
 
 </template>
 

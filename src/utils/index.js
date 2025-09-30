@@ -10,6 +10,9 @@ const replaceUrlRegex = (originalUrl, pattern = null, replacement = null) => {
      * @returns {string} - 替换后的URL
      */
     // 默认模式：匹配任意域名下的/oss/路径
+    if(originalUrl===null || originalUrl===undefined){
+        return '';
+    }
     const defaultPattern = /https:\/\/[^/]+\/oss\//;
     const defaultReplacement = 'https://eo-oss.roy22.xyz/';
     // console.log('original_url', originalUrl);
@@ -75,4 +78,69 @@ const formatTime = (timestamp) => {
     return date.toLocaleDateString('zh-CN');
   }
 };
-export { replaceUrlRegex,removeEmptyProperties,objectToString,formatTime}
+
+const extractDateFromISO = (isoString) => {
+    /**
+     * 从ISO 8601格式的时间字符串中提取日期部分
+     * 例如: "2025-09-29T06:11:20.261347Z" -> "2025-09-29"
+     *
+     * @param {string} isoString - ISO 8601格式的时间字符串
+     * @returns {string} - 提取的日期部分 (YYYY-MM-DD格式)
+     */
+    if (!isoString || typeof isoString !== 'string') {
+        console.warn('extractDateFromISO: 输入参数无效');
+        return '';
+    }
+    
+    try {
+        // 方法1: 使用字符串分割（简单高效）
+        const datePart = isoString.split('T')[0];
+        
+        // 验证提取的日期格式
+        if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+            return datePart;
+        } else {
+            console.warn('extractDateFromISO: 日期格式不正确');
+            return '';
+        }
+    } catch (error) {
+        console.error('extractDateFromISO: 处理日期时发生错误', error);
+        return '';
+    }
+};
+
+
+/**
+ * 比较两个对象，返回发生变化的值
+ * @param {Object} originalObj - 原始对象
+ * @param {Object} newObj - 新对象
+ * @returns {Object} - 包含变化值的新对象
+ */
+const getChangedValues = (originalObj, newObj) => {
+  const changedValues = {};
+  
+  // 遍历新对象的所有属性
+  for (const key in newObj) {
+    // 确保属性是自身的，不是原型链上的
+    if (newObj.hasOwnProperty(key)) {
+      const newValue = newObj[key];
+      const originalValue = originalObj[key];
+      
+      // 使用 JSON.stringify 进行深度比较
+      if (JSON.stringify(newValue) !== JSON.stringify(originalValue)) {
+        changedValues[key] = newValue;
+      }
+    }
+  }
+  
+  return changedValues;
+};
+
+export { 
+    replaceUrlRegex,
+    removeEmptyProperties,
+    objectToString,
+    formatTime,
+    getChangedValues,
+    extractDateFromISO
+}
