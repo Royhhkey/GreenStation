@@ -884,6 +884,9 @@ onMounted(() => {
   .profile-header {
     padding: 100px 16px 50px;
   }
+  .product-list{
+    padding: 20px 0px;
+  }
   
   .avatar-section {
     flex-direction: column;

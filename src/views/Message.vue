@@ -228,7 +228,7 @@ onMounted(() => {
 .avatar {
   width: 48px;
   height: 48px;
-  border-radius: 6px;
+  border-radius: 50%;
   overflow: hidden;
   margin-right: 12px;
   flex-shrink: 0;

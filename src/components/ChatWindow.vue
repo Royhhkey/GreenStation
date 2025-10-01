@@ -742,6 +742,10 @@ onMounted(() => {
   font-weight: 600;
   color: #000;
 }
+.user-info{
+  position: relative;
+  right: 20px;
+}
 
 .header-right {
   display: flex;
@@ -769,7 +773,7 @@ onMounted(() => {
 .chat-user-info .avatar {
   width: 36px;
   height: 36px;
-  border-radius: 4px;
+  border-radius: 50%;
   overflow: hidden;
   margin-right: 12px;
   background: #f0f0f0;
@@ -812,7 +816,7 @@ onMounted(() => {
 .chat-container {
   flex: 1;
   overflow-y: auto;
-  padding: 0;
+ padding-bottom: 100px; /* 为输入框留出空间 */
   background: #f5f5f5;
 }
 
@@ -842,7 +846,7 @@ onMounted(() => {
 .message-avatar {
   width: 32px;
   height: 32px;
-  border-radius: 4px;
+  border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
   background: #f0f0f0;
@@ -964,6 +968,7 @@ onMounted(() => {
 
 .chat-input-area {
   border-top: 1px solid #e8e8e8;
+  border-radius: 15px;
   background: white;
   padding: 0;
 }
