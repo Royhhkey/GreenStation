@@ -6,7 +6,7 @@
       <div class="avatar-section">
         <div class="avatar-container">
           <img 
-            :src="userInfo.avatar" 
+            :src="userInfo.avatar|| 'https://eo-oss.roy22.xyz/secondHand/avatar.png'" 
             alt="用户头像" 
             class="avatar"
             @error="handleAvatarError"

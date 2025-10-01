@@ -4,29 +4,34 @@
       <div class="back-button" @click="backToList">
         <left-outlined />
       </div>
+      <div class="head-right">
+              <div class="connection-status" :class="{ connected: isConnected, disconnected: !isConnected }">
+            {{ isConnected ? '已连接' : '连接中...' }}
+            </div>
+      </div>
       <div class="chat-user-info">
-        <div class="avatar">
+        <!-- <div class="avatar">
           <img :src="chat.avatar" :alt="chat.name" />
-        </div>
+        </div> -->
         <div class="user-info">
           <div class="name">{{ chat.name }}</div>
-          <div class="status">在线</div>
+          <!-- <div class="status">在线</div> -->
         </div>
       </div>
-      <div class="chat-actions">
+      <!-- <div class="chat-actions">
         <a-button type="text" shape="circle" class="action-btn">
           <search-outlined />
         </a-button>
         <a-button type="text" shape="circle" class="action-btn">
           <more-outlined />
         </a-button>
-      </div>
+      </div> -->
     </div>
 
     <div ref="chatContainer" class="chat-container">
       <div class="chat-messages">
         <div
-          v-for="message in chat.messages"
+          v-for="message in messages"
           :key="message.id"
           class="message-bubble"
           :class="{
@@ -37,7 +42,7 @@
           <!-- 所有消息都显示头像 -->
           <div class="message-avatar">
             <img 
-              :src="message.isSent ? currentUserAvatar : chat.avatar" 
+              :src="message.isSent ? replaceUrlRegex(myInfo.avatar) : replaceUrlRegex(chat.avatar)" 
               :alt="message.isSent ? '我' : chat.name" 
             />
           </div>
@@ -57,7 +62,7 @@
               <!-- 图片消息 -->
               <div v-else-if="message.type === 'image'" class="message-image">
                 <img 
-                  :src="message.content" 
+                  :src="replaceUrlRegex(message.content)" 
                   :alt="message.alt || '图片'"
                   @click="previewImage(message.content)"
                 />
@@ -73,7 +78,7 @@
               {{ formatMessageTime(message.time) }}
             </div> -->
               <div  class="message-time text-time">
-              {{ formatMessageTime(message.time) }}
+              {{ formatMessageTime(message.timestamp) }}
             </div>
           </div>
         </div>
@@ -94,22 +99,23 @@
     <div class="chat-input-area">
       <!-- 工具栏 -->
       <div class="input-tools">
-        <a-button type="text" shape="circle" class="tool-btn">
+        <!-- <a-button type="text" shape="circle" class="tool-btn">
           <smile-outlined />
-        </a-button>
+        </a-button> -->
+                  <!-- multiple -->
+
         <a-upload
           :before-upload="beforeUpload"
           :show-upload-list="false"
           accept="image/*"
-          multiple
         >
           <a-button type="text" shape="circle" class="tool-btn">
-            <folder-open-outlined />
+            <PictureOutlined/>
           </a-button>
         </a-upload>
-        <a-button type="text" shape="circle" class="tool-btn">
+        <!-- <a-button type="text" shape="circle" class="tool-btn">
           <more-outlined />
-        </a-button>
+        </a-button> -->
       </div>
 
       <!-- 图片预览区域 -->
@@ -146,27 +152,47 @@
       </div>
     </div>
   </div>
+
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick,onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
+import {
+  StartConversations,
+  GetCurrentUserConversationMessages
+}from '../api';
+
+import {
+  replaceUrlRegex,
+  // removeEmptyProperties,
+  // objectToString,
+  // formatTime
+} from '@/utils'
+
 import {
   LeftOutlined,
   SearchOutlined,
   MoreOutlined,
   SmileOutlined,
-  FolderOpenOutlined,
+  PictureOutlined ,
   SendOutlined,
   CloseOutlined
 } from '@ant-design/icons-vue';
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter();
+const authStore = useAuthStore()
 
+const defaultavatar = 'https://eo-oss.roy22.xyz/secondHand/avatar.png';
 // 当前用户头像
-const currentUserAvatar = ref('https://randomuser.me/api/portraits/lego/1.jpg');
-
+// const currentUserAvatar = ref(defaultavatar);
+const myInfo = ref({
+  id: null,
+  username: '',
+  avatar: defaultavatar
+});
 // 聊天数据
 const chatId = parseInt(router.currentRoute.value.params.id);
 const newMessage = ref('');
@@ -174,90 +200,194 @@ const chatContainer = ref(null);
 const previewVisible = ref(false);
 const previewImageUrl = ref('');
 
+// WebSocket 相关
+const socket = ref(null);
+const isConnected = ref(false);
+const reconnectAttempts = ref(0);
+const maxReconnectAttempts = 5;
+
 // 上传的图片
 const uploadedImages = ref([]);
+const messages = ref([]);
+
 
 // 聊天数据
 const chat = ref({
   id: chatId,
   name: '第三',
   avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-  messages: []
 });
 
-// 加载聊天数据
-const loadChatData = () => {
-  const chatData = {
-    1: {
-      id: 1,
-      name: '第三',
-      avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-      messages: [
-        {
-          id: 1,
-          content: '这个商品在任何时间',
-          type: 'text',
-          time: new Date(Date.now() - 1000 * 60 * 35),
-          isSent: false,
-          showName: true,
-          senderName: '第三'
-        },
-        {
-          id: 2,
-          content: '价格是吗？',
-          type: 'text',
-          time: new Date(Date.now() - 1000 * 60 * 25),
-          isSent: false,
-          showName: true,
-          senderName: '注'
-        },
-        {
-          id: 3,
-          content: '好的，我考虑一下',
-          type: 'text',
-          time: new Date(Date.now() - 1000 * 60 * 8),
-          isSent: true
-        },
-        {
-          id: 4,
-          content: '没问题',
-          type: 'text',
-          time: new Date(Date.now() - 1000 * 60 * 5),
-          isSent: false,
-          showName: true,
-          senderName: 'Zero'
-        },
-        {
-          id: 5,
-          content: '了解了',
-          type: 'text',
-          time: new Date(Date.now() - 1000 * 60 * 2),
-          isSent: false,
-          showName: true,
-          senderName: 'regionv5@30'
-        },
-        {
-          id: 6,
-          content: 'https://via.placeholder.com/200x150/3f9db5/ffffff?text=商品图片',
-          type: 'image',
-          time: new Date(Date.now() - 1000 * 60 * 1),
-          isSent: true,
-          alt: '商品图片'
-        }
-      ]
-    }
-  };
+// });
+// 修改初始化函数
+const init = async () => {
+    // 等待 API 调用完成
+    const response = await StartConversations({
+      other_user_id: chatId,
+    });
+    
+    // 确保拿到数据后再继续执行
+    const { data } = response;
+    console.log('data21312', data);
 
-  chat.value = chatData[chatId] || {
-    id: chatId,
-    name: '用户',
-    avatar: 'https://randomuser.me/api/portraits/lego/1.jpg',
-    messages: []
-  };
+    if(data.code=='01'){
+    // 数据已准备好，开始赋值
+          // chat.value = {
+          //   name: data.data.participant2_info?.username || '未知用户',
+          //   avatar: data.data.participant2_info?.avatar || defaultavatar,
+          //   id: data.data.participant2_info?.id || null
+          // };
+          // console.log('chat', chat.value);
+
+          // myInfo.value = {
+          //   id: data.data.participant1_info?.id || null,
+          //   username: data.data.participant1_info?.username || '',
+          //   avatar: data.data.participant1_info?.avatar || defaultavatar  
+          // };
+
+          myInfo.value ={
+            id: authStore.userInfo.id,
+            username: authStore.userInfo.username,
+            avatar: authStore.userInfo.avatar||defaultavatar
+          }
+          if(data.data.participant2_info?.id==authStore.userInfo.id){
+              chat.value = {
+                name: data.data.participant1_info?.username || '未知用户',
+                avatar: data.data.participant1_info?.avatar || defaultavatar,
+                id: data.data.participant1_info?.id || null
+              };
+          }else{
+            chat.value = {
+              name: data.data.participant2_info?.username || '未知用户',
+              avatar: data.data.participant2_info?.avatar || defaultavatar,
+              id: data.data.participant2_info?.id || null
+            };
+          }
+
+          console.log('myInfo', myInfo.value);
+          let ConversationId
+          if (data.data.id) {
+            ConversationId = data.data.id;
+            console.log('ConversationId', ConversationId);
+          }
+
+            // // 连接 WebSocket
+            connectWebSocket(ConversationId);
+
+            // 加载历史消息
+            const res = await GetCurrentUserConversationMessages(ConversationId);
+            const expandedMessages = res.data.data.map((message) => ({
+              ...message,
+                isSent: message.sender === myInfo.value.id,
+                type: message.message_type || 'text', // 使用服务器返回的消息类型
+                content: message.message_type === 'image' ? (message.image_url || message.content) : message.content
+
+            }));
+
+            messages.value = expandedMessages;
+            
+    }
 };
 
+// 连接 WebSocket
+const connectWebSocket = (conversationId) => {
+  try {
+    // 获取环境变量并清理协议部分
+    let backendHost = import.meta.env.VITE_API_URL || 'localhost:8000';
+    
+    // 移除 http:// 或 https:// 前缀
+    backendHost = backendHost.replace(/^http?:\/\//, '');
+    
+    // 确保没有尾随斜杠
+    backendHost = backendHost.replace(/\/$/, '');
+    
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${backendHost}/ws/chat/${conversationId}/?token=${localStorage.getItem('token')}`;
+    
+    console.log('Connecting to WebSocket:', wsUrl);
+
+    socket.value = new WebSocket(wsUrl);
+    
+    socket.value.onopen = () => {
+      console.log('WebSocket connected');
+      isConnected.value = true;
+      reconnectAttempts.value = 0;
+    };
+    
+    socket.value.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      handleWebSocketMessage(data);
+    };
+    
+    socket.value.onclose = (event) => {
+      console.log('WebSocket disconnected');
+      isConnected.value = false;
+      
+      // 自动重连
+      if (reconnectAttempts.value < maxReconnectAttempts) {
+        setTimeout(() => {
+          reconnectAttempts.value++;
+          connectWebSocket(conversationId);
+        }, 3000);
+      }
+    };
+    
+    socket.value.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+    
+  } catch (error) {
+    console.error('WebSocket connection failed:', error);
+  }
+};
+
+// 处理 WebSocket 消息
+const handleWebSocketMessage = (data) => {
+  console.log('收到WebSocket消息:', data);
+  
+  if (data.message) {
+    handleNewMessage(data.message);
+  } else {
+    console.log('未知消息格式:', data);
+  }
+};
+
+// 处理新消息
+const handleNewMessage = (messageData) => {
+  console.log('处理新消息:', messageData);
+  
+  const newMsg = {
+    id: messageData.id || Date.now(),
+    content: messageData.content || '',
+    type: messageData.message_type || 'text',
+    timestamp: messageData.timestamp || messageData.created_at || new Date().toISOString(),
+    isSent: messageData.sender === myInfo.value.id,
+    senderName: messageData.sender_info?.username || '',
+    showName: messageData.sender !== myInfo.value.id,
+    // 如果是图片消息，使用 image_url
+    imageUrl: messageData.image_url || null
+  };
+  
+  // 如果是图片消息，使用图片URL作为显示内容
+  if (newMsg.type === 'image' && newMsg.imageUrl) {
+    newMsg.content = newMsg.imageUrl;
+  }
+  
+  console.log('构建的消息对象:', newMsg);
+  
+  // 检查是否已存在该消息
+  const exists = messages.value.find(msg => msg.id === newMsg.id);
+  if (!exists) {
+    messages.value.push(newMsg);
+    
+    nextTick(() => {
+      scrollToBottom();
+    });
+  }
+};
 // 格式化消息时间
 const formatMessageTime = (time) => {
+  console.log('time', time)
   const messageTime = new Date(time);
   const now = new Date();
   const diffMinutes = Math.floor((now - messageTime) / (1000 * 60));
@@ -310,80 +440,245 @@ const removeImage = (index) => {
 
 // 预览图片
 const previewImage = (imageUrl) => {
-  previewImageUrl.value = imageUrl;
+  previewImageUrl.value = replaceUrlRegex(imageUrl);
   previewVisible.value = true;
+};
+
+// 发送图片消息
+const sendImageMessage = async () => {
+  if (uploadedImages.value.length > 0) {
+    for (const image of uploadedImages.value) {
+      try {
+        // 确保是纯base64数据，移除data URL前缀
+        let imageData = image.url;
+        if (imageData.includes(';base64,')) {
+          // 如果是data URL格式，提取纯base64部分
+          imageData = imageData.split(';base64,')[1];
+        }
+        
+        const messageData = {
+          type: 'image',
+          image_data: imageData, // 纯base64数据
+          file_name: image.name || `image_${Date.now()}`
+        };
+        
+        console.log('发送图片消息:', messageData);
+        
+        socket.value.send(JSON.stringify(messageData));
+        
+        // // 本地立即显示图片消息（乐观更新）
+        // const tempMsg = {
+        //   id: Date.now(),
+        //   content: image.url, // 使用原始URL用于预览
+        //   type: 'image',
+        //   timestamp: new Date().toISOString(),
+        //   isSent: true,
+        //   showName: false,
+        //   senderName: myInfo.value.username
+        // };
+        
+        // messages.value.push(tempMsg);
+        
+      } catch (error) {
+        console.error('发送图片失败:', error);
+        message.error('图片发送失败');
+      }
+    }
+    uploadedImages.value = [];
+    
+    nextTick(() => {
+      scrollToBottom();
+    });
+  }
 };
 
 // 发送消息
 const sendMessage = async () => {
+  if (!isConnected.value) {
+    message.error('连接已断开，请刷新页面重试');
+    return;
+  }
+  // 先发送图片消息
+    if (uploadedImages.value.length > 0) {
+      await sendImageMessage();
+    }
+
   // 发送文本消息
   if (newMessage.value.trim()) {
-    const textMsg = {
-      id: chat.value.messages.length + 1,
-      content: newMessage.value.trim(),
-      type: 'text',
-      time: new Date(),
-      isSent: true
+    const messageData = {
+      type: 'text', // 添加消息类型
+      content: newMessage.value.trim()
     };
     
-    chat.value.messages.push(textMsg);
-    newMessage.value = '';
-  }
-
-  // 发送图片消息
-  if (uploadedImages.value.length > 0) {
-    for (const image of uploadedImages.value) {
-      const imageUrl = await simulateImageUpload(image);
+    console.log('发送文本消息:', messageData);
+    
+    try {
+      socket.value.send(JSON.stringify(messageData));
       
-      const imageMsg = {
-        id: chat.value.messages.length + 1,
-        content: imageUrl,
-        type: 'image',
-        alt: image.name,
-        time: new Date(),
-        isSent: true
-      };
+      // // 本地立即显示发送的消息（乐观更新）
+      // const tempMsg = {
+      //   id: Date.now(), // 临时ID，等服务器返回真实ID后会替换
+      //   content: newMessage.value.trim(),
+      //   type: 'text',
+      //   timestamp: new Date().toISOString(),
+      //   isSent: true,
+      //   showName: false,
+      //   senderName: myInfo.value.username
+      // };
       
-      chat.value.messages.push(imageMsg);
-    }
-    uploadedImages.value = [];
-  }
-
-  // 滚动到底部
-  nextTick(() => {
-    scrollToBottom();
-  });
-
-  // 模拟对方回复
-  if (newMessage.value.trim() || uploadedImages.value.length > 0) {
-    setTimeout(() => {
-      const replyMsg = {
-        id: chat.value.messages.length + 1,
-        content: '收到，谢谢！',
-        type: 'text',
-        time: new Date(Date.now() + 2000),
-        isSent: false,
-        showName: true,
-        senderName: '第三'
-      };
-      
-      chat.value.messages.push(replyMsg);
+      // messages.value.push(tempMsg);
+      newMessage.value = '';
       
       nextTick(() => {
         scrollToBottom();
       });
-    }, 2000);
+      
+    } catch (error) {
+      console.error('发送消息失败:', error);
+      message.error('发送失败，请重试');
+    }
   }
+
+
 };
 
-// 模拟图片上传到服务器
-const simulateImageUpload = async (image) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(image.url);
-    }, 500);
-  });
-};
+// // 发送消息
+// const sendMessage = async () => {
+//   if (!isConnected.value) {
+//     message.error('连接已断开，请刷新页面重试');
+//     return;
+//   }
+
+//   // 发送文本消息
+//   if (newMessage.value.trim()) {
+//     const messageData = {
+//       type: 'text', // 添加消息类型
+//       content: newMessage.value.trim()
+//     };
+    
+//     console.log('发送文本消息:', messageData);
+    
+//     try {
+//       socket.value.send(JSON.stringify(messageData));
+      
+//       // 本地立即显示发送的消息（乐观更新）
+//       const tempMsg = {
+//         id: Date.now(), // 临时ID，等服务器返回真实ID后会替换
+//         content: newMessage.value.trim(),
+//         type: 'text',
+//         timestamp: new Date().toISOString(),
+//         isSent: true,
+//         showName: false,
+//         senderName: myInfo.value.username
+//       };
+      
+//       messages.value.push(tempMsg);
+//       newMessage.value = '';
+      
+//       nextTick(() => {
+//         scrollToBottom();
+//       });
+      
+//     } catch (error) {
+//       console.error('发送消息失败:', error);
+//       message.error('发送失败，请重试');
+//     }
+//   }
+
+//   // 发送图片消息
+//   if (uploadedImages.value.length > 0) {
+//     for (const image of uploadedImages.value) {
+//       try {
+//         // 直接发送base64图片数据
+//         const messageData = {
+//           type: 'image',
+//           image_data: image.url, // base64数据
+//           file_name: image.name || `image_${Date.now()}`
+//         };
+        
+//         console.log('发送图片消息:', messageData);
+        
+//         socket.value.send(JSON.stringify(messageData));
+        
+//         // 本地立即显示图片消息（乐观更新）
+//         const tempMsg = {
+//           id: Date.now(),
+//           content: image.url,
+//           type: 'image',
+//           timestamp: new Date().toISOString(),
+//           isSent: true,
+//           showName: false,
+//           senderName: myInfo.value.username
+//         };
+        
+//         messages.value.push(tempMsg);
+        
+//       } catch (error) {
+//         console.error('发送图片失败:', error);
+//         message.error('图片发送失败');
+//       }
+//     }
+//     uploadedImages.value = [];
+    
+//     nextTick(() => {
+//       scrollToBottom();
+//     });
+//   }
+// };
+
+// 发送输入状态
+// const sendTypingStatus = (isTyping) => {
+//   if (socket.value && isConnected.value) {
+//     const typingData = {
+//       type: 'typing',
+//       is_typing: isTyping
+//     };
+//     socket.value.send(JSON.stringify(typingData));
+//   }
+// };
+
+// // 监听输入框变化
+// const onInputChange = () => {
+//   // 防抖处理输入状态
+//   clearTimeout(typingTimer);
+//   if (newMessage.value.trim()) {
+//     sendTypingStatus(true);
+//     typingTimer = setTimeout(() => {
+//       sendTypingStatus(false);
+//     }, 1000);
+//   } else {
+//     sendTypingStatus(false);
+//   }
+// };
+
+// let typingTimer = null;
+
+// // 图片上传函数
+// const uploadImage = async (file) => {
+//   const formData = new FormData();
+//   formData.append('image', file);
+  
+//   try {
+//     const response = await fetch('/api/upload/image/', {
+//       method: 'POST',
+//       body: formData,
+//     });
+    
+//     const data = await response.json();
+//     return data.url;
+//   } catch (error) {
+//     console.error('图片上传失败:', error);
+//     throw error;
+//   }
+// };
+
+// 组件卸载时关闭连接
+onUnmounted(() => {
+  if (socket.value) {
+    socket.value.close();
+  }
+});
+
 
 // 滚动到底部
 const scrollToBottom = () => {
@@ -394,7 +689,8 @@ const scrollToBottom = () => {
 
 // 初始化
 onMounted(() => {
-  loadChatData();
+  // loadChatData();
+  init();
   nextTick(() => {
     scrollToBottom();
   });
@@ -414,6 +710,7 @@ onMounted(() => {
   border-bottom: 1px solid #e8e8e8;
   display: flex;
   align-items: center;
+  justify-content: space-between; /* 关键：左右分布 */
   background: white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -422,9 +719,9 @@ onMounted(() => {
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-right: 16px;
   color: #666;
   font-size: 14px;
+  flex-shrink: 0; /* 防止压缩 */
 }
 
 .back-button :deep(.anticon) {
@@ -436,6 +733,37 @@ onMounted(() => {
   display: flex;
   align-items: center;
   flex: 1;
+  justify-content: center; /* 用户信息居中 */
+  margin: 0 16px;
+}
+
+.user-info .name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0; /* 防止压缩 */
+}
+
+.connection-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap; /* 防止文字换行 */
+}
+
+.connection-status.connected {
+  background: #52c41a;
+  color: white;
+}
+
+.connection-status.disconnected {
+  background: #faad14;
+  color: white;
 }
 
 .chat-user-info .avatar {
@@ -725,7 +1053,6 @@ onMounted(() => {
   border-color: #d9d9d9;
   color: #bfbfbf;
 }
-
 @media (max-width: 768px) {
   .chat-header {
     padding: 8px 12px;

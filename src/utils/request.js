@@ -29,7 +29,7 @@ const tokenManager = {
 }
 
 // 不需要添加 token 的白名单
-const whiteList = ['/api/login/', '/api/register/', '/api/send-code/', '/api/verify-code/']
+const whiteList = ['/api/login/', '/api/register/', '/api/send-code/', '/api/verify-code/', '/api/reset-password/']
 
 request.interceptors.request.use(config => {
     // 显示加载提示

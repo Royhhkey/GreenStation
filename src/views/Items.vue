@@ -84,7 +84,7 @@
           :product-data="selectedProduct"
           :categories="categories"
           @update:visible="handleDetailModalVisibleChange"
-          @contact-seller="handleContactSeller"
+          @contact-seller="contactSeller"
         />
         <!-- 空状态 -->
         <!-- <div v-if="!loading && displayItems.length === 0" class="empty-container">
@@ -107,11 +107,15 @@ import { ReadOutlined , MessageOutlined, SmileOutlined } from '@ant-design/icons
 import Myserach from '@/components/searchcompent.vue';
 import ProductDetailModal from '@/components/ProductDetailModal.vue'; // 引入详情组件
 import {replaceUrlRegex,removeEmptyProperties,objectToString,formatTime} from '@/utils'
-import {getproducts} from '@/api'
+import {
+        getproducts,
+      } from '@/api'
+import { useRouter } from "vue-router";
 
 // 详情弹窗相关
 const detailModalVisible = ref(false);
 const selectedProduct = ref(null);
+const router = useRouter();
 
 // 商品类别配置
 const categories = [
@@ -240,8 +244,15 @@ const viewItemDetail = (item) => {
 };
 
 // 联系卖家
-const contactSeller = (item) => {
-  message.info(`请联系卖家：${item.seller || '未知卖家'}`);
+const contactSeller = async (item) => {
+  // message.info(`请联系卖家：${item.seller || '未知卖家'}`);
+  console.log("item",item);
+  router.push(`/home/chat/${item.user.id}`);
+
+  // const {data} = await StartConversations({
+  //   other_user_id: item.user.id
+  //   // product_id: item.id
+  // });
 };
 
 
@@ -322,7 +333,7 @@ const loadMore = async () => {
                 image: image
             };
         });
-      console.log('processedResult',processedResult);
+      // console.log('processedResult',processedResult);
       items.value.push(...processedResult);
       currentPage.value++;
       noMoreData.value = items.value.length >= data.data.count;
@@ -338,7 +349,7 @@ const loadMore = async () => {
     message.error('加载数据失败，请重试');
   } finally {
     loading.value = false;
-    console.log('加载完成');
+    // console.log('加载完成');
   }
 };
 

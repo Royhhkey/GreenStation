@@ -157,15 +157,15 @@ const contactSeller = () => {
     return;
   }
   
-  const sellerName = productDetail.value.user?.username || '未知卖家';
-  message.info(`请联系卖家：${sellerName}`);
+//   const sellerName = productDetail.value.user?.username || '未知卖家';
+//   message.info(`请联系卖家：${sellerName}`);
   emit('contact-seller', productDetail.value);
 };
 
-const toggleFavorite = () => {
-  isFavorite.value = !isFavorite.value;
-  message.success(isFavorite.value ? '已收藏商品' : '已取消收藏');
-};
+// const toggleFavorite = () => {
+//   isFavorite.value = !isFavorite.value;
+//   message.success(isFavorite.value ? '已收藏商品' : '已取消收藏');
+// };
 
 const handleImageError = (event) => {
   event.target.src = 'https://eo-oss.roy22.xyz/secondHand/image.png';

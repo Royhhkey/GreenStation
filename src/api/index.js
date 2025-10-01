@@ -103,3 +103,25 @@ export const  CreateProduct = (data)=>{
         data
     })
 }
+// /api/chats/conversations/start_conversation/
+export const StartConversations = (data)=>{
+    return request({
+        url: '/api/chats/conversations/start_conversation/',
+        method: 'post',
+        data
+    })
+}
+
+export const GetCurrentUserConversationMessages = (ConversationId)=>{
+    return request({
+        url: `/api/chats/conversations/${ConversationId}/messages/`,
+        method: 'get',
+    })
+}
+
+export const GetMyAllConversations = ()=>{
+    return request({
+        url: '/api/chats/conversations/',
+        method: 'get',
+    })
+}

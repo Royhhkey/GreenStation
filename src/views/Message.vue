@@ -10,7 +10,8 @@
       />
     </div>
     
-    <div class="message-list">
+    <!-- 有数据时显示消息列表 -->
+    <div v-if="filteredChats.length > 0" class="message-list">
       <div
         v-for="chat in filteredChats"
         :key="chat.id"
@@ -18,7 +19,7 @@
         @click="goToChat(chat.id)"
       >
         <div class="avatar">
-          <img :src="chat.avatar" :alt="chat.name" />
+          <img :src="replaceUrlRegex(chat.avatar)" :alt="chat.name" />
         </div>
         <div class="message-content">
           <div class="message-top">
@@ -29,70 +30,51 @@
             <span class="last-message">{{ chat.lastMessage }}</span>
             <div class="message-badges">
               <a-badge v-if="chat.unreadCount > 0" :count="chat.unreadCount" class="unread-badge" />
-              <span v-if="chat.mute" class="mute-icon">🔇</span>
+              <!-- <span v-if="chat.mute" class="mute-icon">🔇</span> -->
             </div>
           </div>
         </div>
       </div>
     </div>
+    
+    <!-- 无数据时显示空状态 -->
+    <div v-else class="empty-state">
+      <div class="empty-icon">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <path d="M52 44H12C10.8954 44 10 43.1046 10 42V14C10 12.8954 10.8954 12 12 12H52C53.1046 12 54 12.8954 54 14V42C54 43.1046 53.1046 44 52 44Z" stroke="#d9d9d9" stroke-width="2"/>
+          <path d="M10 18H54" stroke="#d9d9d9" stroke-width="2"/>
+          <path d="M16 24H24" stroke="#d9d9d9" stroke-width="2" stroke-linecap="round"/>
+          <path d="M16 32H32" stroke="#d9d9d9" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="46" cy="28" r="2" fill="#d9d9d9"/>
+          <circle cx="46" cy="36" r="2" fill="#d9d9d9"/>
+        </svg>
+      </div>
+      <div class="empty-text">
+        <h3>暂无消息</h3>
+        <p>还没有任何聊天记录，快去和朋友们聊天吧</p>
+      </div>
+    </div>
+    
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import {
+  GetMyAllConversations 
+} from '@/api';
+import {replaceUrlRegex} from '@/utils'
+import { message } from 'ant-design-vue';
 
 const router = useRouter();
 const searchKeyword = ref('');
-
+const defaultavatar ='https://eo-oss.roy22.xyz/secondHand/avatar.png '
+const loading = ref(false);
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 // 模拟消息数据 - 根据你提供的截图样式调整
-const chats = ref([
-  {
-    id: 1,
-    name: '持剑行山雪',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    lastMessage: '收到！',
-    lastTime: new Date(Date.now() - 1000 * 60 * 5),
-    unreadCount: 0,
-    mute: false
-  },
-  {
-    id: 2,
-    name: 'Toriko',
-    avatar: 'https://randomuser.me/api/portraits/men/2.jpg',
-    lastMessage: '[事项提醒]',
-    lastTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25), // 8-31
-    unreadCount: 0,
-    mute: true
-  },
-  {
-    id: 3,
-    name: '裤衩114514',
-    avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
-    lastMessage: '[表情]',
-    lastTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 33), // 8-23
-    unreadCount: 0,
-    mute: false
-  },
-  {
-    id: 4,
-    name: '八荒88',
-    avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
-    lastMessage: '[表情]',
-    lastTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 69), // 7-22
-    unreadCount: 0,
-    mute: false
-  },
-  {
-    id: 5,
-    name: '35岁带4娃画稿宝妈日常',
-    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
-    lastMessage: '笑死我了',
-    lastTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 162), // 4-20
-    unreadCount: 3,
-    mute: false
-  }
-]);
+const chats = ref([]);
 
 // 过滤后的聊天列表
 const filteredChats = computed(() => {
@@ -108,6 +90,8 @@ const filteredChats = computed(() => {
 
 // 格式化时间显示 - 改为QQ样式
 const formatTime = (time) => {
+  if (!time) return '';
+  
   const now = new Date();
   const messageTime = new Date(time);
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -143,6 +127,54 @@ const handleSearch = () => {
 const goToChat = (chatId) => {
   router.push(`/home/chat/${chatId}`);
 };
+
+// 加载聊天列表
+const loadChats = async () => {
+  loading.value = true;
+  try {
+    const { data } = await GetMyAllConversations();
+    console.log("data", data);
+    chats.value = data.results.map(item => {
+      console.log("item", item); // 打印每个 item
+      // if (item.participant2_info.id === item.participant1_info.id) {
+      //   // 自己发的消息不显示
+      //   return null;
+      // }
+      // if (!item.last_message) {
+      //   // 没有消息记录的不显示
+      //   return null;
+      // }
+      if(item.participant2_info.id === authStore.userInfo.id){
+        // 对方是自己不显示
+        return {
+          id: item.participant1_info.id,
+          name: item.participant1_info.username,
+          avatar: item.participant1_info.avatar || defaultavatar,
+          lastMessage: item.last_message?.content || '暂无消息', // 使用可选链操作符和默认值
+          lastTime: item.last_message?.timestamp ||'', // 使用可选链操作符和默认值
+          unreadCount: item.unread_count,
+        }
+      }
+      return {
+        id: item.participant2_info.id,
+        name: item.participant2_info.username,
+        avatar: item.participant2_info.avatar || defaultavatar,
+        lastMessage: item.last_message?.content || '暂无消息', // 使用可选链操作符和默认值
+        lastTime: item.last_message?.timestamp ||'', // 使用可选链操作符和默认值
+        unreadCount: item.unread_count,
+      };
+    });
+  } catch (error) {
+    console.error('加载聊天列表失败:', error);
+    message.error('加载聊天列表失败');
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  loadChats();
+});
 </script>
 
 <style scoped>
@@ -294,6 +326,37 @@ const goToChat = (chatId) => {
   display: none;
 }
 
+/* 空状态样式 */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #f5f5f5;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  margin-bottom: 20px;
+  opacity: 0.6;
+}
+
+.empty-text h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #666;
+  font-weight: 500;
+}
+
+.empty-text p {
+  margin: 0;
+  font-size: 14px;
+  color: #999;
+  line-height: 1.5;
+}
+
 @media (max-width: 768px) {
   .message-header {
     padding: 12px;
@@ -313,6 +376,23 @@ const goToChat = (chatId) => {
   }
   
   .last-message {
+    font-size: 13px;
+  }
+  
+  .empty-state {
+    padding: 30px 16px;
+  }
+  
+  .empty-icon svg {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .empty-text h3 {
+    font-size: 15px;
+  }
+  
+  .empty-text p {
     font-size: 13px;
   }
 }

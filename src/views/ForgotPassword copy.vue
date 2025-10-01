@@ -5,13 +5,13 @@
             <ArrowLeftOutlined  class="arrow-icon" />
             </a-button>
             <a-card title="忘记密码" bordered>
-
+                <!-- @finish="handleSubmit" -->
             <a-form
                 :model="form"
                 :rules="rules"
                 ref="formRef"
                 layout="vertical"
-                @finish="handleSubmit"
+                 @submit.prevent="handleSubmit" 
             >
                 <a-form-item label="邮箱" name="email" :rules="rules.email">
                 <a-input v-model:value="form.email" placeholder="请输入邮箱" />
@@ -93,27 +93,27 @@ let timer = null;
   }, 1000);
 }
 
- async function handleSubmit() {
-  formRef.value
-    .validate()
-    .then(async () => {
-        console.log('12312321');
-        const Form   ={
+const handleSubmit = async () => { 
+  console.log(form);
+  if((!form.email)||(!form.code)||(!form.password)){
+    message.error("请完整填写信息");
+    return;
+  }
+  const Form   ={
             email: form.email,
             code: form.code,
             new_password: form.password,
-        }
-        const {data} = await resetPassword(Form);
-        if(data.code !='01'){
-          message.error(data.msg);
-          return;
-        }
-      // 这里写提交验证码的逻辑
-      message.success("密码重置成功，请登录");
-      router.push("/");
-    })
-    .catch(() => {});
+  }
+  const {data} = await resetPassword(Form);
+  console.log("data",data);
+  // if(data.code !='01'){
+  //   message.error(data.msg);
+  //   return;
+  // }
+  // message.success("密码重置成功");
+  // router.push("/");
 }
+
 
 function goBack() {
   router.push("/");
