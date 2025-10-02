@@ -90,8 +90,8 @@ function handleMenuSelect({ key }) {
 .content {
   padding: 20px;
   background-color: white;
-  min-height: calc(100vh - 56px);
-  overflow: auto;
+  /* min-height: calc(100vh - 56px); */
+  /* overflow: hidden; */
   flex: 1;
 }
 

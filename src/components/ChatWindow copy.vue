@@ -4,8 +4,10 @@
       <div class="back-button" @click="backToList">
         <left-outlined />
       </div>
-      <div class="connection-status" :class="{ connected: isConnected, disconnected: !isConnected }">
-        {{ isConnected ? '已连接' : '连接中...' }}
+      <div class="head-right">
+              <div class="connection-status" :class="{ connected: isConnected, disconnected: !isConnected }">
+            {{ isConnected ? '已连接' : '连接中...' }}
+            </div>
       </div>
       <div class="chat-user-info">
         <!-- <div class="avatar">
@@ -108,7 +110,7 @@
           accept="image/*"
         >
           <a-button type="text" shape="circle" class="tool-btn">
-            <folder-open-outlined />
+            <PictureOutlined/>
           </a-button>
         </a-upload>
         <!-- <a-button type="text" shape="circle" class="tool-btn">
@@ -174,12 +176,14 @@ import {
   SearchOutlined,
   MoreOutlined,
   SmileOutlined,
-  FolderOpenOutlined,
+  PictureOutlined ,
   SendOutlined,
   CloseOutlined
 } from '@ant-design/icons-vue';
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter();
+const authStore = useAuthStore()
 
 const defaultavatar = 'https://eo-oss.roy22.xyz/secondHand/avatar.png';
 // 当前用户头像
@@ -228,18 +232,38 @@ const init = async () => {
 
     if(data.code=='01'){
     // 数据已准备好，开始赋值
-          chat.value = {
-            name: data.data.participant2_info?.username || '未知用户',
-            avatar: data.data.participant2_info?.avatar || defaultavatar,
-            id: data.data.participant2_info?.id || null
-          };
-          console.log('chat', chat.value);
+          // chat.value = {
+          //   name: data.data.participant2_info?.username || '未知用户',
+          //   avatar: data.data.participant2_info?.avatar || defaultavatar,
+          //   id: data.data.participant2_info?.id || null
+          // };
+          // console.log('chat', chat.value);
 
-          myInfo.value = {
-            id: data.data.participant1_info?.id || null,
-            username: data.data.participant1_info?.username || '',
-            avatar: data.data.participant1_info?.avatar || defaultavatar  
-          };
+          // myInfo.value = {
+          //   id: data.data.participant1_info?.id || null,
+          //   username: data.data.participant1_info?.username || '',
+          //   avatar: data.data.participant1_info?.avatar || defaultavatar  
+          // };
+
+          myInfo.value ={
+            id: authStore.userInfo.id,
+            username: authStore.userInfo.username,
+            avatar: authStore.userInfo.avatar||defaultavatar
+          }
+          if(data.data.participant2_info?.id==authStore.userInfo.id){
+              chat.value = {
+                name: data.data.participant1_info?.username || '未知用户',
+                avatar: data.data.participant1_info?.avatar || defaultavatar,
+                id: data.data.participant1_info?.id || null
+              };
+          }else{
+            chat.value = {
+              name: data.data.participant2_info?.username || '未知用户',
+              avatar: data.data.participant2_info?.avatar || defaultavatar,
+              id: data.data.participant2_info?.id || null
+            };
+          }
+
           console.log('myInfo', myInfo.value);
           let ConversationId
           if (data.data.id) {
@@ -686,6 +710,7 @@ onMounted(() => {
   border-bottom: 1px solid #e8e8e8;
   display: flex;
   align-items: center;
+  justify-content: space-between; /* 关键：左右分布 */
   background: white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -694,9 +719,9 @@ onMounted(() => {
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-right: 16px;
   color: #666;
   font-size: 14px;
+  flex-shrink: 0; /* 防止压缩 */
 }
 
 .back-button :deep(.anticon) {
@@ -708,12 +733,47 @@ onMounted(() => {
   display: flex;
   align-items: center;
   flex: 1;
+  justify-content: center; /* 用户信息居中 */
+  margin: 0 16px;
+}
+
+.user-info .name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+}
+.user-info{
+  position: relative;
+  right: 20px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0; /* 防止压缩 */
+}
+
+.connection-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap; /* 防止文字换行 */
+}
+
+.connection-status.connected {
+  background: #52c41a;
+  color: white;
+}
+
+.connection-status.disconnected {
+  background: #faad14;
+  color: white;
 }
 
 .chat-user-info .avatar {
   width: 36px;
   height: 36px;
-  border-radius: 4px;
+  border-radius: 50%;
   overflow: hidden;
   margin-right: 12px;
   background: #f0f0f0;
@@ -756,7 +816,7 @@ onMounted(() => {
 .chat-container {
   flex: 1;
   overflow-y: auto;
-  padding: 0;
+ padding-bottom: 100px; /* 为输入框留出空间 */
   background: #f5f5f5;
 }
 
@@ -786,7 +846,7 @@ onMounted(() => {
 .message-avatar {
   width: 32px;
   height: 32px;
-  border-radius: 4px;
+  border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
   background: #f0f0f0;
@@ -908,6 +968,7 @@ onMounted(() => {
 
 .chat-input-area {
   border-top: 1px solid #e8e8e8;
+  border-radius: 15px;
   background: white;
   padding: 0;
 }
@@ -997,32 +1058,6 @@ onMounted(() => {
   border-color: #d9d9d9;
   color: #bfbfbf;
 }
-
-
-.connection-status {
-  /* position: fixed;
-  top: 10px;
-  right: 10px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  z-index: 1000; */
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-}
-
-.connection-status.connected {
-  background: #52c41a;
-  color: white;
-}
-
-.connection-status.disconnected {
-  background: #faad14;
-  color: white;
-}
-
-
 @media (max-width: 768px) {
   .chat-header {
     padding: 8px 12px;

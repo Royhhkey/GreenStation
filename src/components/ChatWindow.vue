@@ -28,7 +28,7 @@
       </div> -->
     </div>
 
-    <div ref="chatContainer" class="chat-container">
+    <div ref="chatContainer" class="chat-container" > 
       <div class="chat-messages">
         <div
           v-for="message in messages"
@@ -161,7 +161,8 @@ import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
 import {
   StartConversations,
-  GetCurrentUserConversationMessages
+  GetCurrentUserConversationMessages,
+  // MarkConversationMessagesAsRead 
 }from '../api';
 
 import {
@@ -209,7 +210,8 @@ const maxReconnectAttempts = 5;
 // 上传的图片
 const uploadedImages = ref([]);
 const messages = ref([]);
-
+// 添加会话ID引用
+const currentConversationId = ref(null);
 
 // 聊天数据
 const chat = ref({
@@ -228,7 +230,7 @@ const init = async () => {
     
     // 确保拿到数据后再继续执行
     const { data } = response;
-    console.log('data21312', data);
+    // console.log('data21312', data);
 
     if(data.code=='01'){
     // 数据已准备好，开始赋值
@@ -264,11 +266,12 @@ const init = async () => {
             };
           }
 
-          console.log('myInfo', myInfo.value);
+          // console.log('myInfo', myInfo.value);
           let ConversationId
           if (data.data.id) {
             ConversationId = data.data.id;
-            console.log('ConversationId', ConversationId);
+            currentConversationId.value = ConversationId
+            // console.log('ConversationId', ConversationId);
           }
 
             // // 连接 WebSocket
@@ -285,6 +288,7 @@ const init = async () => {
             }));
 
             messages.value = expandedMessages;
+            scrollToBottom();
             
     }
 };
@@ -385,23 +389,63 @@ const handleNewMessage = (messageData) => {
     });
   }
 };
-// 格式化消息时间
+// // 格式化消息时间
+// const formatMessageTime = (time) => {
+//   console.log('time', time)
+//   const messageTime = new Date(time);
+//   const now = new Date();
+//   const diffMinutes = Math.floor((now - messageTime) / (1000 * 60));
+  
+//   if (diffMinutes < 1) return '刚刚';
+//   else if (diffMinutes < 60) return `${diffMinutes}分钟前`;
+//   else return messageTime.toLocaleTimeString('zh-CN', {
+//     hour: '2-digit',
+//     minute: '2-digit'
+//   });
+// };
+
+// 修改格式化消息时间函数
 const formatMessageTime = (time) => {
-  console.log('time', time)
   const messageTime = new Date(time);
   const now = new Date();
-  const diffMinutes = Math.floor((now - messageTime) / (1000 * 60));
   
-  if (diffMinutes < 1) return '刚刚';
-  else if (diffMinutes < 60) return `${diffMinutes}分钟前`;
-  else return messageTime.toLocaleTimeString('zh-CN', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  // 正确地创建日期比较对象
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const messageDate = new Date(messageTime.getFullYear(), messageTime.getMonth(), messageTime.getDate());
+  
+  // 计算日期差
+  const diffTime = today - messageDate;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  // 如果是今天，显示具体时间
+  if (diffDays === 0) {
+    return messageTime.toLocaleTimeString('zh-CN', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+  // 如果是昨天，显示"昨天"
+  else if (diffDays === 1) {
+    return `昨天 ${messageTime.toLocaleTimeString('zh-CN', {
+      hour: '2-digit',
+      minute: '2-digit'
+    })}`;
+  }
+  // 如果是更早的消息，显示具体日期
+  else {
+    return messageTime.toLocaleString('zh-CN', {
+      month: 'numeric',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
 };
 
 // 返回消息列表
-const backToList = () => {
+const backToList =async () => {
+    await markMessagesAsRead();
+    // console.log("markMessagesAsRead");
   router.push('/home/messages');
 };
 
@@ -672,37 +716,77 @@ const sendMessage = async () => {
 //   }
 // };
 
+
+
+// const handleScroll = () => {
+//   console.log("handleScroll");
+//   console.log("chatContainer.value.scrollTop", chatContainer.value.scrollTop);
+//       console.log("chatContainer.value.scrollHeight", chatContainer.value.scrollHeight);
+//     chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+
+//   if(chatContainer.value.scrollTop === 0){
+//     console.log("滚动到底部");
+//   }
+// }
+// 滚动到底部
+const scrollToBottom = async() => {
+  if (chatContainer.value) {
+     await nextTick();
+    console.log("chatContainer.value.scrollHeight", chatContainer.value.scrollHeight);
+    console.log("chatContainer.value.scrollTop", chatContainer.value.scrollTop);
+    console.log("chatContainer.value", chatContainer.value);
+
+    chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+
+    console.log("chatContaqweqweweeeeeeHeight", chatContainer.value.scrollHeight);
+    console.log("chatContainer.value.scrollTop", chatContainer.value.scrollTop);
+
+  }
+};
+
+// 标记会话消息为已读
+const markMessagesAsRead = async () => {
+  if (currentConversationId.value) {
+    try {
+      await GetCurrentUserConversationMessages(currentConversationId.value);
+      console.log('会话消息已标记为已读');
+    } catch (error) {
+      console.error('标记消息已读失败:', error);
+    }
+  }
+};
 // 组件卸载时关闭连接
 onUnmounted(() => {
+
+  // await markMessagesAsRead();
+
   if (socket.value) {
     socket.value.close();
   }
 });
 
-
-// 滚动到底部
-const scrollToBottom = () => {
-  if (chatContainer.value) {
-    chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
-  }
-};
-
 // 初始化
 onMounted(() => {
   // loadChatData();
   init();
-  nextTick(() => {
-    scrollToBottom();
-  });
+  // nextTick(() => {
+  //   scrollToBottom();
+  // });
+
+    //   setTimeout(() => {
+    //     scrollToBottom();
+    // }, 2000);
 });
 </script>
 
 <style scoped>
 .chat-page {
-  height: 100vh;
+  /* height: 100vh; */
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: #f5f5f5;
+  overflow: hidden;
 }
 
 .chat-header {
@@ -713,6 +797,7 @@ onMounted(() => {
   justify-content: space-between; /* 关键：左右分布 */
   background: white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: sticky;
 }
 
 .back-button {
@@ -967,9 +1052,12 @@ onMounted(() => {
 }
 
 .chat-input-area {
-  border-top: 1px solid #e8e8e8;
+  /* e8e8e8 */
+  /* border-top: 1px solid #000; */
+  border: 1px solid #333;
   border-radius: 15px;
   background: white;
+  /* background: #3f9db5; */
   padding: 0;
 }
 

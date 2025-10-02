@@ -16,7 +16,7 @@
         v-for="chat in filteredChats"
         :key="chat.id"
         class="message-item"
-        @click="goToChat(chat.id)"
+        @click="goToChat(chat)"
       >
         <div class="avatar">
           <img :src="replaceUrlRegex(chat.avatar)" :alt="chat.name" />
@@ -124,8 +124,10 @@ const handleSearch = () => {
 };
 
 // 跳转到聊天页面
-const goToChat = (chatId) => {
+const goToChat = (chat) => {
+  const chatId = chat.id;
   router.push(`/home/chat/${chatId}`);
+  chat.unreadCount = 0; // 清除未读消息数
 };
 
 // 加载聊天列表
@@ -173,6 +175,7 @@ const loadChats = async () => {
 };
 
 onMounted(() => {
+  console.log("123213213d$$$$");
   loadChats();
 });
 </script>
