@@ -10,17 +10,27 @@
       >
         <component :is="item.icon" class="nav-icon" />
         <span class="nav-text">{{ item.text }}</span>
+        <!-- 消息未读数提示 -->
+        <a-badge 
+          v-if="item.key === 'messages' && unreadMessagesCount > 0" 
+          :count="unreadMessagesCount" 
+          class="message-badge"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref, watch } from 'vue';
 import { ShoppingOutlined, UserOutlined, MessageOutlined } from '@ant-design/icons-vue';
 import { useRouter, useRoute } from 'vue-router';
+import { GetAllUnreadMessagesCounts } from '@/api';
 
 const router = useRouter();
 const route = useRoute();
+
+const unreadMessagesCount = ref(0);
 
 const navItems = [
   {
@@ -43,6 +53,21 @@ const navItems = [
   }
 ];
 
+// 获取未读消息数
+const getUnreadMessagesCounts = async () => {
+  try {
+    const {data} = await GetAllUnreadMessagesCounts();
+          console.log('res', data)
+
+    if (data.code === '01') {
+      // console.log('res', res)
+      unreadMessagesCount.value = data.unread_count || 0;
+    }
+  } catch (error) {
+    console.error('获取未读消息数失败:', error);
+  }
+};
+
 const isActive = (path) => {
   return route.path === path;
 };
@@ -53,6 +78,19 @@ const handleClick = (key) => {
     router.push(item.route);
   }
 };
+
+// 监听路由变化，当进入消息页面时清零未读数，离开时更新未读数
+watch(
+  () => route.path,
+  (newPath) => {
+     console.log('newPath', newPath)
+      getUnreadMessagesCounts();
+
+  }
+);
+
+// 组件挂载时获取未读消息数
+getUnreadMessagesCounts();
 </script>
 
 <style scoped>
@@ -120,6 +158,24 @@ const handleClick = (key) => {
   color: #1890ff;
 }
 
+/* 消息未读数样式 */
+.message-badge {
+  position: absolute;
+  top: 4px;
+  right: 20%;
+  transform: translateX(50%);
+}
+
+.message-badge :deep(.ant-badge-count) {
+  background: #ff3b30;
+  box-shadow: none;
+  min-width: 16px;
+  height: 16px;
+  line-height: 16px;
+  font-size: 10px;
+  padding: 0 4px;
+}
+
 /* 移动端适配 */
 @media (max-width: 768px) {
   .floating-nav {
@@ -138,6 +194,11 @@ const handleClick = (key) => {
   
   .nav-text {
     font-size: 10px;
+  }
+  
+  .message-badge {
+    top: 2px;
+    right: 25%;
   }
 }
 </style>

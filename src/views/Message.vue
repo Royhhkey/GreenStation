@@ -127,7 +127,7 @@ const handleSearch = () => {
 const goToChat = (chat) => {
   const chatId = chat.id;
   router.push(`/home/chat/${chatId}`);
-  chat.unreadCount = 0; // 清除未读消息数
+  // chat.unreadCount = 0; // 清除未读消息数
 };
 
 // 加载聊天列表

@@ -29,14 +29,6 @@ const authStore = useAuthStore()
 const router = useRouter();
 const route = useRoute();
 
-const menuItems = [
-  { key: "/home/profile", label: "个人主页" },
-  { key: "/home/items", label: "交易物品" },
-];
-
-const selectedKey = computed(() => {
-  return route.path.startsWith("/home/items") ? "/home/items" : "/home/profile";
-});
 
 // 判断当前是否为聊天页面
 const isChatPage = computed(() => {
@@ -48,9 +40,6 @@ function logout() {
   router.push("/");
 }
 
-function handleMenuSelect({ key }) {
-  router.push(key);
-}
 </script>
 
 <style scoped>

@@ -125,3 +125,10 @@ export const GetMyAllConversations = ()=>{
         method: 'get',
     })
 }
+
+export const GetAllUnreadMessagesCounts = ()=>{
+    return request({
+        url: '/api/chats/messages/unread_count/',
+        method: 'get',
+    })
+}
