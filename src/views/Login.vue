@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <a-card class="login-card" bordered>
-      <h2 class="title">校园二手交易平台登录</h2>
+      <h2 class="title">绿驿</h2>
       <a-form
         :model="form"
         :rules="rules"
@@ -108,7 +108,8 @@ onMounted(()=>{
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #e6f0ff;
+  background: #e6f0ff url("../image/background.jpg") no-repeat;
+  background-size: 100% 100%;
 }
 .login-card {
   width: 360px;
@@ -119,6 +120,7 @@ onMounted(()=>{
   text-align: center;
   margin-bottom: 24px;
   color: #2c3e8f;
+  letter-spacing: 2vh;
 }
 .a-form-item {
   margin-bottom: 20px;
