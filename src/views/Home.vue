@@ -59,6 +59,9 @@ function logout() {
   align-items: center;
   height: 56px;
   min-width: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .logo {

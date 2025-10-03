@@ -52,7 +52,7 @@
         <div class="description-section">
           <h3 class="section-title">商品描述</h3>
           <div class="description-content">
-            <p class="description-text">{{ productDetail.description || '暂无详细描述' }}</p>
+            <div  class="description-text">{{ productDetail.description || '暂无详细描述' }}</div >
           </div>
         </div>
 
@@ -194,8 +194,8 @@ watch(() => props.visible, (newVisible) => {
 
 <style scoped>
 .product-detail-modal :deep(.ant-modal-body) {
-  padding: 0;
-  max-height: 60vh;
+  padding: 0  10px 10px 20px;
+  min-height: 60vh;
   overflow-y: auto;
 }
 
@@ -240,7 +240,8 @@ watch(() => props.visible, (newVisible) => {
   gap: 20px;
   min-height: 0;
   flex: 1;
-  overflow: hidden;
+  /* overflow: auto; */
+  overflow-y: auto;
 }
 
 .basic-info {
@@ -299,7 +300,6 @@ watch(() => props.visible, (newVisible) => {
 
 .description-content {
   background: #f8f9fa;
-  padding: 16px;
   border-radius: 6px;
   line-height: 1.6;
   color: #666;
@@ -307,7 +307,9 @@ watch(() => props.visible, (newVisible) => {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  overflow: hidden;
+  /* overflow: hidden; */
+  overflow-y: auto;
+  padding: 12px;
 }
 
 .description-text {
@@ -317,10 +319,9 @@ watch(() => props.visible, (newVisible) => {
   white-space: pre-wrap;
   overflow-wrap: break-word;
   line-height: 1.6;
-  flex: 1;
-  overflow-y: auto;
-  max-height: 200px; /* 移除最大高度限制 */
-  padding-right: 4px;
+  padding: 8px;
+  background: white;
+  border-radius: 4px;
 }
 
 /* 自定义描述文本的滚动条 */
@@ -348,11 +349,8 @@ watch(() => props.visible, (newVisible) => {
   margin-top: auto;
   padding-top: 20px;
   border-top: 1px solid #f0f0f0;
-  flex-shrink: 0;
-  position: sticky;
-  bottom: 0;
+
   background: white;
-  z-index: 1;
 }
 
 .contact-btn {
@@ -432,6 +430,7 @@ watch(() => props.visible, (newVisible) => {
   
   .description-section {
     margin: 12px 0;
+    min-height: 100px; /* 确保在小屏幕上也有最小高度 */
   }
   
   .section-title {
@@ -440,19 +439,21 @@ watch(() => props.visible, (newVisible) => {
   }
   
   .description-content {
-    padding: 12px;
-    font-size: 14px;
+    padding: 8px;
+    min-height: 80px;
   }
   
   .description-text {
     font-size: 14px;
+    /* max-height: 150px; 在小屏幕上适当减小最大高度 */
+    padding: 6px;
   }
   
   .action-buttons {
     gap: 8px;
     padding-top: 16px;
-    position: sticky;
-    bottom: 0;
+    /* position: sticky;
+    bottom: 0; */
     background: white;
   }
   
@@ -517,7 +518,7 @@ watch(() => props.visible, (newVisible) => {
 .detail-modal-wrap .ant-modal-content {
   display: flex;
   flex-direction: column;
-  max-height: 90vh;
+  /* max-height: 90vh; */
 }
 
 .detail-modal-wrap .ant-modal-body {
@@ -533,12 +534,12 @@ watch(() => props.visible, (newVisible) => {
     width: 85vw !important;
     max-width: 85vw;
     margin: 10px auto;
-    max-height: 90vh;
+    /* max-height: 90vh; */
   }
   
   .detail-modal-wrap .ant-modal-content {
     border-radius: 12px;
-    max-height: 90vh;
+    /* max-height: 90vh; */
   }
   
   .detail-modal-wrap .ant-modal-header {
@@ -556,7 +557,7 @@ watch(() => props.visible, (newVisible) => {
   }
   
   .detail-modal-wrap .ant-modal-body {
-    max-height: calc(90vh - 55px);
+    /* max-height: calc(90vh - 55px); */
     overflow-y: auto;
   }
 }
@@ -574,14 +575,5 @@ watch(() => props.visible, (newVisible) => {
   }
 }
 
-/* 横屏手机优化 */
-@media (max-width: 768px) and (orientation: landscape) {
-  .detail-modal-wrap .ant-modal {
-    max-height: 85vh;
-  }
-  
-  .detail-modal-wrap .ant-modal-body {
-    max-height: calc(85vh - 55px);
-  }
-}
+
 </style>
