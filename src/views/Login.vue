@@ -108,13 +108,14 @@ onMounted(()=>{
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #e6f0ff url("../image/background.jpg") no-repeat;
+  background: #e6f0ff url("../image/background2.jpg") no-repeat;
   background-size: 100% 100%;
 }
 .login-card {
   width: 360px;
   padding: 20px;
   border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.4);
 }
 .title {
   text-align: center;
