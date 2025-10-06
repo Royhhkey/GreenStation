@@ -102,15 +102,31 @@ onMounted(()=>{
 </script>
 
 <style scoped>
-.login-container {
-  height: 100vh;
-  /* width: 100vw; */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #e6f0ff url("../image/background2.jpg") no-repeat;
-  background-size: 100% 100%;
+@media screen and (min-width:768px)
+{
+    .login-container {
+    height: 100vh;
+    /* width: 100vw; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e6f0ff url("../image/background2.jpg") no-repeat;
+    background-size: 100% 100%;
+  }
 }
+@media screen and (max-width:767px)
+{
+    .login-container {
+    height: 100vh;
+    /* width: 100vw; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e6f0ff url("../image/background4.jpg") no-repeat;
+    background-size: cover;
+  }
+}
+
 .login-card {
   width: 360px;
   padding: 20px;
