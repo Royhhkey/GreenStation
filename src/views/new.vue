@@ -1,13 +1,22 @@
 <template>
   <div class="message-list-page">
     <div class="message-header">
-      <h2>消息</h2>
+      <h2>消息 
+        <span v-if="messageStore.totalUnread > 0" class="total-unread-badge">
+          {{ messageStore.totalUnread }}
+        </span>
+      </h2>
       <a-input-search
         v-model:value="searchKeyword"
         placeholder="搜索聊天"
         style="width: 200px"
         @search="handleSearch"
       />
+    </div>
+    
+    <!-- WebSocket 状态指示器 -->
+    <div class="websocket-status" :class="websocketStatus">
+      WebSocket: {{ websocketStatusText }}
     </div>
     
     <!-- 有数据时显示消息列表 -->
@@ -29,8 +38,7 @@
           <div class="message-bottom">
             <span class="last-message">{{ chat.lastMessage }}</span>
             <div class="message-badges">
-              <a-badge v-if="chat.unreadCount > 0" :count="chat.unreadCount" class="unread-badge" />
-              <!-- <span v-if="chat.mute" class="mute-icon">🔇</span> -->
+              <a-badge v-if="getUnreadCount(chat.id) > 0" :count="getUnreadCount(chat.id)" class="unread-badge" />
             </div>
           </div>
         </div>
@@ -54,41 +62,83 @@
         <p>还没有任何聊天记录，快去和朋友们聊天吧</p>
       </div>
     </div>
-    
+
+    <!-- 通知中心 -->
+    <div class="notifications-container">
+      <div
+        v-for="notification in messageStore.notifications"
+        :key="notification.id"
+        class="conversation-notification"
+        @click="switchToConversation(notification.conversationId)"
+      >
+        <div class="notification-header">
+          <strong>{{ notification.conversationName }}</strong>
+          <span class="unread-count">{{ notification.unreadCount }}</span>
+          <button class="close-btn" @click.stop="removeNotification(notification.id)">×</button>
+        </div>
+        <div class="notification-body">
+          <img :src="replaceUrlRegex(notification.message.sender?.avatar) || defaultavatar" 
+               :alt="notification.message.sender?.username" class="avatar">
+          <div class="content">
+            <div class="sender">{{ notification.message.sender?.username }}</div>
+            <div class="message">{{ notification.message.content }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import {
-  GetMyAllConversations 
-} from '@/api';
-import {replaceUrlRegex} from '@/utils'
 import { message } from 'ant-design-vue';
+import { useMessageStore } from '@/stores/messageStore';
+import WebSocketService from '@/services/websocket';
+import { useAuthStore } from '@/stores/auth';
+import { replaceUrlRegex } from '@/utils';
 
 const router = useRouter();
 const searchKeyword = ref('');
-const defaultavatar ='https://eo-oss.roy22.xyz/secondHand/avatar.png '
-const loading = ref(false);
-import { useAuthStore } from '@/stores/auth'
-const authStore = useAuthStore()
-// 模拟消息数据 - 根据你提供的截图样式调整
-const chats = ref([]);
+const defaultavatar = 'https://eo-oss.roy22.xyz/secondHand/avatar.png';
+
+const authStore = useAuthStore();
+const messageStore = useMessageStore();
+
+// WebSocket 状态
+const websocketStatus = computed(() => WebSocketService.getStatus());
+const websocketStatusText = computed(() => {
+  const statusMap = {
+    'connected': '已连接',
+    'connecting': '连接中',
+    'disconnected': '未连接',
+    'closed': '已关闭',
+    'closing': '关闭中',
+    'unknown': '未知状态'
+  };
+  return statusMap[websocketStatus.value] || '未知状态';
+});
 
 // 过滤后的聊天列表
 const filteredChats = computed(() => {
+  const chats = messageStore.conversationList;
+  
   if (!searchKeyword.value) {
-    return chats.value.sort((a, b) => new Date(b.lastTime) - new Date(a.lastTime));
+    return chats;
   }
   
-  return chats.value.filter(chat => 
+  return chats.filter(chat => 
     chat.name.toLowerCase().includes(searchKeyword.value.toLowerCase()) ||
     chat.lastMessage.toLowerCase().includes(searchKeyword.value.toLowerCase())
-  ).sort((a, b) => new Date(b.lastTime) - new Date(a.lastTime));
+  );
 });
 
-// 格式化时间显示 - 改为QQ样式
+// 获取未读消息数量
+const getUnreadCount = (conversationId) => {
+  return messageStore.unreadCounts.get(conversationId) || 0;
+};
+
+// 格式化时间显示
 const formatTime = (time) => {
   if (!time) return '';
   
@@ -99,7 +149,6 @@ const formatTime = (time) => {
   const diffDays = Math.floor((today - messageDate) / (1000 * 60 * 60 * 24));
   
   if (diffDays === 0) {
-    // 今天显示具体时间
     return messageTime.toLocaleTimeString('zh-CN', { 
       hour: '2-digit', 
       minute: '2-digit',
@@ -113,7 +162,6 @@ const formatTime = (time) => {
     const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
     return `周${weekdays[messageTime.getDay()]}`;
   } else {
-    // 超过一周显示月日
     return `${messageTime.getMonth() + 1}-${messageTime.getDate()}`;
   }
 };
@@ -125,58 +173,58 @@ const handleSearch = () => {
 
 // 跳转到聊天页面
 const goToChat = (chat) => {
+  // 标记为已读
+  messageStore.markConversationAsRead(chat.id);
+  // 跳转到聊天页面
   const chatId = chat.id;
   router.push(`/home/chat/${chatId}`);
-  // chat.unreadCount = 0; // 清除未读消息数
 };
 
-// 加载聊天列表
-const loadChats = async () => {
-  loading.value = true;
-  try {
-    const { data } = await GetMyAllConversations();
-    console.log("data", data);
-    chats.value = data.results.map(item => {
-      console.log("item", item); // 打印每个 item
-      // if (item.participant2_info.id === item.participant1_info.id) {
-      //   // 自己发的消息不显示
-      //   return null;
-      // }
-      // if (!item.last_message) {
-      //   // 没有消息记录的不显示
-      //   return null;
-      // }
-      if(item.participant2_info.id === authStore.userInfo.id){
-        // 对方是自己不显示
-        return {
-          id: item.participant1_info.id,
-          name: item.participant1_info.username,
-          avatar: item.participant1_info.avatar || defaultavatar,
-          lastMessage: item.last_message?.content || '暂无消息', // 使用可选链操作符和默认值
-          lastTime: item.last_message?.timestamp ||'', // 使用可选链操作符和默认值
-          unreadCount: item.unread_count,
-        }
-      }
-      return {
-        id: item.participant2_info.id,
-        name: item.participant2_info.username,
-        avatar: item.participant2_info.avatar || defaultavatar,
-        lastMessage: item.last_message?.content || '暂无消息', // 使用可选链操作符和默认值
-        lastTime: item.last_message?.timestamp ||'', // 使用可选链操作符和默认值
-        unreadCount: item.unread_count,
-      };
+// 切换到会话
+const switchToConversation = (conversationId) => {
+  messageStore.switchToConversation(conversationId);
+  // 这里可以添加跳转到聊天页面的逻辑
+  router.push(`/home/chat/${conversationId}`);
+};
+
+// 移除通知
+const removeNotification = (notificationId) => {
+  messageStore.removeNotification(notificationId);
+};
+
+// 请求通知权限
+const requestNotificationPermission = () => {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission().then(permission => {
+      console.log('通知权限:', permission);
     });
-  } catch (error) {
-    console.error('加载聊天列表失败:', error);
-    message.error('加载聊天列表失败');
-  } finally {
-    loading.value = false;
   }
 };
 
 onMounted(() => {
-  console.log("123213213d$$$$");
-  loadChats();
+  console.log("初始化消息列表");
+  
+  // 请求通知权限
+  requestNotificationPermission();
+  
+  // 加载会话列表
+  messageStore.loadConversations().catch(error => {
+    console.error('加载会话列表失败:', error);
+    message.error('加载会话列表失败');
+  });
+  
+  // 连接 WebSocket
+  const userId = authStore.userInfo?.id;
+  if (userId) {
+    WebSocketService.connect(userId);
+  } else {
+    console.warn('用户ID为空，无法连接WebSocket');
+  }
+});
+
+onUnmounted(() => {
+  // 断开 WebSocket 连接
+  WebSocketService.disconnect();
 });
 </script>
 
@@ -186,6 +234,7 @@ onMounted(() => {
   background: white;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .message-header {
@@ -202,6 +251,39 @@ onMounted(() => {
   color: #333;
   font-size: 18px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.total-unread-badge {
+  background: #ff3b30;
+  color: white;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.websocket-status {
+  padding: 4px 16px;
+  font-size: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.websocket-status.connected {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.websocket-status.connecting {
+  background: #fff7e6;
+  color: #fa8c16;
+}
+
+.websocket-status.disconnected {
+  background: #fff2f0;
+  color: #ff4d4f;
 }
 
 .message-list {
@@ -222,10 +304,6 @@ onMounted(() => {
 
 .message-item:hover {
   background-color: #f8f8f8;
-}
-
-.message-item:active {
-  background-color: #e6e6e6;
 }
 
 .avatar {
@@ -309,24 +387,90 @@ onMounted(() => {
   }
 }
 
-.mute-icon {
+/* 通知容器 */
+.notifications-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 300px;
+}
+
+.conversation-notification {
+  background: white;
+  border-left: 4px solid #1890ff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.conversation-notification:hover {
+  transform: translateX(-5px);
+}
+
+.notification-header {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification-header .unread-count {
+  background: #ff4757;
+  color: white;
+  border-radius: 10px;
+  padding: 1px 6px;
   font-size: 12px;
+}
+
+.notification-body {
+  padding: 12px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.notification-body .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.notification-body .content {
+  flex: 1;
+}
+
+.notification-body .sender {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.notification-body .message {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
   color: #999;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 分割线样式 */
-.message-item::after {
-  content: '';
-  position: absolute;
-  left: 76px;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: #f0f0f0;
-}
-
-.message-item:last-child::after {
-  display: none;
+.close-btn:hover {
+  color: #666;
 }
 
 /* 空状态样式 */
@@ -382,21 +526,14 @@ onMounted(() => {
     font-size: 13px;
   }
   
+  .notifications-container {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+  
   .empty-state {
     padding: 30px 16px;
-  }
-  
-  .empty-icon svg {
-    width: 48px;
-    height: 48px;
-  }
-  
-  .empty-text h3 {
-    font-size: 15px;
-  }
-  
-  .empty-text p {
-    font-size: 13px;
   }
 }
 </style>

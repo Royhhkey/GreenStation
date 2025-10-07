@@ -85,7 +85,7 @@ export const AvatarUpload = (data) => {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    timeout: 10000
+    // timeout: 12000
   });
 };
 
@@ -132,3 +132,11 @@ export const GetAllUnreadMessagesCounts = ()=>{
         method: 'get',
     })
 }
+
+export const WithdrawMessage = (messageId) => {
+  return request({
+    url: `/api/chats/messages/${messageId}/withdraw/`,
+    method: 'POST'
+  });
+};
+
