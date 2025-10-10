@@ -18,7 +18,7 @@ export const useMessageStore = defineStore('message', () => {
     // console.log('calculateTotalUnread');
     totalUnread.value = conversations.value.reduce((total, conv) => total + conv.unreadCount, 0);
 
-    console.log('totalUnread:', totalUnread.value);
+    // console.log('totalUnread:', totalUnread.value);
   };
 
   
@@ -139,8 +139,8 @@ export const useMessageStore = defineStore('message', () => {
   };
   
   // 移除通知
-  const removeNotification = (notificationId) => {
-    notifications.value = notifications.value.filter(n => n.conversationId !== notificationId);
+  const removeNotification = (sender) => {
+    notifications.value = notifications.value.filter(n => n.sender.id !== sender);
   };
   
   return {

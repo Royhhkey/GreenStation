@@ -4,45 +4,61 @@
     <div
       v-for="notification in notifications"
       :key="notification.id"
-      class="notification-item"
       @click="handleNotificationClick(notification)"
+   
     >
-      <div class="notification-avatar">
-        <img 
-          :src="replaceUrlRegex(notification.sender.avatar) || defaultAvatar" 
-          :alt="notification.sender.username"
-        />
-      </div>
-      <div class="notification-content">
-        <div class="notification-header">
-          <strong>{{ notification.conversation_name || notification.sender.username }}</strong>
-          <span class="notification-time">{{ formatTime(notification.message.timestamp) }}</span>
-        </div>
-        <div class="notification-message">
-          {{ getMessagePreview(notification.message) }}
-        </div>
-      </div>
-      <div class="notification-close" @click.stop="removeNotification(notification.id)">
-        ×
+      <div  class="notification-item" v-show="isshow(notification.sender.id)">
+          <div class="notification-avatar" >
+            <img 
+              :src="replaceUrlRegex(notification.sender.avatar) || defaultAvatar" 
+              :alt="notification.sender.username"
+            />
+          </div>
+          <div class="notification-content">
+            <div class="notification-header">
+              <strong>{{  notification.sender.username }}</strong>
+              <span class="notification-time">{{ formatTime(notification.message.timestamp) }}</span>
+            </div>
+            <div class="notification-message">
+              {{ getMessagePreview(notification.message) }}
+            </div>
+          </div>
+          <div class="notification-close" @click.stop="removeNotification(notification.id)">
+            ×
+          </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, onUnmounted, computed  ,watch} from 'vue';
+import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useMessageStore } from '@/stores/messageStore';
 import { replaceUrlRegex } from '@/utils';
 
-const router = useRouter();
+const route = useRoute(); // 获取当前路由对象
 const authStore = useAuthStore();
 const messageStore = useMessageStore();
 
 const defaultAvatar = 'https://eo-oss.roy22.xyz/secondHand/avatar.png';
 const notifications = ref([]);
 let notificationWebSocket = null;
+const chatId = ref(parseInt(route.params.id)|| -1);
+watch(()=>  route.path, (newId) => { 
+  if (newId) {
+    chatId.value = parseInt( route.params.id)||-1;
+    if (chatId.value != -1) {
+      removeNotification(chatId.value)
+    }
+  }
+})
+
+const isshow = (ConversationId) => { 
+  return  ConversationId !=  chatId.value;
+};
+
 
 const formatTime = (time) => {
   if (!time) return '';
@@ -76,13 +92,13 @@ const getMessagePreview = (message) => {
 const handleNotificationClick = (notification) => {
   // 跳转到对应的聊天页面
   router.push(`/home/chat/${notification.sender.id}`);
-  removeNotification(notification.id);
-  // 标记会话为已读
-  messageStore.markConversationAsRead(notification.conversation_id);
+  removeNotification(notification.sender.id);
+  // // 标记会话为已读
+  // messageStore.markConversationAsRead(notification.conversation_id);
 };
 
 const removeNotification = (id) => {
-  notifications.value = notifications.value.filter(n => n.id !== id);
+  notifications.value = notifications.value.filter(n => n.sender.id !== id);
 };
 
 const addNotification = (notificationData) => {
@@ -99,7 +115,7 @@ const addNotification = (notificationData) => {
   // 如果通知超过5个，移除最旧的
   if (notifications.value.length > 5) {
     notifications.value.pop();
-    messageStore.removeNotification(notification.conversation_id); 
+    messageStore.removeNotification(notification.sender.id); 
   }
   
   // 显示浏览器通知（如果用户允许）
@@ -154,7 +170,7 @@ const connectNotificationWebSocket = () => {
     notificationWebSocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       // console.log('123213:', data);
-      // console.log('添加通知:12312221', data.notification);
+      console.log('添加通知:12312221', data.notification);
       if (data.notification) {
         // console.log('添加通知:1231222121333333333', );
         addNotification(data.notification);

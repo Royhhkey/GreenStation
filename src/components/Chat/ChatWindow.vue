@@ -309,7 +309,7 @@ const connectWebSocket = (conversationId) => {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${backendHost}/ws/chat/${conversationId}/?token=${localStorage.getItem('token')}`;
     
-    console.log('Connecting to WebSocket:', wsUrl);
+    // console.log('Connecting to WebSocket:', wsUrl);
 
     socket.value = new WebSocket(wsUrl);
     
