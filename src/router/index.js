@@ -30,7 +30,7 @@ const routes = [
       {
         path: 'chat/:id',  // 新增聊天路由
         name: 'chat',
-        component: () => import('../components/ChatWindow.vue'),
+        component: () => import('../components/Chat/ChatWindow.vue'),
       },
       {
         path: '',
