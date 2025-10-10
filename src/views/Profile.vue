@@ -48,7 +48,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { message, Modal } from 'ant-design-vue';
-import ProductModal from '@/components/ProductModal.vue';
+import ProductModal from '@/components/profile/ProductModal.vue';
 import ProfileHeader from '@/components/profile/ProfileHeader.vue';
 import UserInfoCard from '@/components/profile/UserInfoCard.vue';
 import UserProductsCard from '@/components/profile/UserProductsCard.vue';
@@ -170,7 +170,7 @@ const handleAvatarSave = async () => {
       userInfo.value.avatar = data.data?.url || avatarPreview.value;
       authStore.updateUserInfo({ avatar: userInfo.value.avatar });
       showAvatarEdit.value = false;
-      avatarPreview.value = '';
+      // avatarPreview.value = '';
       selectedAvatarFile.value = null;
     } else {
       message.error(data.msg || '头像更新失败');
