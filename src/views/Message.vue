@@ -72,8 +72,8 @@ const router = useRouter();
 const searchKeyword = ref('');
 // const defaultavatar ='https://eo-oss.roy22.xyz/secondHand/avatar.png '
 // const loading = ref(false);
-import { useAuthStore } from '@/stores/auth'
-const authStore = useAuthStore()
+// import { useAuthStore } from '@/stores/auth'
+// const authStore = useAuthStore()
 const messageStore = useMessageStore();
 
 // 模拟消息数据 - 根据你提供的截图样式调整

@@ -6,8 +6,6 @@ import { GetAllUnreadMessagesCounts } from '@/api';
 // import { useAuthStore } from './auth';
 // import { useRouter } from "vue-router";
 
-const authStore = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
-
 
 
 export const useMessageStore = defineStore('message', () => {
@@ -35,6 +33,7 @@ export const useMessageStore = defineStore('message', () => {
     // }
     try {
       const response = await GetMyAllConversations();
+      const authStore = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
       console.log('authStore', authStore)
       conversations.value = response.data.results.map(item => {
         // 根据你的业务逻辑处理参与者信息
@@ -85,24 +84,16 @@ export const useMessageStore = defineStore('message', () => {
   
   // 更新会话的最新消息
   const updateConversationLastMessage = (conversationId, message, timestamp) => {
-    console.log('updateConversationLastMessage213123123', conversationId, message, timestamp)
-    console.log('conversations.value', conversations.value);
+
     const conversation = conversations.value.find((conv) => {
-      // console.log('11111', conv);
-      console.log('22222', conversationId);
-      console.log('33333', conv.conversationId);
-      
-      console.log('44444', conv.conversationId == conversationId);
 
       return conv.conversationId == conversationId; // 返回布尔值
     });
 
-    // console.log('213123123', conversations)
-    console.log('updateConversationLastMessage', conversation)
+
 
     if (conversation) {
-      // console.log('updateConversatio213213123', conversation)
-      // console.log('updateConversationLastMessage', conversationId, message, timestamp)
+
       conversation.lastMessage = message;
       conversation.lastTime = timestamp;
       // 如果不在当前聊天页面，增加未读计数
@@ -149,7 +140,7 @@ export const useMessageStore = defineStore('message', () => {
   
   // 移除通知
   const removeNotification = (notificationId) => {
-    notifications.value = notifications.value.filter(n => n.id !== notificationId);
+    notifications.value = notifications.value.filter(n => n.conversationId !== notificationId);
   };
   
   return {

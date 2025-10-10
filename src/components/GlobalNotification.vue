@@ -99,7 +99,7 @@ const addNotification = (notificationData) => {
   // 如果通知超过5个，移除最旧的
   if (notifications.value.length > 5) {
     notifications.value.pop();
-    messageStore.removeNotification(removed.id); 
+    messageStore.removeNotification(notification.conversation_id); 
   }
   
   // 显示浏览器通知（如果用户允许）
@@ -292,11 +292,11 @@ defineExpose({
   color: #666;
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .notifications-container {
     right: 10px;
     left: 10px;
     max-width: none;
   }
-}
+} */
 </style>
