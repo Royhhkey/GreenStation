@@ -23,7 +23,7 @@
               {{ getMessagePreview(notification.message) }}
             </div>
           </div>
-          <div class="notification-close" @click.stop="removeNotification(notification.id)">
+          <div class="notification-close" @click.stop="removeNotification(notification.sender.id)">
             ×
           </div>
       </div>
@@ -33,12 +33,14 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed  ,watch} from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute ,useRouter} from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useMessageStore } from '@/stores/messageStore';
 import { replaceUrlRegex } from '@/utils';
 
 const route = useRoute(); // 获取当前路由对象
+const router = useRouter();
+
 const authStore = useAuthStore();
 const messageStore = useMessageStore();
 
@@ -106,6 +108,12 @@ const addNotification = (notificationData) => {
     id: Date.now(),
     ...notificationData
   };
+
+  if(chatId.value != -1){
+    if (notification.sender.id == chatId.value) {
+      return;
+    }
+  }
   
   // 添加到通知列表开头
   notifications.value.unshift(notification);
