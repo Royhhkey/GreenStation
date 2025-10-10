@@ -26,12 +26,16 @@ import { ref, watch } from 'vue';
 import { ShoppingOutlined, UserOutlined, MessageOutlined } from '@ant-design/icons-vue';
 import { useRouter, useRoute } from 'vue-router';
 import { GetAllUnreadMessagesCounts } from '@/api';
-
+import { useMessageStore } from '@/stores/messageStore';
 const router = useRouter();
 const route = useRoute();
+const messageStore = useMessageStore();
 
 const unreadMessagesCount = ref(0);
-
+watch( ()=> messageStore.totalUnread, (newVal) => {
+  console.log('newVal', newVal)
+  unreadMessagesCount.value = newVal;
+})
 const navItems = [
   {
     key: 'items',

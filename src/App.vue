@@ -2,9 +2,19 @@
 import {  RouterView } from 'vue-router'
 
 // import { test } from '@/api';
-import { onMounted } from 'vue';
+import { onMounted ,ref,provide } from 'vue';
 import locale from 'ant-design-vue/es/locale-provider';
+import GlobalNotification from '@/components/GlobalNotification.vue';
 
+const globalNotification = ref(null);
+// 提供全局通知方法
+provide('globalNotification', {
+  addNotification: (notification) => {
+    if (globalNotification.value) {
+      globalNotification.value.addNotification(notification);
+    }
+  }
+});
 onMounted(async()=>{
   // const res = await test();
   // console.log(res);
@@ -15,6 +25,7 @@ onMounted(async()=>{
 <template>
   <a-config-provide locale="zh_CN">
       <RouterView></RouterView>
+      <GlobalNotification ref="globalNotification" />
   </a-config-provide>
    
 

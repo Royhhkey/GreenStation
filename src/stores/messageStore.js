@@ -2,193 +2,166 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { GetMyAllConversations } from '@/api';
-import { useAuthStore } from '@/stores/auth';
+import { GetAllUnreadMessagesCounts } from '@/api';
+// import { useAuthStore } from './auth';
+// import { useRouter } from "vue-router";
+
+const authStore = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+
+
 
 export const useMessageStore = defineStore('message', () => {
-  const authStore = useAuthStore();
-  const defaultavatar = 'https://eo-oss.roy22.xyz/secondHand/avatar.png';
-  
-  // 状态
-  const conversations = ref(new Map());
-  const currentConversationId = ref(null);
-  const unreadCounts = ref(new Map());
+  const conversations = ref([]);
+  const totalUnread = ref(0);
   const notifications = ref([]);
-  const loading = ref(false);
+  
+  // 计算总未读消息数
+  const calculateTotalUnread = () => {
+    // console.log('calculateTotalUnread');
+    totalUnread.value = conversations.value.reduce((total, conv) => total + conv.unreadCount, 0);
 
-  // 计算属性
-  const totalUnread = computed(() => {
-    let total = 0;
-    for (let count of unreadCounts.value.values()) {
-      total += count;
-    }
-    return total;
-  });
+    console.log('totalUnread:', totalUnread.value);
+  };
 
-  const conversationList = computed(() => {
-    return Array.from(conversations.value.values()).sort((a, b) => 
-      new Date(b.lastTime) - new Date(a.lastTime)
-    );
-  });
-
-  // 方法
-  function setConversation(conversation) {
-    conversations.value.set(conversation.id, conversation);
-    if (!unreadCounts.value.has(conversation.id)) {
-      unreadCounts.value.set(conversation.id, conversation.unreadCount || 0);
-    }
-  }
-
-  function updateConversationUnread(conversationId, count) {
-    unreadCounts.value.set(conversationId, count);
-    updatePageTitle();
-  }
-
-  function markConversationAsRead(conversationId) {
-    unreadCounts.value.set(conversationId, 0);
-    updatePageTitle();
-    markAsReadOnServer(conversationId);
-  }
-
-  function handleNewMessage(data) {
-    const { message, conversation_unread_count, conversation_id } = data;
-    
-    // 更新会话未读数量
-    updateConversationUnread(conversation_id, conversation_unread_count);
-    
-    // 如果当前不在这个会话中，显示通知
-    if (currentConversationId.value !== conversation_id) {
-      showNotification(message, conversation_id);
-    }
-  }
-
-  function showNotification(message, conversationId) {
-    const conversation = conversations.value.get(conversationId);
-    const conversationName = conversation?.name || `用户 ${conversationId}`;
-    
-    // 浏览器通知
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(`${conversationName} - 新消息`, {
-        body: `${message.sender?.username}：${message.content}`,
-        icon: message.sender?.avatar || defaultavatar,
-        tag: `conversation_${conversationId}`
-      });
-    }
-    
-    // 应用内通知
-    showInAppNotification(message, conversationId, conversationName);
-  }
-
-  function showInAppNotification(message, conversationId, conversationName) {
-    const notification = {
-      id: Date.now(),
-      conversationId,
-      conversationName,
-      message,
-      unreadCount: unreadCounts.value.get(conversationId) || 0
-    };
-    
-    notifications.value.push(notification);
-    
-    setTimeout(() => {
-      removeNotification(notification.id);
-    }, 5000);
-  }
-
-  function removeNotification(notificationId) {
-    const index = notifications.value.findIndex(n => n.id === notificationId);
-    if (index !== -1) {
-      notifications.value.splice(index, 1);
-    }
-  }
-
-  function switchToConversation(conversationId) {
-    currentConversationId.value = conversationId;
-    markConversationAsRead(conversationId);
-    removeNotificationsForConversation(conversationId);
-  }
-
-  function removeNotificationsForConversation(conversationId) {
-    notifications.value = notifications.value.filter(
-      n => n.conversationId !== conversationId
-    );
-  }
-
-  function updatePageTitle() {
-    if (totalUnread.value > 0) {
-      document.title = `(${totalUnread.value}) 二手交易平台`;
-    } else {
-      document.title = '二手交易平台';
-    }
-  }
-
-  async function markAsReadOnServer(conversationId) {
+  
+  
+  // 加载所有会话
+  const loadConversations = async () => {
+    // if(localStorage.getItem('conversations')){
+    //    conversations.value = JSON.parse(localStorage.getItem('conversations'));
+    //    totalUnread.value = JSON.parse(localStorage.getItem('totalUnread'));
+    //    notifications.value = JSON.parse(localStorage.getItem('notifications'));
+    //    return ;
+    // }
     try {
-      // 这里调用您的标记已读API
-      console.log('标记会话为已读:', conversationId);
-    } catch (error) {
-      console.error('标记已读失败:', error);
-    }
-  }
-
-  // 加载会话列表 - 基于您现有的 loadChats 逻辑
-  async function loadConversations() {
-    loading.value = true;
-    try {
-      const { data } = await GetMyAllConversations();
-      console.log("加载会话数据:", data);
-      
-      // 清空现有会话
-      conversations.value.clear();
-      unreadCounts.value.clear();
-      
-      data.results.forEach(item => {
-        if (item.participant2_info.id === authStore.userInfo.id) {
-          // 对方是自己不显示
-          return;
+      const response = await GetMyAllConversations();
+      console.log('authStore', authStore)
+      conversations.value = response.data.results.map(item => {
+        // 根据你的业务逻辑处理参与者信息
+        if (item.participant2_info?.id === authStore?.id) {
+          return {
+            id: item.participant1_info?.id,
+            name: item.participant1_info?.username,
+            avatar: item.participant1_info?.avatar || 'https://eo-oss.roy22.xyz/secondHand/avatar.png',
+            lastMessage: item.last_message?.content || '暂无消息',
+            lastTime: item.last_message?.timestamp || '',
+            unreadCount: item.unread_count || 0,
+            conversationId: item.id
+          };
         }
-        
-        const conversation = {
-          id: item.participant2_info.id, // 使用对方用户ID作为会话ID
-          conversationId: item.id, // 实际会话ID
-          name: item.participant2_info.username,
-          avatar: item.participant2_info.avatar || defaultavatar,
+        return {
+          id: item.participant2_info?.id,
+          name: item.participant2_info?.username,
+          avatar: item.participant2_info?.avatar || 'https://eo-oss.roy22.xyz/secondHand/avatar.png',
           lastMessage: item.last_message?.content || '暂无消息',
           lastTime: item.last_message?.timestamp || '',
           unreadCount: item.unread_count || 0,
-          participant1: item.participant1_info,
-          participant2: item.participant2_info
+          conversationId: item.id
         };
-        
-        setConversation(conversation);
-        updateConversationUnread(conversation.id, conversation.unreadCount);
       });
+      calculateTotalUnread();
+      localStorage.setItem('conversations', JSON.stringify(conversations.value));
+      localStorage.setItem('totalUnread', JSON.stringify(totalUnread.value));
+      localStorage.setItem('notifications', JSON.stringify(notifications.value));
     } catch (error) {
       console.error('加载会话列表失败:', error);
-      throw error;
-    } finally {
-      loading.value = false;
     }
-  }
-
-  return {
-    // 状态
-    conversations,
-    currentConversationId,
-    unreadCounts,
-    notifications,
-    loading,
-    
-    // 计算属性
-    totalUnread,
-    conversationList,
-    
-    // 方法
-    setConversation,
-    updateConversationUnread,
-    markConversationAsRead,
-    handleNewMessage,
-    switchToConversation,
-    removeNotification,
-    loadConversations
   };
-});``
+
+// 获取未读消息数
+  const getUnreadMessagesCounts = async () => {
+    try {
+      const {data} = await GetAllUnreadMessagesCounts();
+            // console.log('res', data)
+
+      if (data.code === '01') {
+        // console.log('res', res)
+        totalUnread.value = data.unread_count || 0;
+      }
+    } catch (error) {
+      console.error('获取未读消息数失败:', error);
+    }
+  };
+  
+  // 更新会话的最新消息
+  const updateConversationLastMessage = (conversationId, message, timestamp) => {
+    console.log('updateConversationLastMessage213123123', conversationId, message, timestamp)
+    console.log('conversations.value', conversations.value);
+    const conversation = conversations.value.find((conv) => {
+      // console.log('11111', conv);
+      console.log('22222', conversationId);
+      console.log('33333', conv.conversationId);
+      
+      console.log('44444', conv.conversationId == conversationId);
+
+      return conv.conversationId == conversationId; // 返回布尔值
+    });
+
+    // console.log('213123123', conversations)
+    console.log('updateConversationLastMessage', conversation)
+
+    if (conversation) {
+      // console.log('updateConversatio213213123', conversation)
+      // console.log('updateConversationLastMessage', conversationId, message, timestamp)
+      conversation.lastMessage = message;
+      conversation.lastTime = timestamp;
+      // 如果不在当前聊天页面，增加未读计数
+      if (!isCurrentConversation(2222)) {
+        conversation.unreadCount += 1;
+      }
+      // console.log("Roy321312321")
+      // console.log('updateConversationLastMessage', conversation)
+      // calculateTotalUnread();
+    }
+    localStorage.setItem('conversations', JSON.stringify(conversations.value));
+    localStorage.setItem('totalUnread', JSON.stringify(totalUnread.value));
+    // localStorage.setItem('notifications', JSON.stringify(notifications.value));
+  };
+  
+  // 标记会话为已读
+  const markConversationAsRead = (conversationId) => {
+    const conversation = conversations.value.find(conv => conv.conversationId === conversationId);
+    if (conversation) {
+      conversation.unreadCount = 0;
+      calculateTotalUnread();
+    }
+  };
+  
+  // 检查是否为当前会话（需要根据实际路由判断）
+  const isCurrentConversation = (id) => {
+    // const router = useRouter();
+    // console.log('router', router)
+    // if(router.currentRoute.value.params.id==null)
+    //   return false;
+    // return router.currentRoute.value.params.id == id;
+    // // 这里需要根据你的路由逻辑来判断
+    // // 例如：return router.currentRoute.value.params.id == conversationId;
+    return false;
+  };
+  
+  // 添加通知
+  const addNotification = (notification) => {
+    notifications.value.push(notification);
+    // console.log('addNotification21312213', notification)
+    updateConversationLastMessage(notification.conversation_id, notification.message.content, notification.message.timestamp)
+    calculateTotalUnread();
+  };
+  
+  // 移除通知
+  const removeNotification = (notificationId) => {
+    notifications.value = notifications.value.filter(n => n.id !== notificationId);
+  };
+  
+  return {
+    conversations,
+    totalUnread,
+    notifications,
+    loadConversations,
+    updateConversationLastMessage,
+    markConversationAsRead,
+    getUnreadMessagesCounts,
+    addNotification,
+    removeNotification,
+    calculateTotalUnread
+  };
+});

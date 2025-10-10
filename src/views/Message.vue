@@ -59,25 +59,29 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import {
-  GetMyAllConversations 
-} from '@/api';
+// import {
+//   GetMyAllConversations 
+// } from '@/api';
 import {replaceUrlRegex} from '@/utils'
-import { message } from 'ant-design-vue';
+import {useMessageStore} from '@/stores/messageStore'
+// import { message } from 'ant-design-vue';
 
 const router = useRouter();
 const searchKeyword = ref('');
-const defaultavatar ='https://eo-oss.roy22.xyz/secondHand/avatar.png '
-const loading = ref(false);
+// const defaultavatar ='https://eo-oss.roy22.xyz/secondHand/avatar.png '
+// const loading = ref(false);
 import { useAuthStore } from '@/stores/auth'
 const authStore = useAuthStore()
+const messageStore = useMessageStore();
+
 // 模拟消息数据 - 根据你提供的截图样式调整
 const chats = ref([]);
 
 // 过滤后的聊天列表
 const filteredChats = computed(() => {
+  // chats.value = messageStore.conversations;
   if (!searchKeyword.value) {
     return chats.value.sort((a, b) => new Date(b.lastTime) - new Date(a.lastTime));
   }
@@ -130,53 +134,58 @@ const goToChat = (chat) => {
   // chat.unreadCount = 0; // 清除未读消息数
 };
 
-// 加载聊天列表
-const loadChats = async () => {
-  loading.value = true;
-  try {
-    const { data } = await GetMyAllConversations();
-    console.log("data", data);
-    chats.value = data.results.map(item => {
-      console.log("item", item); // 打印每个 item
-      // if (item.participant2_info.id === item.participant1_info.id) {
-      //   // 自己发的消息不显示
-      //   return null;
-      // }
-      // if (!item.last_message) {
-      //   // 没有消息记录的不显示
-      //   return null;
-      // }
-      if(item.participant2_info.id === authStore.userInfo.id){
-        // 对方是自己不显示
-        return {
-          id: item.participant1_info.id,
-          name: item.participant1_info.username,
-          avatar: item.participant1_info.avatar || defaultavatar,
-          lastMessage: item.last_message?.content || '暂无消息', // 使用可选链操作符和默认值
-          lastTime: item.last_message?.timestamp ||'', // 使用可选链操作符和默认值
-          unreadCount: item.unread_count,
-        }
-      }
-      return {
-        id: item.participant2_info.id,
-        name: item.participant2_info.username,
-        avatar: item.participant2_info.avatar || defaultavatar,
-        lastMessage: item.last_message?.content || '暂无消息', // 使用可选链操作符和默认值
-        lastTime: item.last_message?.timestamp ||'', // 使用可选链操作符和默认值
-        unreadCount: item.unread_count,
-      };
-    });
-  } catch (error) {
-    console.error('加载聊天列表失败:', error);
-    message.error('加载聊天列表失败');
-  } finally {
-    loading.value = false;
-  }
-};
+// // 加载聊天列表
+// const loadChats = async () => {
+//   loading.value = true;
+//   try {
+//     const { data } = await GetMyAllConversations();
+//     console.log("data", data);
+//     chats.value = data.results.map(item => {
+//       console.log("item", item); // 打印每个 item
+//       // if (item.participant2_info.id === item.participant1_info.id) {
+//       //   // 自己发的消息不显示
+//       //   return null;
+//       // }
+//       // if (!item.last_message) {
+//       //   // 没有消息记录的不显示
+//       //   return null;
+//       // }
+//       if(item.participant2_info.id === authStore.userInfo.id){
+//         // 对方是自己不显示
+//         return {
+//           id: item.participant1_info.id,
+//           name: item.participant1_info.username,
+//           avatar: item.participant1_info.avatar || defaultavatar,
+//           lastMessage: item.last_message?.content || '暂无消息', // 使用可选链操作符和默认值
+//           lastTime: item.last_message?.timestamp ||'', // 使用可选链操作符和默认值
+//           unreadCount: item.unread_count,
+//         }
+//       }
+//       return {
+//         id: item.participant2_info.id,
+//         name: item.participant2_info.username,
+//         avatar: item.participant2_info.avatar || defaultavatar,
+//         lastMessage: item.last_message?.content || '暂无消息', // 使用可选链操作符和默认值
+//         lastTime: item.last_message?.timestamp ||'', // 使用可选链操作符和默认值
+//         unreadCount: item.unread_count,
+//       };
+//     });
+//   } catch (error) {
+//     console.error('加载聊天列表失败:', error);
+//     message.error('加载聊天列表失败');
+//   } finally {
+//     loading.value = false;
+//   }
+// };
 
+watch(()=>messageStore.conversations, (newVal, oldVal) => {
+  console.log("newVal", newVal);
+  chats.value = newVal
+})
 onMounted(() => {
-  console.log("123213213d$$$$");
-  loadChats();
+  // console.log("123213213d$$$$");
+  // loadChats();
+    messageStore.loadConversations();
 });
 </script>
 
