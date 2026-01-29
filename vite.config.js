@@ -9,7 +9,15 @@ export default defineConfig({
   base: '/GreenStation/',   // ← 新增这一行（GitHub Pages 子路径）
   server: {
     host: '0.0.0.0',
-    cors: true
+    cors: true,
+    proxy: {
+      '/api': {
+        target: 'http://39.108.135.150:8888',
+        changeOrigin: true,
+        // 可选：如果后端不是挂在 /api 前缀，打开这一行去掉 /api
+        // rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
   },
   plugins: [
     vue(),
