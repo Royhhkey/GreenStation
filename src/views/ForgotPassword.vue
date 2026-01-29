@@ -1,82 +1,84 @@
 <template>
-    <div class="container">
-        <div class="page-container">
-            <a-button type="link" @click="goBack" class="back-btn">
-            <ArrowLeftOutlined  class="arrow-icon" />
-            </a-button>
-            <a-card title="忘记密码" bordered>
+  <div class="container">
+    <div class="page-container">
+      <a-button type="link" @click="goBack" class="back-btn">
+        <ArrowLeftOutlined class="arrow-icon" />
+      </a-button>
+      <a-card title="忘记密码" bordered>
+        <a-form
+          :model="form"
+          :rules="rules"
+          ref="formRef"
+          layout="vertical"
+          @finish="handleSubmit"
+        >
+          <a-form-item label="邮箱" name="email" :rules="rules.email">
+            <a-input v-model:value="form.email" placeholder="请输入邮箱" />
+          </a-form-item>
+          <a-form-item
+            label="验证码"
+            name="code"
+            :rules="rules.code"
+            class="code-form-item"
+          >
+            <div class="code-container">
+              <a-input v-model:value="form.code" placeholder="请输入验证码" />
+              <a-button
+                type="primary"
+                @click="HandesendCode"
+                :disabled="countdown > 0"
+              >
+                {{ countdown > 0 ? countdown + 's后重新发送' : '获取验证码' }}
+              </a-button>
+            </div>
+          </a-form-item>
+          <a-form-item label="新密码" name="password" :rules="rules.password">
+            <a-input v-model:value="form.password" placeholder="请输入新密码" />
+          </a-form-item>
 
-            <a-form
-                :model="form"
-                :rules="rules"
-                ref="formRef"
-                layout="vertical"
-                @finish="handleSubmit"
-            >
-                <a-form-item label="邮箱" name="email" :rules="rules.email">
-                <a-input v-model:value="form.email" placeholder="请输入邮箱" />
-                </a-form-item>
-                <a-form-item label="验证码" name="code" :rules="rules.code" class="code-form-item">
-                      <div class="code-container">
-                        <a-input v-model:value="form.code" placeholder="请输入验证码" />
-                        <a-button type="primary" @click="HandesendCode" :disabled="countdown > 0">
-                          {{ countdown > 0 ? countdown + 's后重新发送' : '获取验证码' }}
-                        </a-button>
-                      </div>
-                </a-form-item>
-                <a-form-item label="新密码" name="password" :rules="rules.password">
-                <a-input v-model:value="form.password" placeholder="请输入新密码" />
-                </a-form-item>
-
-            
-                <a-form-item v-if="showSubmit">
-                <a-button type="primary" html-type="submit" block>提交</a-button>
-                </a-form-item>
-            </a-form>
-            </a-card>
-        </div>
+          <a-form-item v-if="showSubmit">
+            <a-button type="primary" html-type="submit" block>提交</a-button>
+          </a-form-item>
+        </a-form>
+      </a-card>
     </div>
+  </div>
 </template>
 
 <script setup>
-import { reactive, ref, watch } from "vue";
-import { message } from "ant-design-vue";
-import { ArrowLeftOutlined } from "@ant-design/icons-vue";
-import { useRouter } from "vue-router";
-import {sendCode,resetPassword} from "../api/index";
+import { reactive, ref, watch } from 'vue';
+import { message } from 'ant-design-vue';
+import { ArrowLeftOutlined } from '@ant-design/icons-vue';
+import { useRouter } from 'vue-router';
+import { sendCode, resetPassword } from '../api/index';
 
 const router = useRouter();
 const formRef = ref(null);
 const form = reactive({
-  email: "",
-  code: "",
+  email: '',
+  code: '',
 });
 
 const rules = {
   email: [
-    { required: true, message: "请输入邮箱"},
-    { type: "email", message: "请输入有效的邮箱地址", trigger:  "change"},
+    { required: true, message: '请输入邮箱' },
+    { type: 'email', message: '请输入有效的邮箱地址', trigger: 'change' },
   ],
-  code: [
-    { required: true, message: "请输入验证码", },
-  ],
-  password: [
-    { required: true, message: "请输入新密码"},
-  ],
+  code: [{ required: true, message: '请输入验证码' }],
+  password: [{ required: true, message: '请输入新密码' }],
 };
 
 const countdown = ref(0);
 let timer = null;
 
- async function HandesendCode() {
+async function HandesendCode() {
   if (!form.email) {
-    message.error("请输入邮箱后再发送验证码");
+    message.error('请输入邮箱后再发送验证码');
     return;
   }
   if (countdown.value > 0) return;
-  const {data} = await sendCode(
-    { email: form.email });
-  if(data.code !='01'){
+  const { data } = await sendCode({ email: form.email });
+  if (data.code != '01') {
     message.error(data.msg);
     return;
   }
@@ -93,30 +95,30 @@ let timer = null;
   }, 1000);
 }
 
- async function handleSubmit() {
+async function handleSubmit() {
   formRef.value
     .validate()
     .then(async () => {
-        console.log('12312321');
-        const Form   ={
-            email: form.email,
-            code: form.code,
-            new_password: form.password,
-        }
-        const {data} = await resetPassword(Form);
-        if(data.code !='01'){
-          message.error(data.msg);
-          return;
-        }
+      console.log('12312321');
+      const Form = {
+        email: form.email,
+        code: form.code,
+        new_password: form.password,
+      };
+      const { data } = await resetPassword(Form);
+      if (data.code != '01') {
+        message.error(data.msg);
+        return;
+      }
       // 这里写提交验证码的逻辑
-      message.success("密码重置成功，请登录");
-      router.push("/");
+      message.success('密码重置成功，请登录');
+      router.push('/');
     })
     .catch(() => {});
 }
 
 function goBack() {
-  router.push("/");
+  router.push('/');
 }
 
 const showSubmit = ref(false);
@@ -124,7 +126,7 @@ watch(
   () => form.code,
   (val) => {
     showSubmit.value = val && val.trim().length > 0;
-  }
+  },
 );
 </script>
 
@@ -137,10 +139,10 @@ watch(
   align-items: center;
   padding: 20px;
 }
-.title{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .page-container {
   background: white;
@@ -174,8 +176,6 @@ watch(
   gap: 12px;
   align-items: center;
 }
-
-
 
 .code-container .ant-btn {
   width: 100px;

@@ -5,7 +5,7 @@
     :class="{
       'message-sent': message.isSent,
       'message-received': !message.isSent,
-      'message-withdrawn': message.is_withdrawn
+      'message-withdrawn': message.is_withdrawn,
     }"
     @contextmenu="handleRightClick"
     @touchstart="handleTouchStart"
@@ -14,34 +14,41 @@
   >
     <!-- 所有消息都显示头像 -->
     <div class="message-avatar">
-      <img 
-        :src="message.isSent ? replaceUrlRegex(myAvatar) :replaceUrlRegex( chatAvatar)" 
-        :alt="message.isSent ? '我' : chatName" 
+      <img
+        :src="
+          message.isSent
+            ? replaceUrlRegex(myAvatar)
+            : replaceUrlRegex(chatAvatar)
+        "
+        :alt="message.isSent ? '我' : chatName"
       />
     </div>
-    
+
     <div class="message-content-wrapper">
       <!-- 昵称显示 -->
       <div v-if="message.showName" class="message-sender">
         {{ message.senderName || (message.isSent ? '我' : chatName) }}
       </div>
-      
-      <div class="message-content" :class="{'image-content': message.type === 'image'}">
+
+      <div
+        class="message-content"
+        :class="{ 'image-content': message.type === 'image' }"
+      >
         <!-- 文本消息 -->
         <div v-if="message.type === 'text'" class="message-text">
           {{ message.content }}
         </div>
-        
+
         <!-- 图片消息 -->
         <div v-else-if="message.type === 'image'" class="message-image">
-          <img 
-            :src="replaceUrlRegex(message.content)" 
+          <img
+            :src="replaceUrlRegex(message.content)"
             :alt="message.alt || '图片'"
             @click="previewImage"
           />
         </div>
       </div>
-      
+
       <!-- 消息状态和时间 -->
       <div class="message-status">
         <div class="message-time">
@@ -59,10 +66,15 @@ const props = defineProps({
   message: Object,
   myAvatar: String,
   chatAvatar: String,
-  chatName: String
+  chatName: String,
 });
 
-const emit = defineEmits(['rightClick', 'touchStart', 'touchEnd', 'previewImage']);
+const emit = defineEmits([
+  'rightClick',
+  'touchStart',
+  'touchEnd',
+  'previewImage',
+]);
 
 const handleRightClick = (event) => {
   emit('rightClick', event);
@@ -85,29 +97,33 @@ const previewImage = () => {
 const formatMessageTime = (time) => {
   const messageTime = new Date(time);
   const now = new Date();
-  
+
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const messageDate = new Date(messageTime.getFullYear(), messageTime.getMonth(), messageTime.getDate());
-  
+  const messageDate = new Date(
+    messageTime.getFullYear(),
+    messageTime.getMonth(),
+    messageTime.getDate(),
+  );
+
   const diffTime = today - messageDate;
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays === 0) {
     return messageTime.toLocaleTimeString('zh-CN', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   } else if (diffDays === 1) {
     return `昨天 ${messageTime.toLocaleTimeString('zh-CN', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     })}`;
   } else {
     return messageTime.toLocaleString('zh-CN', {
       month: 'numeric',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   }
 };
@@ -248,7 +264,7 @@ const formatMessageTime = (time) => {
   .message-bubble {
     max-width: 90%;
   }
-  
+
   .message-content.image-content {
     max-width: 180px;
   }

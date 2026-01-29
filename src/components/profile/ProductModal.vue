@@ -6,21 +6,19 @@
     @ok="handleSave"
     @cancel="handleCancel"
   >
-    <a-form
-      ref="formRef"
-      :model="formState"
-      :rules="rules"
-      layout="vertical"
-    >
+    <a-form ref="formRef" :model="formState" :rules="rules" layout="vertical">
       <!-- 标题和价格放在同一行 -->
       <a-row :gutter="16">
         <a-col :span="16">
           <a-form-item label="商品标题" name="name">
-            <a-input v-model:value="formState.name" placeholder="请输入商品标题" />
+            <a-input
+              v-model:value="formState.name"
+              placeholder="请输入商品标题"
+            />
           </a-form-item>
         </a-col>
         <a-col :span="8">
-          <a-form-item label="价格" name="price" >
+          <a-form-item label="价格" name="price">
             <a-input-number
               v-model:value="formState.price"
               :min="0"
@@ -32,19 +30,22 @@
           </a-form-item>
         </a-col>
       </a-row>
-      
+
       <a-form-item label="商品分类" class="category-item">
-        <a-select v-model:value="formState.category_info.cid" placeholder="请选择分类">
-          <a-select-option 
-            v-for="category in categories" 
-            :key="category.value" 
+        <a-select
+          v-model:value="formState.category_info.cid"
+          placeholder="请选择分类"
+        >
+          <a-select-option
+            v-for="category in categories"
+            :key="category.value"
             :value="category.value"
           >
             {{ category.label }}
           </a-select-option>
         </a-select>
       </a-form-item>
-      
+
       <a-form-item label="商品图片" name="image">
         <a-upload
           v-model:file-list="fileList"
@@ -60,7 +61,7 @@
           </div>
         </a-upload>
       </a-form-item>
-      
+
       <a-form-item label="商品描述" name="description">
         <a-textarea
           v-model:value="formState.description"
@@ -73,13 +74,17 @@
     </a-form>
 
     <!-- 图片预览模态框 -->
-      <a-modal :open="previewVisible" :footer="null" @cancel="previewVisible = false">
-        <img 
-          alt="预览图片" 
-          style="width: 100%; height: 400px; object-fit: contain;" 
-          :src="previewImage" 
-        />
-      </a-modal>
+    <a-modal
+      :open="previewVisible"
+      :footer="null"
+      @cancel="previewVisible = false"
+    >
+      <img
+        alt="预览图片"
+        style="width: 100%; height: 400px; object-fit: contain"
+        :src="previewImage"
+      />
+    </a-modal>
   </a-modal>
 </template>
 
@@ -87,12 +92,12 @@
 import { ref, reactive, watch } from 'vue';
 import { message } from 'ant-design-vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
-import { replaceUrlRegex } from '@/utils'
+import { replaceUrlRegex } from '@/utils';
 
 const props = defineProps({
   visible: Boolean,
   productData: Object,
-  categories: Array
+  categories: Array,
 });
 
 const emit = defineEmits(['update:visible', 'save', 'cancel']);
@@ -118,25 +123,25 @@ const formState = reactive({
   // price: undefined,
   // description: '',
   // image: '',
-  category_info: { cid: null } // 确保 category_info 始终是一个对象
+  category_info: { cid: null }, // 确保 category_info 始终是一个对象
 });
 
 const rules = {
   name: [
     { required: true, message: '请输入商品标题', trigger: 'blur' },
-    { min: 1, max: 25, message: '标题长度为2-50个字符', trigger: 'blur' }
+    { min: 1, max: 25, message: '标题长度为2-50个字符', trigger: 'blur' },
   ],
   'category_info.cid': [
-    { required: true, message: '请选择商品分类', trigger: 'change' }
+    { required: true, message: '请选择商品分类', trigger: 'change' },
   ],
   price: [
     { required: true, message: '请输入商品价格', trigger: 'blur' },
-    { type: 'number', min: 0, message: '价格不能为负数', trigger: 'blur' }
+    { type: 'number', min: 0, message: '价格不能为负数', trigger: 'blur' },
   ],
   description: [
     { required: true, message: '请输入商品描述', trigger: 'blur' },
-    { min: 1, max: 200, message: '描述长度为1-200个字符', trigger: 'blur' }
-  ]
+    { min: 1, max: 200, message: '描述长度为1-200个字符', trigger: 'blur' },
+  ],
 };
 
 // 图片上传前的处理
@@ -146,26 +151,28 @@ const beforeUpload = (file) => {
     message.error('只能上传图片文件!');
     return false;
   }
-  
+
   const isLt5M = file.size / 1024 / 1024 < 5;
   if (!isLt5M) {
     message.error('图片大小不能超过 5MB!');
     return false;
   }
   selectedAvatarFile.value = file;
-  
+
   const reader = new FileReader();
   reader.readAsDataURL(file);
   reader.onload = (e) => {
     formState.image = e.target.result;
-    fileList.value = [{
-      uid: file.uid,
-      name: file.name,
-      status: 'done',
-      url: e.target.result
-    }];
+    fileList.value = [
+      {
+        uid: file.uid,
+        name: file.name,
+        status: 'done',
+        url: e.target.result,
+      },
+    ];
   };
-  
+
   return false;
 };
 
@@ -184,7 +191,7 @@ const getBase64 = (file) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
+    reader.onerror = (error) => reject(error);
   });
 };
 
@@ -207,9 +214,9 @@ const handleSave = async () => {
       price: formState.price,
       description: formState.description,
       category_info: formState.category_info,
-      image: selectedAvatarFile.value
-    }
-  
+      image: selectedAvatarFile.value,
+    };
+
     emit('save', submitData);
     handleCancel();
   } catch (error) {
@@ -226,49 +233,57 @@ const handleCancel = () => {
   emit('cancel');
 };
 
-watch(() => props.productData, (newProduct) => {
-  console.log('newProduct', newProduct);
-  if (newProduct) {
-        Object.assign(formState, newProduct);
-        formState.price = parseFloat(formState.price) || 0;// 转换为浮点数
-        if (newProduct.category_info && newProduct.category_info.cid) {
-          formState.category_info.cid = String(newProduct.category_info.cid);
-        }
-        // else  {
-        //   formState.category_info.cid = null;
-        // }
+watch(
+  () => props.productData,
+  (newProduct) => {
+    console.log('newProduct', newProduct);
+    if (newProduct) {
+      Object.assign(formState, newProduct);
+      formState.price = parseFloat(formState.price) || 0; // 转换为浮点数
+      if (newProduct.category_info && newProduct.category_info.cid) {
+        formState.category_info.cid = String(newProduct.category_info.cid);
+      }
+      // else  {
+      //   formState.category_info.cid = null;
+      // }
 
-    if (newProduct.image) {
-      fileList.value = [{
-        uid: '-1',
-        name: 'product-image',
-        status: 'done',
-        url: replaceUrlRegex(newProduct.image)
-      }];
+      if (newProduct.image) {
+        fileList.value = [
+          {
+            uid: '-1',
+            name: 'product-image',
+            status: 'done',
+            url: replaceUrlRegex(newProduct.image),
+          },
+        ];
+      } else {
+        fileList.value = [
+          {
+            uid: '-1',
+            name: 'product-image',
+            status: 'done',
+            url: 'https://eo-oss.roy22.xyz/secondHand/image.png',
+          },
+        ];
+      }
     } else {
-      fileList.value = [{
-              uid: '-1',
-              name: 'product-image',
-              status: 'done',
-              url: 'https://eo-oss.roy22.xyz/secondHand/image.png'
-      }];
+      // 重置表单
+      // Object.keys(formState).forEach(key => {
+      //   if (key === 'price') {
+      //     formState[key] = undefined;
+      //   } else {
+      //     formState[key] = '';
+      //   }
+      // });
+      // formState.categoryId = undefined;
+      fileList.value = [];
     }
-  } else {
-    // 重置表单
-    // Object.keys(formState).forEach(key => {
-    //   if (key === 'price') {
-    //     formState[key] = undefined;
-    //   } else {
-    //     formState[key] = '';
-    //   }
-    // });
-    // formState.categoryId = undefined;
-    fileList.value = [];
-  }
-}, { immediate: true });
+  },
+  { immediate: true },
+);
 </script>
 
-<style scoped> 
+<style scoped>
 .category-item {
   max-width: 60%;
 }

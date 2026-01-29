@@ -14,15 +14,15 @@ class WebSocketService {
       console.error('用户ID为空，无法连接WebSocket');
       return;
     }
-    
+
     this.messageStore = useMessageStore();
-    
+
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/ws/chat/`;
-    
+
     console.log('正在连接WebSocket:', wsUrl);
     this.socket = new WebSocket(wsUrl);
-    
+
     this.socket.onopen = () => {
       console.log('WebSocket 连接成功');
       this.reconnectAttempts = 0;
@@ -47,14 +47,14 @@ class WebSocketService {
   subscribeToNotifications(userId) {
     const message = {
       type: 'subscribe_notifications',
-      user_id: userId
+      user_id: userId,
     };
     this.sendMessage(message);
   }
 
   handleMessage(data) {
     const { type, event, message, is_reminder, data: eventData } = data;
-    
+
     switch (type) {
       case 'chat_message':
         if (is_reminder) {
@@ -63,11 +63,11 @@ class WebSocketService {
           console.log('普通聊天消息:', message);
         }
         break;
-      
+
       case 'notification_event':
         this.handleNotificationEvent(event, eventData);
         break;
-      
+
       default:
         console.log('未知消息类型:', type, data);
     }
@@ -95,7 +95,9 @@ class WebSocketService {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
       const delay = 3000 * this.reconnectAttempts;
-      console.log(`${delay}ms后尝试重新连接... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+      console.log(
+        `${delay}ms后尝试重新连接... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`,
+      );
       setTimeout(() => {
         this.connect(userId);
       }, delay);
@@ -114,11 +116,16 @@ class WebSocketService {
   getStatus() {
     if (!this.socket) return 'disconnected';
     switch (this.socket.readyState) {
-      case WebSocket.CONNECTING: return 'connecting';
-      case WebSocket.OPEN: return 'connected';
-      case WebSocket.CLOSING: return 'closing';
-      case WebSocket.CLOSED: return 'closed';
-      default: return 'unknown';
+      case WebSocket.CONNECTING:
+        return 'connecting';
+      case WebSocket.OPEN:
+        return 'connected';
+      case WebSocket.CLOSING:
+        return 'closing';
+      case WebSocket.CLOSED:
+        return 'closed';
+      default:
+        return 'unknown';
     }
   }
 }

@@ -9,7 +9,7 @@
         accept="image/*"
       >
         <a-button type="text" shape="circle" class="tool-btn">
-          <PictureOutlined/>
+          <PictureOutlined />
         </a-button>
       </a-upload>
     </div>
@@ -17,7 +17,11 @@
     <!-- 图片预览区域 -->
     <div v-if="uploadedImages.length > 0" class="image-preview-area">
       <div class="preview-images">
-        <div v-for="(image, index) in uploadedImages" :key="index" class="preview-item">
+        <div
+          v-for="(image, index) in uploadedImages"
+          :key="index"
+          class="preview-item"
+        >
           <img :src="image.url" />
           <div class="preview-actions">
             <close-outlined @click="() => removeImage(index)" />
@@ -52,16 +56,16 @@
 <script setup>
 import { ref } from 'vue';
 import { message as antMessage } from 'ant-design-vue';
-import { 
-  PictureOutlined, 
-  SendOutlined, 
-  CloseOutlined 
+import {
+  PictureOutlined,
+  SendOutlined,
+  CloseOutlined,
 } from '@ant-design/icons-vue';
 
 const newMessage = ref('');
 
 const props = defineProps({
-  uploadedImages: Array
+  uploadedImages: Array,
 });
 
 const emit = defineEmits(['sendMessage', 'removeImage', 'beforeUpload']);
@@ -182,7 +186,7 @@ const beforeUpload = (file) => {
   .input-container {
     padding: 8px 12px;
   }
-  
+
   .preview-item {
     width: 50px;
     height: 50px;

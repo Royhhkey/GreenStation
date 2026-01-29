@@ -4,7 +4,7 @@
       <a-layout-header class="header">
         <div class="logo">校园二手交易平台</div>
         <a-button type="text" @click="logout">
-          <LogoutOutlined style="color: #fff;" />
+          <LogoutOutlined style="color: #fff" />
         </a-button>
       </a-layout-header>
       <a-layout>
@@ -20,15 +20,14 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import FloatingNav from '@/components/FloatingNav.vue'
-import { LogoutOutlined } from '@ant-design/icons-vue'
-import { useAuthStore } from '@/stores/auth'
-const authStore = useAuthStore()
+import { computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import FloatingNav from '@/components/FloatingNav.vue';
+import { LogoutOutlined } from '@ant-design/icons-vue';
+import { useAuthStore } from '@/stores/auth';
+const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
-
 
 // 判断当前是否为聊天页面
 const isChatPage = computed(() => {
@@ -36,10 +35,9 @@ const isChatPage = computed(() => {
 });
 
 function logout() {
-  authStore.clearUserInfo()
-  router.push("/");
+  authStore.clearUserInfo();
+  router.push('/');
 }
-
 </script>
 
 <style scoped>

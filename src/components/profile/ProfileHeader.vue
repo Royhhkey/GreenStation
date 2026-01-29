@@ -4,9 +4,9 @@
     <div class="header-bg"></div>
     <div class="avatar-section">
       <div class="avatar-container">
-        <img 
-          :src="avatarUrl" 
-          alt="用户头像" 
+        <img
+          :src="avatarUrl"
+          alt="用户头像"
           class="avatar"
           @error="handleAvatarError"
         />
@@ -28,15 +28,17 @@ import { EditOutlined } from '@ant-design/icons-vue';
 
 const props = defineProps({
   userInfo: Object,
-  avatarPreview: String
+  avatarPreview: String,
 });
 
 const emit = defineEmits(['editAvatar']);
 
 const avatarUrl = computed(() => {
-  return props.avatarPreview || 
-         props.userInfo?.avatar || 
-         'https://eo-oss.roy22.xyz/secondHand/avatar.png';
+  return (
+    props.avatarPreview ||
+    props.userInfo?.avatar ||
+    'https://eo-oss.roy22.xyz/secondHand/avatar.png'
+  );
 });
 
 const editAvatar = () => {
@@ -134,28 +136,28 @@ const handleAvatarError = (event) => {
   .profile-header {
     padding: 100px 16px 50px;
   }
-  
+
   .avatar-section {
     flex-direction: column;
     align-items: center;
     text-align: center;
     gap: 16px;
   }
-  
+
   .avatar {
     width: 100px;
     height: 100px;
     margin-bottom: 0;
   }
-  
+
   .avatar-container {
     margin-bottom: 0;
   }
-  
+
   .user-info {
     padding-bottom: 0;
   }
-  
+
   .username {
     font-size: 24px;
   }
@@ -165,12 +167,12 @@ const handleAvatarError = (event) => {
   .profile-header {
     padding: 80px 12px 40px;
   }
-  
+
   .avatar {
     width: 80px;
     height: 80px;
   }
-  
+
   .username {
     font-size: 20px;
   }

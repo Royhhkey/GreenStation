@@ -1,20 +1,20 @@
 <!-- ImagePreview.vue -->
 <template>
-  <a-modal 
-    :open="previewVisible" 
+  <a-modal
+    :open="previewVisible"
     :footer="null"
     width="80%"
-    style="top: 20px;"
+    style="top: 20px"
     @cancel="closePreview"
   >
-    <img :src="previewImageUrl" style="width: 100%;" />
+    <img :src="previewImageUrl" style="width: 100%" />
   </a-modal>
 </template>
 
 <script setup>
 const props = defineProps({
   previewVisible: Boolean,
-  previewImageUrl: String
+  previewImageUrl: String,
 });
 
 const emit = defineEmits(['update:previewVisible']);

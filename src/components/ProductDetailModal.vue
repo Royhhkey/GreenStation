@@ -13,8 +13,8 @@
       <!-- 商品图片区域 -->
       <div class="image-section">
         <div class="main-image">
-          <img 
-            :src="productDetail.image" 
+          <img
+            :src="productDetail.image"
             :alt="productDetail.title"
             @error="handleImageError"
           />
@@ -36,7 +36,10 @@
           <a-descriptions :column="1" bordered size="small">
             <a-descriptions-item label="商品分类">
               <a-tag color="blue">
-                {{ productDetail.categoryName || getCategoryLabel(productDetail.categoryId) }}
+                {{
+                  productDetail.categoryName ||
+                  getCategoryLabel(productDetail.categoryId)
+                }}
               </a-tag>
             </a-descriptions-item>
             <a-descriptions-item label="发布时间" :span="1">
@@ -52,15 +55,17 @@
         <div class="description-section">
           <h3 class="section-title">商品描述</h3>
           <div class="description-content">
-            <div  class="description-text">{{ productDetail.description || '暂无详细描述' }}</div >
+            <div class="description-text">
+              {{ productDetail.description || '暂无详细描述' }}
+            </div>
           </div>
         </div>
 
         <!-- 操作按钮 -->
         <div class="action-buttons">
-          <a-button 
-            type="primary" 
-            size="large" 
+          <a-button
+            type="primary"
+            size="large"
             class="contact-btn"
             @click="contactSeller"
             :disabled="productDetail.isSold"
@@ -83,26 +88,26 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 import { message } from 'ant-design-vue';
-import { 
-  MessageOutlined, 
-  HeartOutlined, 
-  HeartFilled 
+import {
+  MessageOutlined,
+  HeartOutlined,
+  HeartFilled,
 } from '@ant-design/icons-vue';
 
 // 接收父组件传递的props
 const props = defineProps({
   visible: {
     type: Boolean,
-    default: false
+    default: false,
   },
   productData: {
     type: Object,
-    default: () => ({})
+    default: () => ({}),
   },
   categories: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 });
 
 // 定义emit事件
@@ -115,7 +120,7 @@ const productDetail = ref({});
 // 计算属性
 const categoryMap = computed(() => {
   const map = {};
-  props.categories.forEach(cat => {
+  props.categories.forEach((cat) => {
     map[cat.value] = cat.label;
   });
   return map;
@@ -136,7 +141,7 @@ const formatTime = (timeString) => {
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   } catch {
     return timeString;
@@ -156,9 +161,9 @@ const contactSeller = () => {
     message.warning('该商品已售出，无法联系卖家');
     return;
   }
-  
-//   const sellerName = productDetail.value.user?.username || '未知卖家';
-//   message.info(`请联系卖家：${sellerName}`);
+
+  //   const sellerName = productDetail.value.user?.username || '未知卖家';
+  //   message.info(`请联系卖家：${sellerName}`);
   emit('contact-seller', productDetail.value);
 };
 
@@ -172,29 +177,36 @@ const handleImageError = (event) => {
 };
 
 // 监听productData变化，更新详情数据
-watch(() => props.productData, (newProduct) => {
-  if (newProduct && Object.keys(newProduct).length > 0) {
-    productDetail.value = {
-      ...newProduct,
-      // 可以在这里添加一些默认值或转换逻辑
-      isSold: newProduct.isSold || false,
-      originalPrice: newProduct.originalPrice || null
-    };
-  }
-}, { immediate: true });
+watch(
+  () => props.productData,
+  (newProduct) => {
+    if (newProduct && Object.keys(newProduct).length > 0) {
+      productDetail.value = {
+        ...newProduct,
+        // 可以在这里添加一些默认值或转换逻辑
+        isSold: newProduct.isSold || false,
+        originalPrice: newProduct.originalPrice || null,
+      };
+    }
+  },
+  { immediate: true },
+);
 
 // 监听visible变化，重置状态
-watch(() => props.visible, (newVisible) => {
-  if (!newVisible) {
-    // 关闭弹窗时重置收藏状态
-    isFavorite.value = false;
-  }
-});
+watch(
+  () => props.visible,
+  (newVisible) => {
+    if (!newVisible) {
+      // 关闭弹窗时重置收藏状态
+      isFavorite.value = false;
+    }
+  },
+);
 </script>
 
 <style scoped>
 .product-detail-modal :deep(.ant-modal-body) {
-  padding: 0  10px 10px 20px;
+  padding: 0 10px 10px 20px;
   min-height: 60vh;
   overflow-y: auto;
 }
@@ -380,15 +392,15 @@ watch(() => props.visible, (newVisible) => {
   .product-detail-content {
     gap: 20px;
   }
-  
+
   .image-section {
     padding: 16px;
   }
-  
+
   .info-section {
     padding: 16px 16px 16px 0;
   }
-  
+
   .main-image {
     height: 280px;
   }
@@ -400,55 +412,55 @@ watch(() => props.visible, (newVisible) => {
     grid-template-columns: 1fr;
     gap: 0;
   }
-  
+
   .image-section {
     border-radius: 8px 8px 0 0;
     padding: 16px;
   }
-  
+
   .info-section {
     padding: 16px;
   }
-  
+
   .main-image {
     height: 220px;
     max-height: 40vh;
   }
-  
+
   .product-title {
     font-size: 18px;
     margin-bottom: 8px;
   }
-  
+
   .price {
     font-size: 20px;
   }
-  
+
   .attributes {
     margin: 12px 0;
   }
-  
+
   .description-section {
     margin: 12px 0;
     min-height: 100px; /* 确保在小屏幕上也有最小高度 */
   }
-  
+
   .section-title {
     font-size: 15px;
     margin-bottom: 8px;
   }
-  
+
   .description-content {
     padding: 8px;
     min-height: 80px;
   }
-  
+
   .description-text {
     font-size: 14px;
     /* max-height: 150px; 在小屏幕上适当减小最大高度 */
     padding: 6px;
   }
-  
+
   .action-buttons {
     gap: 8px;
     padding-top: 16px;
@@ -456,8 +468,8 @@ watch(() => props.visible, (newVisible) => {
     bottom: 0; */
     background: white;
   }
-  
-  .contact-btn{
+
+  .contact-btn {
     height: 40px;
     font-size: 14px;
   }
@@ -468,28 +480,28 @@ watch(() => props.visible, (newVisible) => {
   .image-section {
     padding: 12px;
   }
-  
+
   .info-section {
     padding: 12px;
   }
-  
+
   .main-image {
     height: 180px;
   }
-  
+
   .product-title {
     font-size: 16px;
   }
-  
+
   .price {
     font-size: 18px;
   }
-  
+
   .action-buttons {
     flex-direction: column;
   }
-  
-  .contact-btn{
+
+  .contact-btn {
     height: 38px;
   }
 }
@@ -503,7 +515,7 @@ watch(() => props.visible, (newVisible) => {
 
 /* 当描述内容很少时的样式 */
 .description-text:empty::before {
-  content: "暂无详细描述";
+  content: '暂无详细描述';
   color: #999;
   font-style: italic;
 }
@@ -536,26 +548,26 @@ watch(() => props.visible, (newVisible) => {
     margin: 10px auto;
     /* max-height: 90vh; */
   }
-  
+
   .detail-modal-wrap .ant-modal-content {
     border-radius: 12px;
     /* max-height: 90vh; */
   }
-  
+
   .detail-modal-wrap .ant-modal-header {
     padding: 12px 16px;
     flex-shrink: 0;
   }
-  
+
   .detail-modal-wrap .ant-modal-title {
     font-size: 16px;
   }
-  
+
   .detail-modal-wrap .ant-modal-close {
     top: 12px;
     right: 16px;
   }
-  
+
   .detail-modal-wrap .ant-modal-body {
     /* max-height: calc(90vh - 55px); */
     overflow-y: auto;
@@ -569,11 +581,9 @@ watch(() => props.visible, (newVisible) => {
     max-width: 88vw;
     margin: 5px auto;
   }
-  
+
   .detail-modal-wrap .ant-modal-content {
     border-radius: 8px;
   }
 }
-
-
 </style>

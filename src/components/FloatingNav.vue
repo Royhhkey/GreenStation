@@ -1,8 +1,8 @@
 <template>
   <div class="floating-nav">
     <div class="nav-items">
-      <div 
-        v-for="item in navItems" 
+      <div
+        v-for="item in navItems"
         :key="item.key"
         class="nav-item"
         :class="{ active: isActive(item.route) }"
@@ -11,9 +11,9 @@
         <component :is="item.icon" class="nav-icon" />
         <span class="nav-text">{{ item.text }}</span>
         <!-- 消息未读数提示 -->
-        <a-badge 
-          v-if="item.key === 'messages' && unreadMessagesCount > 0" 
-          :count="unreadMessagesCount" 
+        <a-badge
+          v-if="item.key === 'messages' && unreadMessagesCount > 0"
+          :count="unreadMessagesCount"
           class="message-badge"
         />
       </div>
@@ -23,7 +23,11 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { ShoppingOutlined, UserOutlined, MessageOutlined } from '@ant-design/icons-vue';
+import {
+  ShoppingOutlined,
+  UserOutlined,
+  MessageOutlined,
+} from '@ant-design/icons-vue';
 import { useRouter, useRoute } from 'vue-router';
 import { GetAllUnreadMessagesCounts } from '@/api';
 import { useMessageStore } from '@/stores/messageStore';
@@ -32,36 +36,39 @@ const route = useRoute();
 const messageStore = useMessageStore();
 
 const unreadMessagesCount = ref(0);
-watch( ()=> messageStore.totalUnread, (newVal) => {
-  console.log('newVal', newVal)
-  unreadMessagesCount.value = newVal;
-})
+watch(
+  () => messageStore.totalUnread,
+  (newVal) => {
+    console.log('newVal', newVal);
+    unreadMessagesCount.value = newVal;
+  },
+);
 const navItems = [
   {
     key: 'items',
     text: '商品',
     icon: ShoppingOutlined,
-    route: '/home/items'
+    route: '/home/items',
   },
   {
     key: 'messages',
     text: '消息',
     icon: MessageOutlined,
-    route: '/home/messages'
+    route: '/home/messages',
   },
   {
     key: 'profile',
     text: '我的',
     icon: UserOutlined,
-    route: '/home/profile'
-  }
+    route: '/home/profile',
+  },
 ];
 
 // 获取未读消息数
 const getUnreadMessagesCounts = async () => {
   try {
-    const {data} = await GetAllUnreadMessagesCounts();
-          console.log('res', data)
+    const { data } = await GetAllUnreadMessagesCounts();
+    console.log('res', data);
 
     if (data.code === '01') {
       // console.log('res', res)
@@ -77,7 +84,7 @@ const isActive = (path) => {
 };
 
 const handleClick = (key) => {
-  const item = navItems.find(item => item.key === key);
+  const item = navItems.find((item) => item.key === key);
   if (item) {
     router.push(item.route);
   }
@@ -87,10 +94,9 @@ const handleClick = (key) => {
 watch(
   () => route.path,
   (newPath) => {
-     console.log('newPath', newPath)
-      getUnreadMessagesCounts();
-
-  }
+    console.log('newPath', newPath);
+    getUnreadMessagesCounts();
+  },
 );
 
 // 组件挂载时获取未读消息数
@@ -187,19 +193,19 @@ getUnreadMessagesCounts();
     width: 95%;
     padding: 6px 12px;
   }
-  
+
   .nav-item {
     padding: 10px 0;
   }
-  
+
   .nav-icon {
     font-size: 18px;
   }
-  
+
   .nav-text {
     font-size: 10px;
   }
-  
+
   .message-badge {
     top: 2px;
     right: 25%;

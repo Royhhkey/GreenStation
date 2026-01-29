@@ -9,7 +9,7 @@
         @search="handleSearch"
       />
     </div>
-    
+
     <!-- 有数据时显示消息列表 -->
     <div v-if="filteredChats.length > 0" class="message-list">
       <div
@@ -29,24 +29,42 @@
           <div class="message-bottom">
             <span class="last-message">{{ chat.lastMessage }}</span>
             <div class="message-badges">
-              <a-badge v-if="chat.unreadCount > 0" :count="chat.unreadCount" class="unread-badge" />
+              <a-badge
+                v-if="chat.unreadCount > 0"
+                :count="chat.unreadCount"
+                class="unread-badge"
+              />
               <!-- <span v-if="chat.mute" class="mute-icon">🔇</span> -->
             </div>
           </div>
         </div>
       </div>
     </div>
-    
+
     <!-- 无数据时显示空状态 -->
     <div v-else class="empty-state">
       <div class="empty-icon">
         <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-          <path d="M52 44H12C10.8954 44 10 43.1046 10 42V14C10 12.8954 10.8954 12 12 12H52C53.1046 12 54 12.8954 54 14V42C54 43.1046 53.1046 44 52 44Z" stroke="#d9d9d9" stroke-width="2"/>
-          <path d="M10 18H54" stroke="#d9d9d9" stroke-width="2"/>
-          <path d="M16 24H24" stroke="#d9d9d9" stroke-width="2" stroke-linecap="round"/>
-          <path d="M16 32H32" stroke="#d9d9d9" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="46" cy="28" r="2" fill="#d9d9d9"/>
-          <circle cx="46" cy="36" r="2" fill="#d9d9d9"/>
+          <path
+            d="M52 44H12C10.8954 44 10 43.1046 10 42V14C10 12.8954 10.8954 12 12 12H52C53.1046 12 54 12.8954 54 14V42C54 43.1046 53.1046 44 52 44Z"
+            stroke="#d9d9d9"
+            stroke-width="2"
+          />
+          <path d="M10 18H54" stroke="#d9d9d9" stroke-width="2" />
+          <path
+            d="M16 24H24"
+            stroke="#d9d9d9"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+          <path
+            d="M16 32H32"
+            stroke="#d9d9d9"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+          <circle cx="46" cy="28" r="2" fill="#d9d9d9" />
+          <circle cx="46" cy="36" r="2" fill="#d9d9d9" />
         </svg>
       </div>
       <div class="empty-text">
@@ -54,7 +72,6 @@
         <p>还没有任何聊天记录，快去和朋友们聊天吧</p>
       </div>
     </div>
-    
   </div>
 </template>
 
@@ -62,10 +79,10 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 // import {
-//   GetMyAllConversations 
+//   GetMyAllConversations
 // } from '@/api';
-import {replaceUrlRegex} from '@/utils'
-import {useMessageStore} from '@/stores/messageStore'
+import { replaceUrlRegex } from '@/utils';
+import { useMessageStore } from '@/stores/messageStore';
 // import { message } from 'ant-design-vue';
 
 const router = useRouter();
@@ -83,31 +100,42 @@ const chats = ref([]);
 const filteredChats = computed(() => {
   // chats.value = messageStore.conversations;
   if (!searchKeyword.value) {
-    return chats.value.sort((a, b) => new Date(b.lastTime) - new Date(a.lastTime));
+    return chats.value.sort(
+      (a, b) => new Date(b.lastTime) - new Date(a.lastTime),
+    );
   }
-  
-  return chats.value.filter(chat => 
-    chat.name.toLowerCase().includes(searchKeyword.value.toLowerCase()) ||
-    chat.lastMessage.toLowerCase().includes(searchKeyword.value.toLowerCase())
-  ).sort((a, b) => new Date(b.lastTime) - new Date(a.lastTime));
+
+  return chats.value
+    .filter(
+      (chat) =>
+        chat.name.toLowerCase().includes(searchKeyword.value.toLowerCase()) ||
+        chat.lastMessage
+          .toLowerCase()
+          .includes(searchKeyword.value.toLowerCase()),
+    )
+    .sort((a, b) => new Date(b.lastTime) - new Date(a.lastTime));
 });
 
 // 格式化时间显示 - 改为QQ样式
 const formatTime = (time) => {
   if (!time) return '';
-  
+
   const now = new Date();
   const messageTime = new Date(time);
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const messageDate = new Date(messageTime.getFullYear(), messageTime.getMonth(), messageTime.getDate());
+  const messageDate = new Date(
+    messageTime.getFullYear(),
+    messageTime.getMonth(),
+    messageTime.getDate(),
+  );
   const diffDays = Math.floor((today - messageDate) / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays === 0) {
     // 今天显示具体时间
-    return messageTime.toLocaleTimeString('zh-CN', { 
-      hour: '2-digit', 
+    return messageTime.toLocaleTimeString('zh-CN', {
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: false 
+      hour12: false,
     });
   } else if (diffDays === 1) {
     return '昨天';
@@ -178,14 +206,17 @@ const goToChat = (chat) => {
 //   }
 // };
 
-watch(()=>messageStore.conversations, (newVal, oldVal) => {
-  console.log("newVal", newVal);
-  chats.value = newVal
-})
+watch(
+  () => messageStore.conversations,
+  (newVal, oldVal) => {
+    console.log('newVal', newVal);
+    chats.value = newVal;
+  },
+);
 onMounted(() => {
   // console.log("123213213d$$$$");
   // loadChats();
-    messageStore.loadConversations();
+  messageStore.loadConversations();
 });
 </script>
 
@@ -373,37 +404,37 @@ onMounted(() => {
   .message-header {
     padding: 12px;
   }
-  
+
   .message-item {
     padding: 10px 12px;
   }
-  
+
   .avatar {
     width: 44px;
     height: 44px;
   }
-  
+
   .name {
     font-size: 15px;
   }
-  
+
   .last-message {
     font-size: 13px;
   }
-  
+
   .empty-state {
     padding: 30px 16px;
   }
-  
+
   .empty-icon svg {
     width: 48px;
     height: 48px;
   }
-  
+
   .empty-text h3 {
     font-size: 15px;
   }
-  
+
   .empty-text p {
     font-size: 13px;
   }

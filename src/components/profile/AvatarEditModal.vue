@@ -11,7 +11,7 @@
       <div class="avatar-preview">
         <img :src="avatarPreview" alt="头像预览" class="preview-image" />
       </div>
-      
+
       <a-upload
         :before-upload="beforeUpload"
         :show-upload-list="false"
@@ -22,14 +22,10 @@
           选择图片
         </a-button>
       </a-upload>
-      
+
       <div class="avatar-actions">
         <a-button @click="close">取消</a-button>
-        <a-button 
-          type="primary" 
-          @click="save" 
-          :loading="avatarLoading"
-        >
+        <a-button type="primary" @click="save" :loading="avatarLoading">
           保存
         </a-button>
       </div>
@@ -43,7 +39,7 @@ import { UploadOutlined } from '@ant-design/icons-vue';
 const props = defineProps({
   visible: Boolean,
   avatarPreview: String,
-  avatarLoading: Boolean
+  avatarLoading: Boolean,
 });
 
 const emit = defineEmits(['update:visible', 'upload', 'save']);

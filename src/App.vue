@@ -1,8 +1,8 @@
 <script setup>
-import {  RouterView } from 'vue-router'
+import { RouterView } from 'vue-router';
 
 // import { test } from '@/api';
-import { onMounted ,ref,provide } from 'vue';
+import { onMounted, ref, provide } from 'vue';
 import locale from 'ant-design-vue/es/locale-provider';
 import GlobalNotification from '@/components/GlobalNotification.vue';
 
@@ -13,22 +13,19 @@ provide('globalNotification', {
     if (globalNotification.value) {
       globalNotification.value.addNotification(notification);
     }
-  }
+  },
 });
-onMounted(async()=>{
+onMounted(async () => {
   // const res = await test();
   // console.log(res);
-})
-
+});
 </script>
 
 <template>
   <a-config-provide locale="zh_CN">
-      <RouterView></RouterView>
-      <GlobalNotification ref="globalNotification" />
+    <RouterView></RouterView>
+    <GlobalNotification ref="globalNotification" />
   </a-config-provide>
-   
-
 </template>
 
 <style scoped>

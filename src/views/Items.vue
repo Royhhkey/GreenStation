@@ -1,31 +1,24 @@
 <template>
   <div class="page-wrapper">
     <!-- 搜索组件 -->
-    <Myserach 
-      :categories="categories"
-      @search="handleSearch"
-    />
-    
+    <Myserach :categories="categories" @search="handleSearch" />
+
     <!-- 内容区域 -->
     <div class="content-area">
-      <div 
-        ref="scrollContainer"
-        class="items-container"
-        @scroll="handleScroll"
-      >
+      <div ref="scrollContainer" class="items-container" @scroll="handleScroll">
         <a-list :grid="gridConfig" :data-source="items">
           <template #renderItem="{ item }">
             <a-list-item>
-              <a-card 
-                :body-style="{ padding: '16px' }" 
-                hoverable 
+              <a-card
+                :body-style="{ padding: '16px' }"
+                hoverable
                 class="item-card"
                 @click="viewItemDetail(item)"
               >
                 <div class="item-image-container">
-                  <img 
-                    :src="item.image" 
-                    :alt="item.title" 
+                  <img
+                    :src="item.image"
+                    :alt="item.title"
                     class="item-image"
                     loading="lazy"
                   />
@@ -34,25 +27,29 @@
                   </div>
                 </div>
                 <div class="item-info">
-                  <h4 class="item-title" :title="item.title">{{ item.title }}</h4>
+                  <h4 class="item-title" :title="item.title">
+                    {{ item.title }}
+                  </h4>
                   <p class="item-price">￥{{ item.price }}</p>
                   <div class="item-meta">
                     <!-- <span class="item-location">{{ item.location }}</span> -->
-                    <span class="item-time">{{ formatTime(item.createTime) }}</span>
+                    <span class="item-time">{{
+                      formatTime(item.createTime)
+                    }}</span>
                   </div>
                 </div>
                 <div class="item-actions">
-                  <a-button 
-                    size="small" 
-                    class="buy-btn" 
+                  <a-button
+                    size="small"
+                    class="buy-btn"
                     @click.stop="viewItemDetail(item)"
                   >
-                    <template #icon><ReadOutlined  /></template>
+                    <template #icon><ReadOutlined /></template>
                     详情
                   </a-button>
-                  <a-button 
-                    type="primary" 
-                    size="small" 
+                  <a-button
+                    type="primary"
+                    size="small"
                     class="contact-btn"
                     @click.stop="contactSeller(item)"
                   >
@@ -64,13 +61,13 @@
             </a-list-item>
           </template>
         </a-list>
-        
+
         <!-- 加载状态提示 -->
         <div v-if="loading && !noMoreData" class="loading-container">
           <a-spin size="large" />
           <span class="loading-text">加载中...</span>
         </div>
-        
+
         <!-- 没有更多数据提示 -->
         <div v-if="noMoreData && items.length > 0" class="no-more-container">
           <a-divider>
@@ -94,23 +91,34 @@
         </div> -->
       </div>
     </div>
-    
+
     <!-- 回到顶部按钮 -->
-    <a-back-top :visibility-height="300" :target="backTopTarget"  class="back-top"/>
+    <a-back-top
+      :visibility-height="300"
+      :target="backTopTarget"
+      class="back-top"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, nextTick } from "vue";
-import { message, Modal } from "ant-design-vue";
-import { ReadOutlined , MessageOutlined, SmileOutlined } from '@ant-design/icons-vue';
+import { ref, reactive, computed, onMounted, nextTick } from 'vue';
+import { message, Modal } from 'ant-design-vue';
+import {
+  ReadOutlined,
+  MessageOutlined,
+  SmileOutlined,
+} from '@ant-design/icons-vue';
 import Myserach from '@/components/searchcompent.vue';
 import ProductDetailModal from '@/components/ProductDetailModal.vue'; // 引入详情组件
-import {replaceUrlRegex,removeEmptyProperties,objectToString,formatTime} from '@/utils'
 import {
-        getproducts,
-      } from '@/api'
-import { useRouter } from "vue-router";
+  replaceUrlRegex,
+  removeEmptyProperties,
+  objectToString,
+  formatTime,
+} from '@/utils';
+import { getproducts } from '@/api';
+import { useRouter } from 'vue-router';
 
 // 详情弹窗相关
 const detailModalVisible = ref(false);
@@ -137,7 +145,7 @@ const currentPage = ref(1);
 const pageSize = ref(10);
 const searchParams = reactive({
   keyword: '',
-  category: ''
+  category: '',
 });
 
 // const searchTimeout = ref(null);
@@ -157,14 +165,13 @@ const gridConfig = ref({
   md: 3,
   lg: 4,
   xl: 4,
-  xxl: 4
+  xxl: 4,
 });
-
 
 // 创建类别映射表
 const categoryMap = computed(() => {
   const map = {};
-  categories.forEach(cat => {
+  categories.forEach((cat) => {
     map[cat.value] = cat.label;
   });
   return map;
@@ -173,11 +180,10 @@ const categoryMap = computed(() => {
 // 使用映射表查找
 const getCategoryLabel = (value) => {
   if (value === null || value === undefined) return '其他';
-  
+
   const stringValue = String(value).trim();
   return categoryMap.value[stringValue] || '其他';
 };
-
 
 // 防抖函数
 const debounce = (func, delay) => {
@@ -191,19 +197,19 @@ const debounce = (func, delay) => {
 // 实际的搜索执行函数
 const executeSearch = async (params) => {
   isSearching.value = true;
-  
+
   try {
     searchParams.keyword = params.keyword || '';
     searchParams.category = params.types || '';
     if (searchParams.category !== '') {
-      searchParams.category = searchParams.category.join(','); 
+      searchParams.category = searchParams.category.join(',');
     }
-    
+
     console.log('执行搜索，参数:', searchParams);
     items.value = [];
     currentPage.value = 1;
     noMoreData.value = false;
-    
+
     await loadMore();
   } finally {
     isSearching.value = false;
@@ -216,12 +222,12 @@ const debouncedSearch = debounce(executeSearch, 1000);
 // 处理搜索
 const handleSearch = (params) => {
   console.log('handleSearch', params);
-  
+
   // 如果正在搜索，显示提示
   if (isSearching.value) {
     console.log('正在搜索中，请稍候...');
   }
-  
+
   debouncedSearch(params);
 };
 
@@ -237,7 +243,7 @@ const resetSearch = () => {
 // 处理详情弹窗显示状态变化
 const handleDetailModalVisibleChange = (visible) => {
   detailModalVisible.value = visible;
-};// 查看商品详情
+}; // 查看商品详情
 const viewItemDetail = (item) => {
   selectedProduct.value = item;
   detailModalVisible.value = true;
@@ -246,7 +252,7 @@ const viewItemDetail = (item) => {
 // 联系卖家
 const contactSeller = async (item) => {
   // message.info(`请联系卖家：${item.seller || '未知卖家'}`);
-  console.log("item",item);
+  console.log('item', item);
   router.push(`/home/chat/${item.user.id}`);
 
   // const {data} = await StartConversations({
@@ -255,95 +261,94 @@ const contactSeller = async (item) => {
   // });
 };
 
-
-
 // 手动滚动处理
 const handleScroll = () => {
   if (loading.value || noMoreData.value) return;
-  
+
   const container = scrollContainer.value;
   if (!container) return;
-  
+
   const scrollTop = container.scrollTop;
   const scrollHeight = container.scrollHeight;
   const clientHeight = container.clientHeight;
-  
+
   // 距离底部100px时触发加载
   const distanceToBottom = scrollHeight - scrollTop - clientHeight;
-  
+
   if (distanceToBottom < 100) {
     console.log('滚动到底部，触发加载');
     loadMore();
   }
 };
 
-
 // 加载更多数据
 const loadMore = async () => {
   if (loading.value || noMoreData.value) {
-    console.log('阻止加载：loading=', loading.value, 'noMoreData=', noMoreData.value);
+    console.log(
+      '阻止加载：loading=',
+      loading.value,
+      'noMoreData=',
+      noMoreData.value,
+    );
     return;
   }
-  
+
   loading.value = true;
   // console.log(`开始加载第 ${currentPage.value} 页数据...`);
-  
-  try {
 
+  try {
     let obj = {
       page: currentPage.value,
       page_size: pageSize.value,
       q: searchParams.keyword,
       category: searchParams.category,
-    }
+    };
     obj = removeEmptyProperties(obj);
     const str = objectToString(obj);
     console.log(str);
 
-
-    const {data} = await getproducts(str);
+    const { data } = await getproducts(str);
     // console.log('data',data);
-    if(data.code=='01'){
-       let result = data.data.results;
-       
-        const processedResult = result.map((item, index) => {
+    if (data.code == '01') {
+      let result = data.data.results;
 
-            const { username, id } = item.user || {};
+      const processedResult = result.map((item, index) => {
+        const { username, id } = item.user || {};
 
-            // 处理 price 和 image 字段
-            const price = item.price !== null ? parseFloat(item.price) : null;
-            const image = item.image !== null ? replaceUrlRegex(item.image) : "https://eo-oss.roy22.xyz/secondHand/image.png"
-            // const useavatar = item.user?.avatar !== null ? replaceUrlRegex(item.user.avatar) : "https://eo-oss.roy22.xyz/secondHand/avatar.png"
+        // 处理 price 和 image 字段
+        const price = item.price !== null ? parseFloat(item.price) : null;
+        const image =
+          item.image !== null
+            ? replaceUrlRegex(item.image)
+            : 'https://eo-oss.roy22.xyz/secondHand/image.png';
+        // const useavatar = item.user?.avatar !== null ? replaceUrlRegex(item.user.avatar) : "https://eo-oss.roy22.xyz/secondHand/avatar.png"
 
-
-            return {
-                id: item.id,
-                title: item.name,
-                price: price,
-                description: item.description,
-                // isSold: item.is_sold,
-                createTime: item.created_at,
-                categoryId: item.category_info.cid,
-                categoryName: item.category_info.cname,
-                user: {
-                    id: id,
-                    username: username,
-                    // avatar: useavatar
-                },
-                image: image
-            };
-        });
+        return {
+          id: item.id,
+          title: item.name,
+          price: price,
+          description: item.description,
+          // isSold: item.is_sold,
+          createTime: item.created_at,
+          categoryId: item.category_info.cid,
+          categoryName: item.category_info.cname,
+          user: {
+            id: id,
+            username: username,
+            // avatar: useavatar
+          },
+          image: image,
+        };
+      });
       // console.log('processedResult',processedResult);
       items.value.push(...processedResult);
       currentPage.value++;
       noMoreData.value = items.value.length >= data.data.count;
     }
 
-    
     if (noMoreData.value) {
       console.log('所有数据已加载完毕');
     }
-    
   } catch (error) {
     console.error('加载数据失败:', error);
     message.error('加载数据失败，请重试');
@@ -353,18 +358,17 @@ const loadMore = async () => {
   }
 };
 
-
 // 初始化加载数据
 onMounted(() => {
   loadMore();
-  
+
   // 确保容器样式正确应用
   nextTick(() => {
     if (scrollContainer.value) {
       console.log('滚动容器信息:', {
         scrollHeight: scrollContainer.value.scrollHeight,
         clientHeight: scrollContainer.value.clientHeight,
-        offsetHeight: scrollContainer.value.offsetHeight
+        offsetHeight: scrollContainer.value.offsetHeight,
       });
     }
   });
@@ -498,12 +502,15 @@ onMounted(() => {
   gap: 8px;
 }
 
-.buy-btn, .contact-btn {
+.buy-btn,
+.contact-btn {
   flex: 1;
   font-size: 13px;
 }
 
-.loading-container, .no-more-container, .empty-container {
+.loading-container,
+.no-more-container,
+.empty-container {
   text-align: center;
   padding: 80px 20px;
 }
@@ -520,7 +527,7 @@ onMounted(() => {
 .empty-container {
   padding: 80px 20px;
 }
-.back-top{
+.back-top {
   position: fixed;
   bottom: 100px;
 }
@@ -529,17 +536,17 @@ onMounted(() => {
   .content-area {
     margin-top: 12vh;
   }
-  
+
   .items-container {
     padding: 12px;
     height: calc(100vh - 12vh);
     margin-top: 12vh;
   }
-  
+
   .item-image {
     height: 140px;
   }
-  
+
   .grid-config {
     gutter: 12;
     xs: 1;
@@ -549,7 +556,7 @@ onMounted(() => {
     xl: 3;
     xxl: 3;
   }
-  
+
   .item-card {
     margin-bottom: 12px;
   }

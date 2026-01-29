@@ -5,7 +5,10 @@
       <left-outlined />
     </div>
     <div class="head-right">
-      <div class="connection-status" :class="{ connected: isConnected, disconnected: !isConnected }">
+      <div
+        class="connection-status"
+        :class="{ connected: isConnected, disconnected: !isConnected }"
+      >
         {{ isConnected ? '已连接' : '连接中...' }}
       </div>
     </div>
@@ -22,7 +25,7 @@ import { LeftOutlined } from '@ant-design/icons-vue';
 
 defineProps({
   chat: Object,
-  isConnected: Boolean
+  isConnected: Boolean,
 });
 
 const emit = defineEmits(['backToList']);
@@ -72,7 +75,7 @@ const backToList = () => {
   color: #000;
 }
 
-.user-info{
+.user-info {
   position: relative;
   right: 20px;
 }

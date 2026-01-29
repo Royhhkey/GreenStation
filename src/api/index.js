@@ -1,81 +1,80 @@
-import { request } from "@/utils/request";
+import { request } from '@/utils/request';
 
+export const login = (data) => {
+  return request({
+    url: '/api/login/',
+    method: 'post',
+    data,
+  });
+};
 
-export const  login = (data)=>{
-    return request({
-        url: '/api/login/',
-        method: 'post',
-        data
-    })
-}
+export const test = () => {
+  return request({
+    url: '/api/tests/',
+    method: 'get',
+  });
+};
 
-export const test = ()=>{
-    return request({
-        url: '/api/tests/',
-        method: 'get',
-    })
-}
+export const sendCode = (data) => {
+  return request({
+    url: '/api/send-code/',
+    method: 'post',
+    data,
+  });
+};
 
-export const sendCode = (data)=>{
-    return request({
-        url: '/api/send-code/',
-        method: 'post',
-        data
-    })
-}
+export const verifyCode = (data) => {
+  return request({
+    url: '/api/verify-code/',
+    method: 'post',
+    data,
+  });
+};
+export const register = (data) => {
+  return request({
+    url: '/api/register/',
+    method: 'post',
+    data,
+  });
+};
 
-export const verifyCode = (data)=>{
-    return request({
-        url: '/api/verify-code/',
-        method: 'post',
-        data
-    })
-}
-export const register = (data)=>{
-    return request({
-        url: '/api/register/',
-        method: 'post',
-        data
-    })
-}
+export const resetPassword = (data) => {
+  return request({
+    url: '/api/reset-password/',
+    method: 'post',
+    data,
+  });
+};
 
-export const  resetPassword = (data)=>{
-    return request({
-        url: '/api/reset-password/',
-        method: 'post',
-        data
-    })
-}
+export const getproducts = (str) => {
+  return request({
+    url: '/api/product/?' + str,
+    method: 'get',
+  });
+};
 
-export const  getproducts = (str)=>{
-    return request({
-        url: '/api/product/?'+str,
-        method: 'get',
-    })
-}
+export const getMyproduct = () => {
+  return request({
+    url: '/api/my-products/',
+    method: 'get',
+  });
+};
 
-export const  getMyproduct = ()=>{
-    return request({
-        url: '/api/my-products/',
-        method: 'get',
-    })
-}
+export const ModifyUserInfo = (data) => {
+  return request({
+    url: '/api/ModifyInfoMessage/',
+    method: 'post',
+    data,
+  });
+};
 
-export const ModifyUserInfo = (data)=>{
-    return request({
-        url: '/api/ModifyInfoMessage/',
-        method: 'post',
-        data
-    })
-}
-
-export const ModifyProduct = (productId,data)=>{
-    return request({
-        url: `/api/products/${productId}/`,
-        method: 'patch',
-        data
-    })
-}
+export const ModifyProduct = (productId, data) => {
+  return request({
+    url: `/api/products/${productId}/`,
+    method: 'patch',
+    data,
+  });
+};
 
 export const AvatarUpload = (data) => {
   return request({
@@ -83,60 +82,59 @@ export const AvatarUpload = (data) => {
     method: 'post',
     data: data,
     headers: {
-      'Content-Type': 'multipart/form-data'
+      'Content-Type': 'multipart/form-data',
     },
     // timeout: 12000
   });
 };
 
-export const DeleteProduct = (productId)=>{
-    return request({
-        url: `/api/products/${productId}/`,
-        method: 'delete',
-    })
-}
+export const DeleteProduct = (productId) => {
+  return request({
+    url: `/api/products/${productId}/`,
+    method: 'delete',
+  });
+};
 
-export const  CreateProduct = (data)=>{
-    return request({
-        url: '/api/products/',
-        method: 'post',
-        data
-    })
-}
+export const CreateProduct = (data) => {
+  return request({
+    url: '/api/products/',
+    method: 'post',
+    data,
+  });
+};
 // /api/chats/conversations/start_conversation/
-export const StartConversations = (data)=>{
-    return request({
-        url: '/api/chats/conversations/start_conversation/',
-        method: 'post',
-        data
-    })
-}
+export const StartConversations = (data) => {
+  return request({
+    url: '/api/chats/conversations/start_conversation/',
+    method: 'post',
+    data,
+  });
+};
 
-export const GetCurrentUserConversationMessages = (ConversationId)=>{
-    return request({
-        url: `/api/chats/conversations/${ConversationId}/messages/`,
-        method: 'get',
-    })
-}
+export const GetCurrentUserConversationMessages = (ConversationId) => {
+  return request({
+    url: `/api/chats/conversations/${ConversationId}/messages/`,
+    method: 'get',
+  });
+};
 
-export const GetMyAllConversations = ()=>{
-    return request({
-        url: '/api/chats/conversations/',
-        method: 'get',
-    })
-}
+export const GetMyAllConversations = () => {
+  return request({
+    url: '/api/chats/conversations/',
+    method: 'get',
+  });
+};
 
-export const GetAllUnreadMessagesCounts = ()=>{
-    return request({
-        url: '/api/chats/messages/unread_count/',
-        method: 'get',
-    })
-}
+export const GetAllUnreadMessagesCounts = () => {
+  return request({
+    url: '/api/chats/messages/unread_count/',
+    method: 'get',
+  });
+};
 
 export const WithdrawMessage = (messageId) => {
   return request({
     url: `/api/chats/messages/${messageId}/withdraw/`,
-    method: 'POST'
+    method: 'POST',
   });
 };
-

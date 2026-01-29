@@ -1,12 +1,12 @@
 <!-- ChatWindow.vue -->
 <template>
   <div class="chat-page" @click="closeContextMenu">
-    <ChatHeader 
-      :chat="chat" 
-      :is-connected="isConnected" 
-      @back-to-list="backToList" 
+    <ChatHeader
+      :chat="chat"
+      :is-connected="isConnected"
+      @back-to-list="backToList"
     />
-    
+
     <div ref="chatContainer" class="chat-container">
       <div class="chat-messages">
         <MessageBubble
@@ -24,7 +24,7 @@
           @withdraw="() => withdrawMessage(message)"
           @copy="() => copyMessage(message)"
         />
-        
+
         <MessageContextMenu
           :show-context-menu="showContextMenu"
           :context-menu-style="contextMenuStyle"
@@ -36,13 +36,13 @@
         />
       </div>
     </div>
-    
+
     <ImagePreview
       :preview-visible="previewVisible"
       :preview-image-url="previewImageUrl"
       @update:preview-visible="previewVisible = $event"
     />
-    
+
     <ChatInput
       :uploaded-images="uploadedImages"
       @send-message="sendMessage"
@@ -59,7 +59,7 @@ import { message as antMessage } from 'ant-design-vue';
 import {
   StartConversations,
   GetCurrentUserConversationMessages,
-  WithdrawMessage
+  WithdrawMessage,
 } from '@/api';
 import { useAuthStore } from '@/stores/auth';
 import { replaceUrlRegex } from '@/utils';
@@ -76,7 +76,7 @@ const defaultavatar = 'https://eo-oss.roy22.xyz/secondHand/avatar.png';
 const myInfo = ref({
   id: null,
   username: '',
-  avatar: defaultavatar
+  avatar: defaultavatar,
 });
 
 // 聊天数据
@@ -116,7 +116,7 @@ const chat = ref({
 // 检查消息是否可以撤回
 const canWithdraw = (message) => {
   if (!message.isSent || message.is_withdrawn) return false;
-  
+
   // 5分钟内可撤回
   const messageTime = new Date(message.timestamp);
   const now = new Date();
@@ -128,10 +128,10 @@ const canWithdraw = (message) => {
 const handleTouchStart = (event, message) => {
   // 阻止默认行为，避免触发浏览器默认的长按菜单
   event.preventDefault();
-  
+
   longPressMessage.value = message;
   isLongPressing.value = false;
-  
+
   // 设置长按计时器
   longPressTimer.value = setTimeout(() => {
     isLongPressing.value = true;
@@ -146,19 +146,19 @@ const handleTouchEnd = () => {
     clearTimeout(longPressTimer.value);
     longPressTimer.value = null;
   }
-  
+
   // 如果是长按操作，阻止后续的点击事件
   if (isLongPressing.value) {
     isLongPressing.value = false;
     // 阻止后续的点击事件
     const originalPreventDefault = Event.prototype.preventDefault;
-    Event.prototype.preventDefault = function() {
+    Event.prototype.preventDefault = function () {
       if (this.type === 'click' || this.type === 'touchend') {
         return;
       }
       originalPreventDefault.call(this);
     };
-    
+
     setTimeout(() => {
       Event.prototype.preventDefault = originalPreventDefault;
     }, 100);
@@ -169,10 +169,10 @@ const handleTouchEnd = () => {
 const showContextMenuForMessage = (message, event) => {
   contextMenuMessage.value = message;
   showContextMenu.value = true;
-  
+
   // 计算菜单位置
   let clientX, clientY;
-  
+
   if (event.type.includes('touch')) {
     // 触摸事件
     const touch = event.touches[0] || event.changedTouches[0];
@@ -183,12 +183,12 @@ const showContextMenuForMessage = (message, event) => {
     clientX = event.clientX;
     clientY = event.clientY;
   }
-  clientX = clientX-40;
-  clientY = clientY+30;
-  
+  clientX = clientX - 40;
+  clientY = clientY + 30;
+
   contextMenuStyle.value = {
     left: `${clientX}px`,
-    top: `${clientY}px`
+    top: `${clientY}px`,
   };
 };
 
@@ -209,14 +209,14 @@ const withdrawMessage = async (message) => {
     const response = await WithdrawMessage(message.id);
     if (response.data.code === '01') {
       // 更新本地消息状态
-      const index = messages.value.findIndex(m => m.id === message.id);
+      const index = messages.value.findIndex((m) => m.id === message.id);
       if (index !== -1) {
         messages.value[index] = {
           ...messages.value[index],
-          message_type :'text',
+          message_type: 'text',
           type: 'text',
           content: '[消息已撤回]',
-          original_content: messages.value[index].content
+          original_content: messages.value[index].content,
         };
       }
       console.log('messages:', messages.value);
@@ -250,27 +250,27 @@ const init = async () => {
   const response = await StartConversations({
     other_user_id: chatId,
   });
-  
+
   const { data } = response;
 
-  if(data.code=='01'){
+  if (data.code == '01') {
     myInfo.value = {
       id: authStore.userInfo.id,
       username: authStore.userInfo.username,
-      avatar: authStore.userInfo.avatar || defaultavatar
-    }
-    
-    if(data.data.participant2_info?.id == authStore.userInfo.id){
+      avatar: authStore.userInfo.avatar || defaultavatar,
+    };
+
+    if (data.data.participant2_info?.id == authStore.userInfo.id) {
       chat.value = {
         name: data.data.participant1_info?.username || '未知用户',
         avatar: data.data.participant1_info?.avatar || defaultavatar,
-        id: data.data.participant1_info?.id || null
+        id: data.data.participant1_info?.id || null,
       };
-    }else{
+    } else {
       chat.value = {
         name: data.data.participant2_info?.username || '未知用户',
         avatar: data.data.participant2_info?.avatar || defaultavatar,
-        id: data.data.participant2_info?.id || null
+        id: data.data.participant2_info?.id || null,
       };
     }
 
@@ -289,9 +289,12 @@ const init = async () => {
       ...message,
       isSent: message.sender === myInfo.value.id,
       type: message.message_type || 'text',
-      content: message.message_type === 'image' ? (message.image_url || message.content) : message.content,
+      content:
+        message.message_type === 'image'
+          ? message.image_url || message.content
+          : message.content,
       timestamp: message.created_at || message.timestamp,
-      is_withdrawn: message.is_withdrawn || false
+      is_withdrawn: message.is_withdrawn || false,
     }));
 
     messages.value = expandedMessages;
@@ -305,29 +308,29 @@ const connectWebSocket = (conversationId) => {
     let backendHost = import.meta.env.VITE_API_URL || 'localhost:8000';
     backendHost = backendHost.replace(/^http?:\/\//, '');
     backendHost = backendHost.replace(/\/$/, '');
-    
+
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${backendHost}/ws/chat/${conversationId}/?token=${localStorage.getItem('token')}`;
-    
+
     // console.log('Connecting to WebSocket:', wsUrl);
 
     socket.value = new WebSocket(wsUrl);
-    
+
     socket.value.onopen = () => {
       console.log('WebSocket connected');
       isConnected.value = true;
       reconnectAttempts.value = 0;
     };
-    
+
     socket.value.onmessage = (event) => {
       const data = JSON.parse(event.data);
       handleWebSocketMessage(data);
     };
-    
+
     socket.value.onclose = (event) => {
       console.log('WebSocket disconnected');
       isConnected.value = false;
-      
+
       // 自动重连
       if (reconnectAttempts.value < maxReconnectAttempts) {
         setTimeout(() => {
@@ -336,11 +339,10 @@ const connectWebSocket = (conversationId) => {
         }, 3000);
       }
     };
-    
+
     socket.value.onerror = (error) => {
       console.error('WebSocket error:', error);
     };
-    
   } catch (error) {
     console.error('WebSocket connection failed:', error);
   }
@@ -349,7 +351,7 @@ const connectWebSocket = (conversationId) => {
 // 处理 WebSocket 消息
 const handleWebSocketMessage = (data) => {
   console.log('收到WebSocket消息:', data);
-  
+
   if (data.message) {
     handleNewMessage(data.message);
   } else if (data.message_withdrawn) {
@@ -366,23 +368,26 @@ const handleNewMessage = (messageData) => {
     id: messageData.id || Date.now(),
     content: messageData.content || '',
     type: messageData.message_type || 'text',
-    timestamp: messageData.timestamp || messageData.created_at || new Date().toISOString(),
+    timestamp:
+      messageData.timestamp ||
+      messageData.created_at ||
+      new Date().toISOString(),
     isSent: messageData.sender === myInfo.value.id,
     senderName: messageData.sender_info?.username || '',
     showName: messageData.sender !== myInfo.value.id,
     is_withdrawn: messageData.is_withdrawn || false,
-    imageUrl: messageData.image_url || null
+    imageUrl: messageData.image_url || null,
   };
-  
+
   if (newMsg.type === 'image' && newMsg.imageUrl) {
     newMsg.content = newMsg.imageUrl;
   }
-  
+
   // 检查是否已存在该消息
-  const exists = messages.value.find(msg => msg.id === newMsg.id);
+  const exists = messages.value.find((msg) => msg.id === newMsg.id);
   if (!exists) {
     messages.value.push(newMsg);
-    
+
     nextTick(() => {
       scrollToBottom();
     });
@@ -391,13 +396,13 @@ const handleNewMessage = (messageData) => {
 
 // 处理消息撤回
 const handleMessageWithdrawn = (messageData) => {
-  const index = messages.value.findIndex(m => m.id === messageData.id);
+  const index = messages.value.findIndex((m) => m.id === messageData.id);
   if (index !== -1) {
     messages.value[index] = {
       ...messages.value[index],
       is_withdrawn: true,
       content: '[消息已撤回]',
-      original_content: messages.value[index].content
+      original_content: messages.value[index].content,
     };
   }
 };
@@ -427,7 +432,7 @@ const beforeUpload = (file) => {
     uploadedImages.value.push({
       file: file,
       url: e.target.result,
-      name: file.name
+      name: file.name,
     });
   };
   reader.readAsDataURL(file);
@@ -455,23 +460,22 @@ const sendImageMessage = async () => {
         if (imageData.includes(';base64,')) {
           imageData = imageData.split(';base64,')[1];
         }
-        
+
         const messageData = {
           type: 'image',
           image_data: imageData,
-          file_name: image.name || `image_${Date.now()}`
+          file_name: image.name || `image_${Date.now()}`,
         };
-        
+
         console.log('发送图片消息:', messageData);
         socket.value.send(JSON.stringify(messageData));
-        
       } catch (error) {
         console.error('发送图片失败:', error);
         antMessage.error('图片发送失败');
       }
     }
     uploadedImages.value = [];
-    
+
     nextTick(() => {
       scrollToBottom();
     });
@@ -484,7 +488,7 @@ const sendMessage = async (content) => {
     antMessage.error('连接已断开，请刷新页面重试');
     return;
   }
-  
+
   if (uploadedImages.value.length > 0) {
     await sendImageMessage();
   }
@@ -492,18 +496,17 @@ const sendMessage = async (content) => {
   if (content) {
     const messageData = {
       type: 'text',
-      content: content
+      content: content,
     };
-    
+
     console.log('发送文本消息:', messageData);
-    
+
     try {
       socket.value.send(JSON.stringify(messageData));
-      
+
       nextTick(() => {
         scrollToBottom();
       });
-      
     } catch (error) {
       console.error('发送消息失败:', error);
       antMessage.error('发送失败，请重试');
@@ -512,7 +515,7 @@ const sendMessage = async (content) => {
 };
 
 // 滚动到底部
-const scrollToBottom = async() => {
+const scrollToBottom = async () => {
   if (chatContainer.value) {
     await nextTick();
     chatContainer.value.scrollTop = chatContainer.value.scrollHeight;

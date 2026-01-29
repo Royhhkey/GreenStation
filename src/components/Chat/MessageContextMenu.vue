@@ -1,9 +1,11 @@
 <!-- MessageContextMenu.vue -->
 <template>
-  <div v-if="showContextMenu" 
-       class="message-context-menu"
-       :style="contextMenuStyle"
-       @click.stop>
+  <div
+    v-if="showContextMenu"
+    class="message-context-menu"
+    :style="contextMenuStyle"
+    @click.stop
+  >
     <div class="menu-item" @click="withdrawMessage" v-if="canWithdraw(message)">
       <undo-outlined />
       <span>撤回消息</span>
@@ -22,7 +24,7 @@ defineProps({
   showContextMenu: Boolean,
   contextMenuStyle: Object,
   message: Object,
-  canWithdraw: Function
+  canWithdraw: Function,
 });
 
 const emit = defineEmits(['withdraw', 'copy', 'close']);
@@ -78,7 +80,7 @@ const copyMessage = () => {
   .message-context-menu {
     min-width: 120px;
   }
-  
+
   .menu-item {
     padding: 10px 12px;
     font-size: 13px;
@@ -91,7 +93,7 @@ const copyMessage = () => {
     min-width: 160px;
     font-size: 16px; /* 移动端字体稍大 */
   }
-  
+
   .menu-item {
     padding: 12px 16px;
     font-size: 16px;

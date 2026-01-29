@@ -5,35 +5,39 @@
       v-for="notification in notifications"
       :key="notification.id"
       @click="handleNotificationClick(notification)"
-   
     >
-      <div  class="notification-item" v-show="isshow(notification.sender.id)">
-          <div class="notification-avatar" >
-            <img 
-              :src="replaceUrlRegex(notification.sender.avatar) || defaultAvatar" 
-              :alt="notification.sender.username"
-            />
+      <div class="notification-item" v-show="isshow(notification.sender.id)">
+        <div class="notification-avatar">
+          <img
+            :src="replaceUrlRegex(notification.sender.avatar) || defaultAvatar"
+            :alt="notification.sender.username"
+          />
+        </div>
+        <div class="notification-content">
+          <div class="notification-header">
+            <strong>{{ notification.sender.username }}</strong>
+            <span class="notification-time">{{
+              formatTime(notification.message.timestamp)
+            }}</span>
           </div>
-          <div class="notification-content">
-            <div class="notification-header">
-              <strong>{{  notification.sender.username }}</strong>
-              <span class="notification-time">{{ formatTime(notification.message.timestamp) }}</span>
-            </div>
-            <div class="notification-message">
-              {{ getMessagePreview(notification.message) }}
-            </div>
+          <div class="notification-message">
+            {{ getMessagePreview(notification.message) }}
           </div>
-          <div class="notification-close" @click.stop="removeNotification(notification.sender.id)">
-            ×
-          </div>
+        </div>
+        <div
+          class="notification-close"
+          @click.stop="removeNotification(notification.sender.id)"
+        >
+          ×
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed  ,watch} from 'vue';
-import { useRoute ,useRouter} from 'vue-router';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useMessageStore } from '@/stores/messageStore';
 import { replaceUrlRegex } from '@/utils';
@@ -47,29 +51,31 @@ const messageStore = useMessageStore();
 const defaultAvatar = 'https://eo-oss.roy22.xyz/secondHand/avatar.png';
 const notifications = ref([]);
 let notificationWebSocket = null;
-const chatId = ref(parseInt(route.params.id)|| -1);
-watch(()=>  route.path, (newId) => { 
-  if (newId) {
-    chatId.value = parseInt( route.params.id)||-1;
-    if (chatId.value != -1) {
-      removeNotification(chatId.value)
+const chatId = ref(parseInt(route.params.id) || -1);
+watch(
+  () => route.path,
+  (newId) => {
+    if (newId) {
+      chatId.value = parseInt(route.params.id) || -1;
+      if (chatId.value != -1) {
+        removeNotification(chatId.value);
+      }
     }
-  }
-})
+  },
+);
 
-const isshow = (ConversationId) => { 
-  return  ConversationId !=  chatId.value;
+const isshow = (ConversationId) => {
+  return ConversationId != chatId.value;
 };
-
 
 const formatTime = (time) => {
   if (!time) return '';
-  
+
   const now = new Date();
   const messageTime = new Date(time);
   const diffMs = now - messageTime;
   const diffMins = Math.floor(diffMs / 60000);
-  
+
   if (diffMins < 1) {
     return '刚刚';
   } else if (diffMins < 60) {
@@ -100,21 +106,21 @@ const handleNotificationClick = (notification) => {
 };
 
 const removeNotification = (id) => {
-  notifications.value = notifications.value.filter(n => n.sender.id !== id);
+  notifications.value = notifications.value.filter((n) => n.sender.id !== id);
 };
 
 const addNotification = (notificationData) => {
   const notification = {
     id: Date.now(),
-    ...notificationData
+    ...notificationData,
   };
 
-  if(chatId.value != -1){
+  if (chatId.value != -1) {
     if (notification.sender.id == chatId.value) {
       return;
     }
   }
-  
+
   // 添加到通知列表开头
   notifications.value.unshift(notification);
   // 添加到消息存储的通知列表
@@ -123,33 +129,39 @@ const addNotification = (notificationData) => {
   // 如果通知超过5个，移除最旧的
   if (notifications.value.length > 5) {
     notifications.value.pop();
-    messageStore.removeNotification(notification.sender.id); 
+    messageStore.removeNotification(notification.sender.id);
   }
-  
+
   // 显示浏览器通知（如果用户允许）
   showBrowserNotification(notification);
 };
 
 const showBrowserNotification = (notification) => {
   // 检查浏览器是否支持通知
-  if (!("Notification" in window)) {
+  if (!('Notification' in window)) {
     return;
   }
-  
+
   // 检查用户是否已经允许或拒绝通知
-  if (Notification.permission === "granted") {
-    new Notification(`${notification.conversation_name || notification.sender.username}`, {
-      body: getMessagePreview(notification.message),
-      icon: notification.sender.avatar || defaultAvatar
-    });
-  } else if (Notification.permission !== "denied") {
+  if (Notification.permission === 'granted') {
+    new Notification(
+      `${notification.conversation_name || notification.sender.username}`,
+      {
+        body: getMessagePreview(notification.message),
+        icon: notification.sender.avatar || defaultAvatar,
+      },
+    );
+  } else if (Notification.permission !== 'denied') {
     // 请求通知权限
-    Notification.requestPermission().then(permission => {
-      if (permission === "granted") {
-        new Notification(`${notification.conversation_name || notification.sender.username}`, {
-          body: getMessagePreview(notification.message),
-          icon: notification.sender.avatar || defaultAvatar
-        });
+    Notification.requestPermission().then((permission) => {
+      if (permission === 'granted') {
+        new Notification(
+          `${notification.conversation_name || notification.sender.username}`,
+          {
+            body: getMessagePreview(notification.message),
+            icon: notification.sender.avatar || defaultAvatar,
+          },
+        );
       }
     });
   }
@@ -159,22 +171,22 @@ const connectNotificationWebSocket = () => {
   try {
     const userId = authStore.userInfo.id;
     if (!userId) return;
-    
+
     let backendHost = import.meta.env.VITE_API_URL || 'localhost:8000';
     backendHost = backendHost.replace(/^http?:\/\//, '');
     backendHost = backendHost.replace(/\/$/, '');
-    
+
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${backendHost}/ws/notifications/${userId}/?token=${localStorage.getItem('token')}`;
-    
+
     // console.log('Connecting to Notification WebSocket:', wsUrl);
-    
+
     notificationWebSocket = new WebSocket(wsUrl);
-    
+
     notificationWebSocket.onopen = () => {
       // console.log('Notification WebSocket connected');
     };
-    
+
     notificationWebSocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       // console.log('123213:', data);
@@ -184,17 +196,16 @@ const connectNotificationWebSocket = () => {
         addNotification(data.notification);
       }
     };
-    
+
     notificationWebSocket.onclose = (event) => {
       console.log('Notification WebSocket disconnected');
       // 自动重连
       setTimeout(connectNotificationWebSocket, 3000);
     };
-    
+
     notificationWebSocket.onerror = (error) => {
       console.error('Notification WebSocket error:', error);
     };
-    
   } catch (error) {
     console.error('Notification WebSocket connection failed:', error);
   }
@@ -202,12 +213,12 @@ const connectNotificationWebSocket = () => {
 
 onMounted(() => {
   // 请求通知权限
-  if ("Notification" in window) {
-    if (Notification.permission === "default") {
+  if ('Notification' in window) {
+    if (Notification.permission === 'default') {
       Notification.requestPermission();
     }
   }
-  
+
   // 连接通知WebSocket
   connectNotificationWebSocket();
 });
@@ -220,7 +231,7 @@ onUnmounted(() => {
 
 // 暴露方法给父组件
 defineExpose({
-  addNotification
+  addNotification,
 });
 </script>
 
@@ -237,7 +248,7 @@ defineExpose({
   background: white;
   border-left: 4px solid #1890ff;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
   cursor: pointer;
   transition: transform 0.2s;

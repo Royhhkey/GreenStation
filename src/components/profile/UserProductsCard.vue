@@ -7,7 +7,7 @@
         发布商品
       </a-button>
     </div>
-    
+
     <a-list
       :grid="gridConfig"
       :data-source="products"
@@ -16,8 +16,8 @@
     >
       <template #renderItem="{ item }">
         <a-list-item>
-          <a-card 
-            hoverable 
+          <a-card
+            hoverable
             class="product-card"
             :body-style="{ padding: '12px' }"
             @click="editProduct(item)"
@@ -29,15 +29,15 @@
                   {{ item.category_info?.cname }}
                 </a-tag>
               </div>
-              <img 
-                :src="replaceUrlRegex(item.image)" 
+              <img
+                :src="replaceUrlRegex(item.image)"
                 :alt="item.title"
                 @error="handleProductImageError"
               />
               <div class="product-actions">
                 <!-- 状态切换按钮 -->
-                <a-button 
-                  size="small" 
+                <a-button
+                  size="small"
                   @click.stop="toggleStatus(item)"
                   :class="item.is_sold ? 'status-sold' : 'status-onsale'"
                   class="change-status-btn"
@@ -47,16 +47,16 @@
                   </template>
                   {{ item.is_sold ? '设为在售' : '设为售出' }}
                 </a-button>
-                <a-button 
-                  size="small" 
-                  type="link" 
+                <a-button
+                  size="small"
+                  type="link"
                   @click.stop="editProduct(item)"
                 >
                   <EditOutlined />
                 </a-button>
-                <a-button 
-                  size="small" 
-                  type="link" 
+                <a-button
+                  size="small"
+                  type="link"
                   danger
                   @click.stop="deleteProduct(item.id)"
                 >
@@ -71,7 +71,9 @@
                   <p class="product-price">￥{{ item.price }}</p>
                 </div>
                 <div class="product-info-right">
-                  <p class="product-time">{{ extractDateFromISO(item.created_at) }}</p>
+                  <p class="product-time">
+                    {{ extractDateFromISO(item.created_at) }}
+                  </p>
                   <a-tag :color="item.is_sold ? 'red' : 'green'">
                     {{ item.is_sold ? '已售出' : '在售中' }}
                   </a-tag>
@@ -86,9 +88,7 @@
     <!-- 空状态 -->
     <div v-if="!loading && products.length === 0" class="empty-products">
       <a-empty description="暂无商品">
-        <a-button type="primary" @click="addProduct">
-          发布第一个商品
-        </a-button>
+        <a-button type="primary" @click="addProduct"> 发布第一个商品 </a-button>
       </a-empty>
     </div>
   </a-card>
@@ -96,21 +96,26 @@
 
 <script setup>
 import { computed } from 'vue';
-import { 
-  PlusOutlined, 
-  EditOutlined, 
-  DeleteOutlined, 
-  SwapOutlined 
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  SwapOutlined,
 } from '@ant-design/icons-vue';
 import { replaceUrlRegex, extractDateFromISO } from '@/utils';
 
 const props = defineProps({
   products: Array,
   loading: Boolean,
-  categories: Array
+  categories: Array,
 });
 
-const emit = defineEmits(['addProduct', 'editProduct', 'deleteProduct', 'toggleStatus']);
+const emit = defineEmits([
+  'addProduct',
+  'editProduct',
+  'deleteProduct',
+  'toggleStatus',
+]);
 
 const gridConfig = computed(() => ({
   gutter: 12,
@@ -119,7 +124,7 @@ const gridConfig = computed(() => ({
   md: 1,
   lg: 1,
   xl: 2,
-  xxl: 2
+  xxl: 2,
 }));
 
 const addProduct = () => {
