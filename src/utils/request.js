@@ -2,7 +2,8 @@ import axios from "axios";
 import { message } from "ant-design-vue";
 
 export const request = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
+    // baseURL: import.meta.env.VITE_API_URL,
+    baseURL: 'http://39.108.135.150:8888/',
     timeout: 8000,
     headers: { 
         "Content-Type": "application/x-www-form-urlencoded"
