@@ -1,4 +1,4 @@
-# TradePlatform
+# GreenStation
 
 ## 项目概述
 这是一个基于Vue.js的前端项目，使用Vue 3 Composition API和Vite构建工具开发。
@@ -15,7 +15,7 @@
 ### 1. 克隆项目
 ```bash
 git clone https://gitee.com/roy-123/trade-platform.git
-cd TradePlatform
+cd  GreenStation
 
 ```
 
