@@ -9,7 +9,7 @@ import 'ant-design-vue/dist/reset.css'  // Changed from antd.css to reset.css
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import App from './App.vue'
 import router from './router'
-
+import './assets/main.css'
 const app = createApp(App)
 
 app.use(createPinia())
