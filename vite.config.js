@@ -6,12 +6,14 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/GreenStation/',   // ← 新增这一行（GitHub Pages 子路径）
   server: {
     host: '0.0.0.0',
     cors: true
   },
   plugins: [
     vue(),
+
     // vueDevTools(),  // 调试插件 Vue DevTools 
 
   ],
