@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { terser } from 'rollup-plugin-terser';
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-// import vueDevTools from 'vite-plugin-vue-devtools'
+import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -22,7 +22,7 @@ export default defineConfig({
   plugins: [
     vue(),
 
-    // vueDevTools(),  // 调试插件 Vue DevTools 
+    vueDevTools(),  // 调试插件 Vue DevTools 
 
   ],
   resolve: {

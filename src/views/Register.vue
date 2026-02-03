@@ -1,32 +1,56 @@
 <template>
-  <div class="container">
-    <div class="page-container">
+  <div class="register-page">
+    <div class="page-shell">
+      <header class="page-header">
       <a-button type="link" @click="goBack" class="back-btn">
         <ArrowLeftOutlined class="arrow-icon" />
       </a-button>
-      <a-card title="创建账号" bordered>
+        <div class="header-text">
+          <h1 class="title">创建账号</h1>
+          <p class="subtitle">填写基础信息，完成校园绿色驿站账号注册</p>
+        </div>
+      </header>
+
+      <main class="page-main">
+        <a-card :bordered="false" class="register-card">
         <a-form
+            ref="formRef"
           :model="form"
           :rules="rules"
-          ref="formRef"
           layout="vertical"
           @finish="handleRegister"
           class="register-form"
         >
-          <a-form-item label="用户名" name="username" :rules="rules.username">
+            <!-- 基础信息 -->
+            <section class="form-section">
+              <h2 class="section-title">基础信息</h2>
+              <a-form-item
+                label="用户名"
+                name="username"
+                :rules="rules.username"
+              >
             <a-input v-model:value="form.username" placeholder="请输入用户名" />
           </a-form-item>
           <a-form-item label="学号" name="XH" :rules="rules.XH">
             <a-input v-model:value="form.XH" placeholder="请输入学号" />
           </a-form-item>
+              <a-form-item label="手机号" name="phone" :rules="rules.phone">
+                <a-input v-model:value="form.phone" placeholder="请输入手机号" />
+              </a-form-item>
+            </section>
+
+            <!-- 账号安全 -->
+            <section class="form-section">
+              <h2 class="section-title">账号安全</h2>
           <a-form-item label="邮箱" name="email" :rules="rules.email">
             <a-input v-model:value="form.email" placeholder="请输入邮箱" />
           </a-form-item>
           <a-form-item label="验证码" name="captcha" :rules="rules.captcha">
-            <div class="captcha-container">
+                <div class="captcha-row">
               <a-input
                 v-model:value="form.captcha"
                 placeholder="请输入验证码"
+                    class="captcha-input"
               />
               <a-button
                 type="primary"
@@ -39,11 +63,13 @@
             </div>
           </a-form-item>
 
-          <a-form-item label="手机号" name="phone" :rules="rules.phone">
-            <a-input v-model:value="form.phone" placeholder="请输入手机号" />
-          </a-form-item>
-
-          <a-form-item label="密码" name="password" :rules="rules.password">
+              <div class="password-row">
+                <a-form-item
+                  label="密码"
+                  name="password"
+                  :rules="rules.password"
+                  class="password-item"
+                >
             <a-input-password
               v-model:value="form.password"
               placeholder="请输入密码"
@@ -53,34 +79,43 @@
             label="确认密码"
             name="confirmPassword"
             :rules="rules.confirmPassword"
+                  class="password-item"
           >
             <a-input-password
               v-model:value="form.confirmPassword"
               placeholder="请再次输入密码"
             />
           </a-form-item>
+              </div>
+            </section>
 
+            <!-- 学籍信息（可选） -->
+            <section class="form-section">
+              <h2 class="section-title">学籍信息（可选）</h2>
           <a-form-item label="年级" name="grade" :rules="rules.grade">
             <a-input v-model:value="form.grade" placeholder="请输入年级" />
           </a-form-item>
           <a-form-item label="专业" name="zy" :rules="rules.zy">
             <a-input v-model:value="form.zy" placeholder="请填写专业" />
           </a-form-item>
-
           <a-form-item label="寝室号" name="dorm" :rules="rules.QSH">
             <a-input v-model:value="form.QSH" placeholder="请填写寝室号" />
           </a-form-item>
-          <a-form-item>
+            </section>
+
+            <a-form-item class="submit-item">
             <a-button
               type="primary"
               html-type="submit"
               block
               class="register-btn"
-              >注册</a-button
             >
+                注册
+              </a-button>
           </a-form-item>
         </a-form>
       </a-card>
+      </main>
     </div>
   </div>
 </template>
@@ -214,59 +249,125 @@ function goBack() {
 </script>
 
 <style scoped>
-.container {
+.register-page {
   min-height: 100vh;
-  width: 100vw;
+  width: 100%;
   background: #e6f0ff;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  padding: 32px 16px;
+}
+
+.page-shell {
+  width: 100%;
+  max-width: 520px;
+}
+
+.page-header {
+  display: flex;
   align-items: center;
-}
-.page-container {
-  /* max-width: 400px;
-  min-width: 500px; */
-  margin: auto;
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  /* box-shadow: 0 0 8px #ccc; */
-}
-.back-btn {
+  gap: 8px;
   margin-bottom: 16px;
-  color: #2c3e8f;
-  font-weight: 500;
+}
+
+.header-text {
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1d39c4;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #86909c;
+}
+
+.page-main {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  padding: 20px 24px 24px;
+}
+
+.register-card :deep(.ant-card-body) {
+  padding: 0;
+}
+
+.back-btn {
   padding: 0;
   height: 32px;
   line-height: 32px;
+  color: #2c3e8f;
+  font-weight: 500;
 }
+
 .back-btn:hover {
   color: #1d39c4;
   text-decoration: underline;
   background: transparent;
 }
+
 .arrow-icon {
-  font-size: 24px;
+  font-size: 20px;
   color: #1d39c4;
 }
-.register-btn {
-  margin: 10px auto;
-  width: 60%;
-  height: 44px;
-  display: block;
-}
-.captcha-container {
-  display: flex;
-  justify-content: space-between;
-}
-.captcha-container > input {
-  width: 50%;
-}
-.captcha-btn {
-  margin-left: 20px;
-  height: 40px;
+
+.form-section {
+  margin-bottom: 16px;
 }
 
-/* .register-form  input{
-    height: 50px;
-} */
+.section-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.captcha-row {
+  display: flex;
+  gap: 12px;
+}
+
+.captcha-input {
+  flex: 1;
+}
+
+.captcha-btn {
+  white-space: nowrap;
+}
+
+.password-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.password-item {
+  flex: 1 1 0;
+}
+
+.submit-item {
+  margin-top: 12px;
+}
+
+.register-btn {
+  height: 44px;
+  font-size: 15px;
+}
+
+@media (max-width: 480px) {
+  .page-main {
+    padding: 16px 16px 20px;
+  }
+
+  .password-row {
+    flex-direction: column;
+  }
+}
 </style>

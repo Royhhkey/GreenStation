@@ -1,245 +1,290 @@
 <template>
-  <div class="profile-page">
-    <!-- 头部信息卡片 -->
-    <div class="profile-header">
-      <div class="header-bg"></div>
-      <div class="avatar-section">
-        <div class="avatar-container">
-          <img
-            :src="
-              userInfo.avatar ||
-              'https://eo-oss.roy22.xyz/secondHand/avatar.png'
-            "
-            alt="用户头像"
-            class="avatar"
-            @error="handleAvatarError"
-          />
-          <div class="edit-avatar-btn" @click="showAvatarEdit = true">
-            <EditOutlined />
+  <div class="min-h-screen relative pb-10 bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 bg-[length:400%_400%] animate-gradient-shift">
+    <!-- 现代化头部信息卡片 -->
+    <div class="relative py-20 px-5 pb-24 overflow-hidden -mb-15 md:py-16 md:px-4 md:pb-20 sm:py-12 sm:px-3 sm:pb-18">
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-500/85 via-sky-500/85 to-green-500/85 backdrop-blur-xl"></div>
+      <div class="absolute inset-0 opacity-50" style="background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);"></div>
+      <div class="relative max-w-6xl mx-auto z-10">
+        <div class="flex items-end gap-8 text-white md:flex-col md:items-center md:text-center md:gap-5">
+          <div class="relative">
+            <div class="relative inline-block">
+              <img
+                :src="
+                  userInfo.avatar ||
+                  'https://eo-oss.roy22.xyz/secondHand/avatar.png'
+                "
+                alt="用户头像"
+                class="w-[140px] h-[140px] rounded-full border-[5px] border-white/30 bg-white/20 object-cover shadow-[0_8px_32px_rgba(0,0,0,0.2),0_0_0_8px_rgba(255,255,255,0.1)] transition-all duration-400 relative z-[2] hover:scale-105 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3),0_0_0_10px_rgba(255,255,255,0.15)] md:w-[120px] md:h-[120px] sm:w-[100px] sm:h-[100px]"
+                @error="handleAvatarError"
+              />
+              <div class="absolute -inset-2.5 rounded-full border-2 border-white/20 animate-rotate"></div>
+              <div class="absolute bottom-2 right-2 w-10 h-10 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center text-blue-500 cursor-pointer border-2 border-white/50 transition-all duration-300 shadow-lg z-[3] hover:bg-white hover:scale-115 hover:rotate-90 hover:shadow-xl" @click="showAvatarEdit = true">
+                <EditOutlined />
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="user-info">
-          <h2 class="username">{{ userInfo.username }}</h2>
-          <p class="user-id">ID: {{ userInfo.id }}</p>
-          <!-- <a-button 
-            type="primary" 
-            class="edit-profile-btn"
-            @click="showEditModal = true"
-          >
-            <template #icon><EditOutlined /></template>
-            编辑资料
-          </a-button> -->
+          <div class="flex-1 pb-5">
+            <h2 class="text-4xl font-bold mb-2 text-shadow-lg tracking-tight bg-gradient-to-br from-white to-white/80 bg-clip-text text-transparent md:text-3xl sm:text-2xl">{{ userInfo.username }}</h2>
+            <p class="text-base opacity-90 mb-4 text-shadow-md font-medium md:text-sm">ID: {{ userInfo.id }}</p>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- 内容区域 -->
-    <div class="profile-content">
-      <!-- 个人信息卡片 -->
-      <a-card class="info-card">
-        <template #title>
-          <div class="info-card-title-container">
-            <div class="info-card-title">
+    <div class="max-w-6xl mx-auto px-5 pt-15 pb-10 grid grid-cols-[1fr_2fr] gap-8 relative z-10 lg:grid-cols-1 lg:gap-6 md:pt-12 md:px-4 md:gap-6 sm:pt-10 sm:px-3">
+      <!-- 个人信息卡片 - 现代化玻璃态设计 -->
+      <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.5)] overflow-hidden transition-all duration-400 border border-white/30 hover:-translate-y-1 hover:shadow-[0_12px_48px_rgba(0,0,0,0.15),0_0_0_1px_rgba(255,255,255,0.6)] sm:rounded-2xl">
+        <div class="flex justify-between items-center p-6 px-7 bg-gradient-to-br from-blue-500/5 to-sky-500/5 border-b border-blue-500/10 md:flex-col md:items-start md:gap-4 md:p-5 sm:p-4">
+          <div class="flex items-center gap-3">
+            <div class="text-2xl w-12 h-12 flex items-center justify-center bg-gradient-to-br from-blue-500 to-sky-500 rounded-xl shadow-lg sm:w-10 sm:h-10 sm:text-xl">👤</div>
+            <h3 class="text-xl font-bold m-0 text-slate-700 tracking-tight sm:text-lg">
               {{ isEditing ? '编辑个人信息' : '个人信息' }}
-            </div>
-            <div>
-              <a-button
-                v-if="!isEditing"
-                type="primary"
-                class="edit-profile-btn"
-                @click="isEditing = true"
-              >
-                <template #icon><EditOutlined /></template>
-                编辑资料
-              </a-button>
+            </h3>
+          </div>
+          <div class="flex gap-3">
+            <a-button
+              v-if="!isEditing"
+              type="primary"
+              class="rounded-xl font-semibold px-5 py-2.5 h-auto transition-all duration-300 shadow-lg hover:-translate-y-0.5 hover:shadow-xl"
+              @click="isEditing = true"
+            >
+              <template #icon><EditOutlined /></template>
+              编辑资料
+            </a-button>
 
-              <div v-else class="edit-actions">
-                <a-button type="primary" class="save-btn" @click="saveEditing">
-                  <template #icon><CheckOutlined /></template>
-                  保存
-                </a-button>
-                <a-button style="margin-left: 8px" @click="isEditing = false">
-                  <template #icon><CloseOutlined /></template>
-                  取消
-                </a-button>
+            <div v-else class="flex gap-3">
+              <a-button
+                type="primary"
+                class="rounded-xl font-semibold px-5 py-2.5 h-auto transition-all duration-300 shadow-lg hover:-translate-y-0.5 hover:shadow-xl bg-gradient-to-br from-green-500 to-green-600 border-none hover:from-green-600 hover:to-green-500"
+                @click="saveEditing"
+              >
+                <template #icon><CheckOutlined /></template>
+                保存
+              </a-button>
+              <a-button
+                class="rounded-xl font-semibold px-5 py-2.5 h-auto transition-all duration-300 shadow-lg hover:-translate-y-0.5 hover:shadow-xl"
+                @click="isEditing = false"
+              >
+                <template #icon><CloseOutlined /></template>
+                取消
+              </a-button>
+            </div>
+          </div>
+        </div>
+        <div class="p-7 md:p-5 sm:p-4">
+          <div class="flex flex-col gap-5">
+            <div class="flex flex-col gap-2 p-4 bg-blue-500/3 rounded-2xl border border-blue-500/10 transition-all duration-300 hover:bg-blue-500/6 hover:border-blue-500/20 hover:translate-x-1 sm:p-3.5">
+              <div class="text-xs font-semibold text-blue-500 uppercase tracking-wider">用户名</div>
+              <div class="text-sm text-slate-700 font-medium">
+                <span v-if="!isEditing">{{
+                  userInfo.username || '未设置'
+                }}</span>
+                <a-input
+                  v-else
+                  v-model:value="editForm.username"
+                  class="w-full"
+                  placeholder="请输入用户名"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2 p-4 bg-blue-500/3 rounded-2xl border border-blue-500/10 transition-all duration-300 hover:bg-blue-500/6 hover:border-blue-500/20 hover:translate-x-1 sm:p-3.5">
+              <div class="text-xs font-semibold text-blue-500 uppercase tracking-wider">学号</div>
+              <div class="text-sm text-slate-700 font-medium">
+                <span v-if="!isEditing">{{ userInfo.XH || '未设置' }}</span>
+                <a-input
+                  v-else
+                  v-model:value="editForm.XH"
+                  class="w-full"
+                  placeholder="请输入学号"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2 p-4 bg-blue-500/3 rounded-2xl border border-blue-500/10 transition-all duration-300 hover:bg-blue-500/6 hover:border-blue-500/20 hover:translate-x-1 sm:p-3.5">
+              <div class="text-xs font-semibold text-blue-500 uppercase tracking-wider">邮箱</div>
+              <div class="text-sm text-slate-700 font-medium">
+                <span v-if="!isEditing">{{ userInfo.email || '未设置' }}</span>
+                <a-input
+                  v-else
+                  v-model:value="editForm.email"
+                  class="w-full"
+                  placeholder="请输入邮箱"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2 p-4 bg-blue-500/3 rounded-2xl border border-blue-500/10 transition-all duration-300 hover:bg-blue-500/6 hover:border-blue-500/20 hover:translate-x-1 sm:p-3.5">
+              <div class="text-xs font-semibold text-blue-500 uppercase tracking-wider">手机号</div>
+              <div class="text-sm text-slate-700 font-medium">
+                <span v-if="!isEditing">{{
+                  userInfo.phoneNumber || '未设置'
+                }}</span>
+                <a-input
+                  v-else
+                  v-model:value="editForm.phoneNumber"
+                  class="w-full"
+                  placeholder="请输入手机号"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2 p-4 bg-blue-500/3 rounded-2xl border border-blue-500/10 transition-all duration-300 hover:bg-blue-500/6 hover:border-blue-500/20 hover:translate-x-1 sm:p-3.5">
+              <div class="text-xs font-semibold text-blue-500 uppercase tracking-wider">寝室</div>
+              <div class="text-sm text-slate-700 font-medium">
+                <span v-if="!isEditing">{{ userInfo.QSH || '未填写' }}</span>
+                <a-input
+                  v-else
+                  v-model:value="editForm.QSH"
+                  class="w-full"
+                  placeholder="请输入寝室"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2 p-4 bg-blue-500/3 rounded-2xl border border-blue-500/10 transition-all duration-300 hover:bg-blue-500/6 hover:border-blue-500/20 hover:translate-x-1 sm:p-3.5">
+              <div class="text-xs font-semibold text-blue-500 uppercase tracking-wider">年级</div>
+              <div class="text-sm text-slate-700 font-medium">
+                <span v-if="!isEditing">{{ userInfo.grade || '未填写' }}</span>
+                <a-input
+                  v-else
+                  v-model:value="editForm.grade"
+                  class="w-full"
+                  placeholder="请输入年级"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2 p-4 bg-blue-500/3 rounded-2xl border border-blue-500/10 transition-all duration-300 hover:bg-blue-500/6 hover:border-blue-500/20 hover:translate-x-1 sm:p-3.5">
+              <div class="text-xs font-semibold text-blue-500 uppercase tracking-wider">专业</div>
+              <div class="text-sm text-slate-700 font-medium">
+                <span v-if="!isEditing">{{ userInfo.ZY || '未填写' }}</span>
+                <a-input
+                  v-else
+                  v-model:value="editForm.ZY"
+                  class="w-full"
+                  placeholder="请输入专业"
+                />
               </div>
             </div>
           </div>
-        </template>
-
-        <a-descriptions :column="1" bordered>
-          <!-- <a-descriptions-item label="用户名">
-              {{ userInfo.username }}
-            </a-descriptions-item> -->
-          <a-descriptions-item label="用户名">
-            <span v-if="!isEditing">{{ userInfo.username || '未设置' }}</span>
-            <a-input
-              v-else
-              v-model:value="editForm.username"
-              size="small"
-              placeholder="请输入用户名"
-            />
-          </a-descriptions-item>
-
-          <a-descriptions-item label="学号">
-            <span v-if="!isEditing">{{ userInfo.XH || '未设置' }}</span>
-            <a-input
-              v-else
-              v-model:value="editForm.XH"
-              size="small"
-              placeholder="请输入学号"
-            />
-          </a-descriptions-item>
-
-          <a-descriptions-item label="邮箱">
-            <span v-if="!isEditing">{{ userInfo.email || '未设置' }}</span>
-            <a-input
-              v-else
-              v-model:value="editForm.email"
-              size="small"
-              placeholder="请输入邮箱"
-            />
-          </a-descriptions-item>
-
-          <a-descriptions-item label="手机号">
-            <span v-if="!isEditing">{{
-              userInfo.phoneNumber || '未设置'
-            }}</span>
-            <a-input
-              v-else
-              v-model:value="editForm.phoneNumber"
-              size="small"
-              placeholder="请输入手机号"
-            />
-          </a-descriptions-item>
-
-          <a-descriptions-item label="寝室">
-            <span v-if="!isEditing">{{ userInfo.QSH || '未填写' }}</span>
-            <a-input
-              v-else
-              v-model:value="editForm.QSH"
-              size="small"
-              placeholder="请输入寝室"
-            />
-          </a-descriptions-item>
-
-          <a-descriptions-item label="年级">
-            <span v-if="!isEditing">{{ userInfo.grade || '未填写' }}</span>
-            <a-input
-              v-else
-              v-model:value="editForm.grade"
-              size="small"
-              placeholder="请输入年级"
-            />
-          </a-descriptions-item>
-
-          <a-descriptions-item label="专业">
-            <span v-if="!isEditing">{{ userInfo.ZY || '未填写' }}</span>
-            <a-input
-              v-else
-              v-model:value="editForm.ZY"
-              size="small"
-              placeholder="请输入专业"
-            />
-          </a-descriptions-item>
-        </a-descriptions>
-      </a-card>
-
-      <!-- 我的商品 -->
-      <a-card title="我的商品" class="products-card">
-        <div class="products-header">
-          <a-button type="primary" @click="showProductModal = true">
-            <template #icon><PlusOutlined /></template>
-            发布商品
-          </a-button>
         </div>
+      </div>
 
-        <a-list
-          :grid="gridConfig"
-          :data-source="myProducts"
-          :loading="loading"
-          class="product-list"
-        >
-          <template #renderItem="{ item }">
-            <a-list-item>
-              <a-card
-                hoverable
-                class="product-card"
-                :body-style="{ padding: '12px' }"
+      <!-- 我的商品 - 现代化设计 -->
+      <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.1),0_0_0_1px_rgba(255,255,255,0.5)] overflow-hidden transition-all duration-400 border border-white/30 hover:-translate-y-1 hover:shadow-[0_12px_48px_rgba(0,0,0,0.15),0_0_0_1px_rgba(255,255,255,0.6)] sm:rounded-2xl">
+        <div class="flex justify-between items-center p-6 px-7 bg-gradient-to-br from-blue-500/5 to-sky-500/5 border-b border-blue-500/10 md:flex-col md:items-start md:gap-4 md:p-5 sm:p-4">
+          <div class="flex items-center gap-3">
+            <div class="text-2xl w-12 h-12 flex items-center justify-center bg-gradient-to-br from-blue-500 to-sky-500 rounded-xl shadow-lg sm:w-10 sm:h-10 sm:text-xl">🛍️</div>
+            <h3 class="text-xl font-bold m-0 text-slate-700 tracking-tight sm:text-lg">我的商品</h3>
+          </div>
+          <div class="flex gap-3">
+            <a-button
+              type="primary"
+              class="rounded-xl font-semibold px-5 py-2.5 h-auto transition-all duration-300 shadow-lg hover:-translate-y-0.5 hover:shadow-xl bg-gradient-to-br from-blue-500 to-sky-500 border-none hover:from-sky-500 hover:to-blue-500"
+              @click="showProductModal = true"
+            >
+              <template #icon><PlusOutlined /></template>
+              发布商品
+            </a-button>
+          </div>
+        </div>
+        <div class="p-7 md:p-5 sm:p-4">
+          <a-spin :spinning="loading" tip="加载中...">
+            <div class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-track-blue-500/10 scrollbar-thumb-blue-500 scrollbar-thumb-rounded-lg lg:grid-cols-[repeat(auto-fill,minmax(240px,1fr))] md:grid-cols-1 md:gap-5 md:max-h-none">
+              <div
+                v-for="item in myProducts"
+                :key="item.id"
+                class="group bg-white/80 backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-400 cursor-pointer border border-white/50 shadow-lg hover:-translate-y-2 hover:scale-[1.02] hover:shadow-blue-500/20 hover:border-blue-500/30"
                 @click="editProduct(item)"
               >
-                <div class="product-image">
-                  <!-- 添加类别标签 -->
-                  <div class="category-tag">
-                    <a-tag color="blue" size="small">
-                      {{ item.category_info.cname }}
-                    </a-tag>
+                <div class="relative w-full h-[220px] overflow-hidden bg-gradient-to-br from-slate-50 to-slate-200 md:h-[200px] sm:h-[180px]">
+                  <div class="absolute top-3 left-3 z-[2]">
+                    <span class="bg-white/95 backdrop-blur-md text-blue-500 px-3 py-1.5 rounded-full text-xs font-semibold shadow-md border border-blue-500/20">{{
+                      item.category_info.cname
+                    }}</span>
                   </div>
                   <img
                     :src="replaceUrlRegex(item.image)"
-                    :alt="item.title"
+                    :alt="item.name"
+                    class="w-full h-full object-cover transition-transform duration-[600ms] group-hover:scale-110"
                     @error="handleProductImageError"
                   />
-                  <div class="product-actions">
-                    <!-- 状态切换按钮 -->
-                    <a-button
-                      size="small"
-                      @click.stop="toggleProductStatus(item)"
-                      :class="item.is_sold ? 'status-sold' : 'status-onsale'"
-                      class="change-status-btn"
-                    >
-                      <template #icon>
-                        <SwapOutlined />
-                      </template>
-                      {{ item.is_sold ? '设为在售' : '设为售出' }}
-                    </a-button>
-                    <a-button
-                      size="small"
-                      type="link"
-                      @click.stop="editProduct(item)"
-                    >
-                      <EditOutlined />
-                    </a-button>
-                    <a-button
-                      size="small"
-                      type="link"
-                      danger
-                      @click.stop="deleteProduct(item.id)"
-                    >
-                      <DeleteOutlined />
-                    </a-button>
-                  </div>
-                </div>
-                <div class="product-info">
-                  <div class="product-info-row">
-                    <div class="product-info-left">
-                      <h4 class="product-title">{{ item.name }}</h4>
-                      <p class="product-price">￥{{ item.price }}</p>
-                    </div>
-                    <div class="product-info-right">
-                      <p class="product-time">
-                        {{ extractDateFromISO(item.created_at) }}
-                      </p>
-                      <a-tag :color="item.is_sold ? 'red' : 'green'">
-                        {{ item.is_sold ? '已售出' : '在售中' }}
-                      </a-tag>
+                  <div class="product-overlay absolute inset-0 bg-gradient-to-b from-transparent to-black/40 flex items-end justify-center p-4 opacity-0 transition-opacity duration-300">
+                    <div class="flex gap-2 w-full justify-center">
+                      <a-button
+                        size="small"
+                        @click.stop="toggleProductStatus(item)"
+                        class="flex-1 bg-white/95 backdrop-blur-md border border-white/30 rounded-xl text-blue-500 font-semibold transition-all duration-300 shadow-md hover:bg-white hover:-translate-y-0.5 hover:shadow-lg"
+                      >
+                        <template #icon>
+                          <SwapOutlined />
+                        </template>
+                        {{ item.is_sold ? '设为在售' : '设为售出' }}
+                      </a-button>
+                      <a-button
+                        size="small"
+                        class="min-w-[40px] bg-white/95 backdrop-blur-md border border-white/30 rounded-xl text-blue-500 font-semibold transition-all duration-300 shadow-md hover:bg-white hover:-translate-y-0.5 hover:shadow-lg"
+                        @click.stop="editProduct(item)"
+                      >
+                        <EditOutlined />
+                      </a-button>
+                      <a-button
+                        size="small"
+                        class="min-w-[40px] bg-white/95 backdrop-blur-md border border-white/30 rounded-xl text-blue-500 font-semibold transition-all duration-300 shadow-md hover:bg-white hover:-translate-y-0.5 hover:shadow-lg"
+                        danger
+                        @click.stop="deleteProduct(item.id)"
+                      >
+                        <DeleteOutlined />
+                      </a-button>
                     </div>
                   </div>
                 </div>
-              </a-card>
-            </a-list-item>
-          </template>
-        </a-list>
+                <div class="p-5">
+                  <div class="flex justify-between items-start mb-3 gap-3">
+                    <h4 class="text-base font-bold text-slate-700 m-0 flex-1 leading-snug overflow-hidden text-ellipsis line-clamp-2">{{ item.name }}</h4>
+                    <div class="flex items-center gap-1.5 px-2.5 py-1 bg-blue-500/10 rounded-xl flex-shrink-0">
+                      <span
+                        :class="[
+                          'w-2 h-2 rounded-full animate-pulse',
+                          item.is_sold ? 'bg-red-500' : 'bg-green-500',
+                        ]"
+                      ></span>
+                      <span class="text-[11px] font-semibold text-blue-500 uppercase tracking-wider">{{
+                        item.is_sold ? '已售出' : '在售中'
+                      }}</span>
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <p class="text-xl font-extrabold m-0 bg-gradient-to-br from-blue-500 to-sky-500 bg-clip-text text-transparent">￥{{ item.price }}</p>
+                    <p class="text-xs text-slate-400 m-0 font-medium">
+                      {{ extractDateFromISO(item.created_at) }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <!-- 空状态 -->
-        <div v-if="!loading && myProducts.length === 0" class="empty-products">
-          <a-empty description="暂无商品">
-            <a-button type="primary" @click="showProductModal = true">
-              发布第一个商品
-            </a-button>
-          </a-empty>
+            <!-- 空状态 -->
+            <div
+              v-if="!loading && myProducts.length === 0"
+              class="py-20 px-5 text-center"
+            >
+              <div class="text-6xl mb-4 opacity-60">📦</div>
+              <p class="text-lg text-slate-400 mb-6 font-medium">暂无商品</p>
+              <a-button
+                type="primary"
+                class="rounded-xl font-semibold px-5 py-2.5 h-auto transition-all duration-300 shadow-lg hover:-translate-y-0.5 hover:shadow-xl bg-gradient-to-br from-blue-500 to-sky-500 border-none hover:from-sky-500 hover:to-blue-500"
+                @click="showProductModal = true"
+              >
+                <template #icon><PlusOutlined /></template>
+                发布第一个商品
+              </a-button>
+            </div>
+          </a-spin>
         </div>
-      </a-card>
+      </div>
     </div>
 
     <!-- 头像编辑弹窗 -->
@@ -249,9 +294,9 @@
       width="400px"
       :footer="null"
     >
-      <div class="avatar-edit-modal">
-        <div class="avatar-preview">
-          <img :src="avatarPreview" alt="头像预览" class="preview-image" />
+      <div class="text-center p-5">
+        <div class="mb-8 flex justify-center">
+          <img :src="avatarPreview" alt="头像预览" class="w-[180px] h-[180px] rounded-full object-cover border-4 border-blue-500/20 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl" />
         </div>
 
         <!-- 修改上传组件，添加 ref -->
@@ -267,7 +312,7 @@
           </a-button>
         </a-upload>
 
-        <div class="avatar-actions">
+        <div class="mt-8 flex gap-4 justify-center">
           <a-button @click="showAvatarEdit = false">取消</a-button>
           <a-button
             type="primary"
@@ -299,6 +344,9 @@ import {
   PlusOutlined,
   DeleteOutlined,
   UploadOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  SwapOutlined,
 } from '@ant-design/icons-vue';
 import ProductModal from '@/components//profile/ProductModal.vue';
 import {
@@ -594,395 +642,75 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 或者使用深度选择器 */
+/* 自定义动画和特殊效果 */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ant Design 输入框样式覆盖 */
 :deep(.ant-input) {
-  border-color: #1890ff;
-  border-radius: 8px;
-  padding: 8px;
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.95);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
+}
+
+:deep(.ant-input:hover) {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(255, 255, 255, 1);
 }
 
 :deep(.ant-input:focus) {
-  border-color: #40a9ff;
-  box-shadow: 0 0 0 2px rgba(64, 169, 255, 0.2);
-}
-.profile-page {
-  min-height: 100vh;
-  background: #f5f5f5;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  background: rgba(255, 255, 255, 1);
 }
 
-/* 头部样式 */
-.profile-header {
-  position: relative;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 120px 20px 60px;
-  color: white;
-}
-
-.header-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.avatar-section {
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  gap: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-  z-index: 1;
-}
-
-.avatar-container {
-  position: relative;
-  margin-bottom: -30px;
-}
-
-.avatar {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 4px solid white;
-  background: white;
-  object-fit: cover;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-
-.edit-avatar-btn {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  width: 32px;
-  height: 32px;
-  background: #1890ff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  cursor: pointer;
-  border: 2px solid white;
-  transition: all 0.3s ease;
-}
-
-.edit-avatar-btn:hover {
-  background: #40a9ff;
-  transform: scale(1.1);
-}
-
-.user-info {
-  flex: 1;
-  padding-bottom: 20px;
-}
-
-.username {
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.user-id {
-  font-size: 16px;
-  opacity: 0.9;
-  margin-bottom: 16px;
-}
-
-/* 内容区域 */
-.profile-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 60px 20px 40px;
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 24px;
-}
-
-.info-card,
-.products-card {
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-}
-.info-card-title-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  /* background: #f5f5f5; */
-  border-radius: 12px 12px 0 0;
-}
-
-.products-header {
-  margin-bottom: 20px;
-}
-.product-list {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  overflow-y: auto;
-  max-height: 500px;
-}
-/* 商品列表样式 */
-.product-card {
-  transition: all 0.3s ease;
-  border-radius: 8px;
-  overflow: hidden;
-  min-width: 300px;
-}
-
-.product-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-.product-image {
-  position: relative;
-  width: 100%;
-  height: 250px;
-  overflow: hidden;
-  border-radius: 6px;
-  margin-bottom: 12px;
-}
-.category-tag {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  z-index: 2;
-}
-
-.category-tag :deep(.ant-tag) {
-  margin: 0;
-  font-size: 16px;
-  padding: 2px 6px;
-  line-height: 1;
-  border: none;
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.product-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.product-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.product-card:hover .product-image img {
-  transform: scale(1.05);
-}
-.change-status-btn {
-  border: none;
-  background-color: #000; /* 默认背景颜色 */
-  color: #fff; /* 文字颜色 */
-  padding: 2px 4px; /* 内边距，使按钮看起来更饱满 */
-  font-size: 12px; /* 字体大小 */
-  font-weight: bold; /* 字体加粗 */
-  border-radius: 5px; /* 圆角边框 */
-  cursor: pointer; /* 鼠标悬停时显示为手型 */
-  transition: all 0.3s ease; /* 平滑过渡效果 */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 阴影效果 */
-}
-
-.change-status-btn:hover {
-  background-color: #ff7875; /* 鼠标悬停时的背景颜色 */
-  color: #fff; /* 鼠标悬停时的文字颜色 */
-  transform: scale(1.05); /* 鼠标悬停时稍微放大 */
-  box-shadow: 0 5px 15px rgba(255, 120, 117, 0.4); /* 鼠标悬停时的阴影效果 */
-}
-
-.change-status-btn:active {
-  transform: scale(0.95); /* 按下时稍微缩小 */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 按下时的阴影效果 */
-}
-
-.product-actions {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  gap: 4px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.product-card:hover .product-actions {
+/* 商品卡片悬停效果 */
+.group:hover .product-overlay {
   opacity: 1;
 }
 
-.product-info {
-  text-align: left;
-  padding: 8px 0;
+/* 自定义滚动条样式 */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
 }
 
-.product-info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
+.scrollbar-track-blue-500\/10::-webkit-scrollbar-track {
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 10px;
 }
 
-.product-info-left {
-  flex: 1;
-  min-width: 0; /* 防止内容溢出 */
+.scrollbar-thumb-blue-500::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 100%);
+  border-radius: 10px;
 }
 
-.product-info-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  flex-shrink: 0;
+.scrollbar-thumb-blue-500::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
 }
 
-.product-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.3;
-}
-
-.product-price {
-  color: #ff4d4f;
-  font-size: 16px;
-  font-weight: bold;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.product-time {
-  font-size: 12px;
-  color: #999;
-  margin: 0;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-/* 确保标签样式合适 */
-:deep(.ant-tag) {
-  margin: 0;
-  font-size: 11px;
-  padding: 2px 6px;
-  line-height: 1;
-}
-
-.empty-products {
-  padding: 60px 20px;
-  text-align: center;
-}
-
-/* 头像编辑弹窗 */
-.avatar-edit-modal {
-  text-align: center;
-}
-
-.avatar-preview {
-  margin-bottom: 20px;
-}
-
-.preview-image {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #f0f0f0;
-}
-
-.avatar-actions {
-  margin-top: 20px;
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .profile-header {
-    padding: 100px 16px 50px;
-  }
-  .product-list {
-    padding: 20px 0px;
-  }
-
-  .avatar-section {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 16px;
-  }
-
-  .avatar {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 0;
-  }
-
-  .avatar-container {
-    margin-bottom: 0;
-  }
-
-  .user-info {
-    padding-bottom: 0;
-  }
-
-  .username {
-    font-size: 24px;
-  }
-
-  .profile-content {
-    grid-template-columns: 1fr;
-    padding: 50px 16px 30px;
-    gap: 20px;
-  }
-
-  /* .product-image {
-    height: 250px;
-  } */
-
-  .grid-config {
-    gutter: 12;
-    xs: 1;
-    sm: 1;
-    md: 1;
-    lg: 1;
-    xl: 2;
-    xxl: 2;
-  }
-}
-
-@media (max-width: 480px) {
-  .profile-header {
-    padding: 80px 12px 40px;
-  }
-
-  .avatar {
-    width: 80px;
-    height: 80px;
-  }
-
-  .username {
-    font-size: 20px;
-  }
-
-  .profile-content {
-    padding: 40px 12px 20px;
-  }
-
-  /* .product-image {
-    height: 120px;
-  } */
+/* 商品卡片悬停时显示覆盖层 */
+.group:hover .product-overlay {
+  opacity: 1;
 }
 </style>

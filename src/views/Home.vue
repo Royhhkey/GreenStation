@@ -1,8 +1,8 @@
 <template>
-  <div class="home-container">
+  <div  class="h-screen flex flex-col bg-gray-100">
     <a-layout>
-      <a-layout-header class="header">
-        <div class="logo">校园二手交易平台</div>
+      <a-layout-header class=" bg-blue-500 text-white p-4 flex justify-between items-center h-16 min-w-0 sticky top-0 z-10">
+        <div class="text-2xl font-bold text-white">GreenStation</div>
         <a-button type="text" @click="logout">
           <LogoutOutlined style="color: #fff" />
         </a-button>
@@ -11,7 +11,7 @@
         <!-- 只有在非聊天页面才显示底部导航 -->
         <FloatingNav v-if="!isChatPage" />
 
-        <a-layout-content class="content">
+        <a-layout-content class="p-4">
           <router-view />
         </a-layout-content>
       </a-layout>
@@ -41,14 +41,14 @@ function logout() {
 </script>
 
 <style scoped>
-.home-container {
+/* .home-container {
   height: 100vh;
   display: flex;
   flex-direction: column;
   background: #eaf2ff;
-}
+} */
 
-.header {
+/* .header {
   background-color: #2c3e8f;
   color: white;
   padding: 0 20px;
@@ -60,32 +60,31 @@ function logout() {
   position: sticky;
   top: 0;
   z-index: 100;
-}
+} */
 
-.logo {
+/* .logo {
   font-weight: bold;
   font-size: 18px;
   color: white;
   white-space: nowrap;
-}
+} */
 
-.menu-sider {
+/* .menu-sider {
   background-color: #ffffff;
   min-width: 160px;
   max-width: 240px;
   width: 18vw;
   transition: width 0.2s;
-}
+} */
 
-.content {
+/* .content {
   padding: 20px;
   background-color: white;
-  /* min-height: calc(100vh - 56px); */
-  /* overflow: hidden; */
+  min-height: calc(100vh - 56px); 
   flex: 1;
-}
+} */
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .menu-sider {
     min-width: 60px;
     width: 60px;
@@ -99,5 +98,5 @@ function logout() {
   .content {
     padding: 8px;
   }
-}
+} */
 </style>

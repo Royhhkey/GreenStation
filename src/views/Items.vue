@@ -1,80 +1,148 @@
 <template>
-  <div class="page-wrapper">
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
     <!-- 搜索组件 -->
     <Myserach :categories="categories" @search="handleSearch" />
 
     <!-- 内容区域 -->
-    <div class="content-area">
-      <div ref="scrollContainer" class="items-container" @scroll="handleScroll">
-        <a-list :grid="gridConfig" :data-source="items">
+    <div class="mt-14 md:mt-16">
+      <div
+        ref="scrollContainer"
+        class="items-container px-4 py-6 md:px-6 md:py-8 overflow-y-auto overflow-x-hidden"
+        @scroll="handleScroll"
+      >
+        <!-- 商品列表 -->
+        <a-list
+          v-if="items.length > 0"
+          :grid="gridConfig"
+          :data-source="items"
+          class="product-list"
+        >
           <template #renderItem="{ item }">
             <a-list-item>
               <a-card
-                :body-style="{ padding: '16px' }"
+                :body-style="{ padding: '0' }"
                 hoverable
-                class="item-card"
+                class="product-card h-full bg-white rounded-xl shadow-sm border border-gray-100 transition-all duration-300 cursor-pointer overflow-hidden group hover:shadow-xl hover:-translate-y-1"
                 @click="viewItemDetail(item)"
               >
-                <div class="item-image-container">
+                <!-- 图片区域 -->
+                <div
+                  class="relative w-full aspect-[4/3] overflow-hidden bg-gray-100"
+                >
                   <img
                     :src="item.image"
                     :alt="item.title"
-                    class="item-image"
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
+                    @error="handleImageError"
                   />
-                  <div class="item-category-tag">
+                  <!-- 分类标签 -->
+                  <div
+                    class="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm"
+                  >
                     {{ getCategoryLabel(item.categoryId) }}
                   </div>
+                  <!-- 遮罩层（hover时显示） -->
+                  <div
+                    class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300"
+                  ></div>
                 </div>
-                <div class="item-info">
-                  <h4 class="item-title" :title="item.title">
+
+                <!-- 内容区域 -->
+                <div class="p-4 space-y-3">
+                  <!-- 标题 -->
+                  <h4
+                    class="text-[15px] md:text-base font-semibold text-gray-900 line-clamp-2 leading-snug min-h-[2.5rem] group-hover:text-blue-600 transition-colors"
+                    :title="item.title"
+                  >
                     {{ item.title }}
                   </h4>
-                  <p class="item-price">￥{{ item.price }}</p>
-                  <div class="item-meta">
-                    <!-- <span class="item-location">{{ item.location }}</span> -->
-                    <span class="item-time">{{
-                      formatTime(item.createTime)
-                    }}</span>
+
+                  <!-- 价格和时间 -->
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-baseline gap-1">
+                      <span class="text-xs text-gray-400 font-normal">¥</span>
+                      <span
+                        class="text-xl md:text-2xl font-bold text-red-500 leading-none"
+                      >
+                        {{ item.price }}
+                      </span>
+                    </div>
+                    <span
+                      class="text-xs text-gray-400 flex items-center gap-1"
+                    >
+                      <ClockCircleOutlined class="text-[10px]" />
+                      {{ formatTime(item.createTime) }}
+                    </span>
                   </div>
-                </div>
-                <div class="item-actions">
-                  <a-button
-                    size="small"
-                    class="buy-btn"
-                    @click.stop="viewItemDetail(item)"
-                  >
-                    <template #icon><ReadOutlined /></template>
-                    详情
-                  </a-button>
-                  <a-button
-                    type="primary"
-                    size="small"
-                    class="contact-btn"
-                    @click.stop="contactSeller(item)"
-                  >
-                    <template #icon><MessageOutlined /></template>
-                    联系卖家
-                  </a-button>
+
+                  <!-- 操作按钮 -->
+                  <div class="flex gap-2 pt-2 border-t border-gray-100">
+                    <a-button
+                      size="small"
+                      class="flex-1 h-9 text-xs font-medium border-gray-200 hover:border-blue-400 hover:text-blue-500 transition-colors"
+                      @click.stop="viewItemDetail(item)"
+                    >
+                      <template #icon><ReadOutlined /></template>
+                      查看详情
+                    </a-button>
+                    <a-button
+                      type="primary"
+                      size="small"
+                      class="flex-1 h-9 text-xs font-medium bg-gradient-to-r from-blue-500 to-blue-600 border-0 hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-md transition-all"
+                      @click.stop="contactSeller(item)"
+                    >
+                      <template #icon><MessageOutlined /></template>
+                      联系卖家
+                    </a-button>
+                  </div>
                 </div>
               </a-card>
             </a-list-item>
           </template>
         </a-list>
 
+        <!-- 空状态 -->
+        <div
+          v-if="!loading && items.length === 0"
+          class="flex flex-col items-center justify-center py-20 px-5"
+        >
+          <div
+            class="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center mb-4"
+          >
+            <ShoppingOutlined class="text-4xl text-gray-400" />
+          </div>
+          <h3 class="text-lg font-semibold text-gray-700 mb-2">暂无商品</h3>
+          <p class="text-sm text-gray-500 text-center mb-6">
+            试试调整搜索条件或筛选条件
+          </p>
+          <a-button type="primary" @click="resetSearch">
+            重新加载
+          </a-button>
+        </div>
+
         <!-- 加载状态提示 -->
-        <div v-if="loading && !noMoreData" class="loading-container">
+        <div
+          v-if="loading && !noMoreData"
+          class="flex flex-col items-center justify-center py-16 px-5"
+        >
           <a-spin size="large" />
-          <span class="loading-text">加载中...</span>
+          <span class="mt-4 text-sm text-gray-500">正在加载商品...</span>
         </div>
 
         <!-- 没有更多数据提示 -->
-        <div v-if="noMoreData && items.length > 0" class="no-more-container">
-          <a-divider>
-            <smile-outlined />
-            <span class="no-more-text">已经到底了，没有更多商品了</span>
-          </a-divider>
+        <div
+          v-if="noMoreData && items.length > 0"
+          class="flex flex-col items-center justify-center py-12 px-5"
+        >
+          <div class="flex items-center gap-3 text-gray-400">
+            <div class="h-px w-12 bg-gray-200"></div>
+            <SmileOutlined class="text-2xl" />
+            <span class="text-sm">已经到底了，没有更多商品了</span>
+            <div class="h-px w-12 bg-gray-200"></div>
+          </div>
         </div>
+
         <!-- 商品详情弹窗 -->
         <ProductDetailModal
           :visible="detailModalVisible"
@@ -83,12 +151,6 @@
           @update:visible="handleDetailModalVisibleChange"
           @contact-seller="contactSeller"
         />
-        <!-- 空状态 -->
-        <!-- <div v-if="!loading && displayItems.length === 0" class="empty-container">
-          <a-empty description="暂无商品数据">
-            <a-button type="primary" @click="resetSearch">重新加载</a-button>
-          </a-empty>
-        </div> -->
       </div>
     </div>
 
@@ -96,7 +158,7 @@
     <a-back-top
       :visibility-height="300"
       :target="backTopTarget"
-      class="back-top"
+      class="fixed bottom-24 right-4 md:right-6"
     />
   </div>
 </template>
@@ -108,6 +170,8 @@ import {
   ReadOutlined,
   MessageOutlined,
   SmileOutlined,
+  ClockCircleOutlined,
+  ShoppingOutlined,
 } from '@ant-design/icons-vue';
 import Myserach from '@/components/searchcompent.vue';
 import ProductDetailModal from '@/components/ProductDetailModal.vue'; // 引入详情组件
@@ -159,11 +223,11 @@ const backTopTarget = () => scrollContainer.value;
 
 // 响应式网格配置
 const gridConfig = ref({
-  gutter: 16,
+  gutter: [16, 20],
   xs: 1,
   sm: 2,
-  md: 3,
-  lg: 4,
+  md: 2,
+  lg: 3,
   xl: 4,
   xxl: 4,
 });
@@ -358,6 +422,12 @@ const loadMore = async () => {
   }
 };
 
+// 图片加载错误处理
+const handleImageError = (event) => {
+  event.target.src =
+    'https://eo-oss.roy22.xyz/secondHand/image.png';
+};
+
 // 初始化加载数据
 onMounted(() => {
   loadMore();
@@ -376,200 +446,55 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 重置全局滚动条 */
-:deep(body) {
-  margin: 0;
-  padding: 0;
-  overflow: hidden; /* 隐藏body的滚动条 */
-  height: 100vh;
-}
-
-:deep(html) {
-  overflow: hidden; /* 隐藏html的滚动条 */
-  height: 100%;
-}
-
-.page-wrapper {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #f5f5f5;
-  overflow: hidden; /* 隐藏页面容器的滚动条 */
-}
-
-.content-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; /* 隐藏内容区域的滚动条 */
-  margin-top: 14vh;
-}
-
-.items-container {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto; /* 只有这个容器有滚动条 */
-  overflow-x: hidden;
-  height: calc(100vh - 14vh);
-  box-sizing: border-box;
-  -webkit-overflow-scrolling: touch; /* 移动端平滑滚动 */
-}
-
 /* 自定义滚动条样式 */
 .items-container::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .items-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
+  background: #f1f5f9;
+  border-radius: 4px;
 }
 
 .items-container::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background 0.2s;
 }
 
 .items-container::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: #94a3b8;
 }
 
-.item-card {
-  height: 100%;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  margin-bottom: 16px;
+/* 商品卡片动画优化 */
+.product-card {
+  will-change: transform;
 }
 
-.item-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.item-image-container {
-  position: relative;
-  margin-bottom: 12px;
-}
-
-.item-image {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.item-category-tag {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-}
-
-.item-info {
-  margin-bottom: 12px;
-}
-
-.item-title {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.3;
-}
-
-.item-price {
-  color: #ff4d4f;
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-.item-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #666;
-}
-
-.item-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.buy-btn,
-.contact-btn {
-  flex: 1;
-  font-size: 13px;
-}
-
-.loading-container,
-.no-more-container,
-.empty-container {
-  text-align: center;
-  padding: 80px 20px;
-}
-
-.loading-text {
-  margin-left: 8px;
-  color: #999;
-}
-
-.no-more-text {
-  color: #999;
-}
-
-.empty-container {
-  padding: 80px 20px;
-}
-.back-top {
-  position: fixed;
-  bottom: 100px;
-}
-/* 移动端适配 */
+/* 响应式调整 */
 @media (max-width: 768px) {
-  .content-area {
-    margin-top: 12vh;
-  }
-
   .items-container {
-    padding: 12px;
-    height: calc(100vh - 12vh);
-    margin-top: 12vh;
+    padding: 12px 16px;
   }
 
-  .item-image {
-    height: 140px;
-  }
-
-  .grid-config {
-    gutter: 12;
-    xs: 1;
-    sm: 2;
-    md: 2;
-    lg: 3;
-    xl: 3;
-    xxl: 3;
-  }
-
-  .item-card {
-    margin-bottom: 12px;
+  .product-card {
+    border-radius: 12px;
   }
 }
 
-/* 确保搜索组件不会导致滚动问题 */
-:deep(.search-component) {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+/* 列表间距优化 */
+:deep(.ant-list-item) {
+  padding: 0 !important;
+  margin-bottom: 20px;
+}
+
+/* 确保卡片高度一致 */
+:deep(.ant-list-grid .ant-col) {
+  display: flex;
+}
+
+/* 按钮图标间距 */
+:deep(.ant-btn-icon) {
+  margin-right: 4px;
 }
 </style>
