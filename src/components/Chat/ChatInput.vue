@@ -183,7 +183,7 @@ const beforeUpload = (file) => {
 
 .message-input:focus {
   border-color: var(--theme-primary);
-  box-shadow: 0 0 0 2px var(--theme-primary)20;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
   outline: none;
 }
 
