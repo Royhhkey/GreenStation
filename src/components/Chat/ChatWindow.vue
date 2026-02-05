@@ -554,22 +554,30 @@ onMounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #f5f5f5;
+  background: var(--theme-background);
   overflow: hidden;
+  transition: var(--transition-normal);
 }
 
 .chat-container {
   flex: 1;
   overflow-y: auto;
   padding-bottom: 100px;
-  background: #f5f5f5;
+  background: var(--theme-background);
   position: relative;
 }
 
 .chat-messages {
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  gap: 16px;
+  padding: 12px;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .chat-messages {
+    padding: 16px;
+    gap: 16px;
+  }
 }
 </style>

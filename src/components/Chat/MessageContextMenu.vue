@@ -41,62 +41,62 @@ const copyMessage = () => {
 </script>
 
 <style scoped>
-/* 右键菜单 */
 .message-context-menu {
   position: fixed;
-  background: white;
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: var(--theme-cardBackground);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--theme-shadowHeavy);
   z-index: 1000;
   min-width: 140px;
   padding: 4px 0;
+  backdrop-filter: blur(8px);
+  transition: var(--transition-fast);
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 10px;
+  padding: 10px 14px;
   cursor: pointer;
   font-size: 14px;
-  transition: background 0.2s;
-  color: #333;
+  transition: var(--transition-fast);
+  color: var(--theme-textPrimary);
+  min-height: 44px;
 }
 
 .menu-item:hover {
-  background: #f5f5f5;
+  background: var(--theme-surfaceBackground);
+  color: var(--theme-primary);
+}
+
+.menu-item:active {
+  background: var(--theme-primary);
+  color: white;
 }
 
 .menu-item:not(:last-child) {
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--theme-borderLight);
 }
 
 .menu-item :deep(.anticon) {
-  font-size: 12px;
+  font-size: 14px;
+  transition: var(--transition-fast);
 }
 
-@media (max-width: 768px) {
-  .message-context-menu {
-    min-width: 120px;
-  }
-
-  .menu-item {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-}
-
-/* 为移动端优化菜单样式 */
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   .message-context-menu {
     min-width: 160px;
-    font-size: 16px; /* 移动端字体稍大 */
   }
 
   .menu-item {
     padding: 12px 16px;
-    font-size: 16px;
+    font-size: 15px;
+  }
+
+  .menu-item :deep(.anticon) {
+    font-size: 15px;
   }
 }
 </style>

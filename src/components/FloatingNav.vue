@@ -253,18 +253,4 @@ getUnreadMessagesCounts();
     font-size: 13px;
   }
 }
-
-  .nav-icon {
-    font-size: 18px;
-  }
-
-  .nav-text {
-    font-size: 10px;
-  }
-
-  .message-badge {
-    top: 2px;
-    right: 25%;
-  }
-}
 </style>

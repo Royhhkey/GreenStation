@@ -132,8 +132,20 @@ const formatMessageTime = (time) => {
 <style scoped>
 .message-bubble {
   display: flex;
-  max-width: 80%;
+  max-width: 75%;
   gap: 8px;
+  transition: var(--transition-fast);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.message-bubble:active {
+  background-color: var(--theme-surfaceBackground);
+  border-radius: var(--radius-md);
 }
 
 .message-sent {
@@ -145,14 +157,15 @@ const formatMessageTime = (time) => {
   align-self: flex-start;
 }
 
-/* 消息头像 */
 .message-avatar {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
-  background: #f0f0f0;
+  background: var(--theme-surfaceBackground);
+  border: 2px solid var(--theme-borderLight);
+  box-shadow: var(--theme-shadow);
 }
 
 .message-avatar img {
@@ -165,11 +178,12 @@ const formatMessageTime = (time) => {
   flex: 1;
   min-width: 0;
   position: relative;
+  cursor: pointer;
 }
 
 .message-sender {
   font-size: 12px;
-  color: #666;
+  color: var(--theme-textSecondary);
   margin-bottom: 4px;
 }
 
@@ -183,25 +197,34 @@ const formatMessageTime = (time) => {
   margin-left: 8px;
 }
 
-/* 文本消息内容 */
 .message-content:not(.image-content) {
-  background: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background: var(--theme-cardBackground);
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--theme-shadow);
   max-width: 100%;
+  transition: var(--transition-fast);
 }
 
 .message-sent .message-content:not(.image-content) {
-  background: #3f9db5;
-  border-bottom-right-radius: 2px;
+  background: var(--theme-primary);
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.message-sent .message-content:not(.image-content):hover {
+  background: var(--theme-primaryHover);
+  box-shadow: var(--theme-shadowMedium);
 }
 
 .message-received .message-content:not(.image-content) {
-  border-bottom-left-radius: 2px;
+  border-bottom-left-radius: var(--radius-sm);
+  background: var(--theme-cardBackground);
 }
 
-/* 图片消息内容 */
+.message-received .message-content:not(.image-content):hover {
+  box-shadow: var(--theme-shadowMedium);
+}
+
 .message-content.image-content {
   background: transparent;
   padding: 0;
@@ -212,41 +235,42 @@ const formatMessageTime = (time) => {
 .message-text {
   margin-bottom: 0;
   word-wrap: break-word;
-  line-height: 1.4;
+  line-height: 1.5;
   font-size: 14px;
   color: white;
 }
 
 .message-received .message-text {
-  color: #000;
+  color: var(--theme-textPrimary);
 }
 
-/* 图片消息样式 */
 .message-image {
   position: relative;
   display: inline-block;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--theme-shadow);
 }
 
 .message-image img {
   max-width: 100%;
   max-height: 200px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: var(--transition-fast);
   display: block;
 }
 
 .message-image img:hover {
   transform: scale(1.02);
+  box-shadow: var(--theme-shadowHeavy);
 }
 
-/* 已撤回消息样式 */
 .message-withdrawn .message-text {
-  color: #999 !important;
+  color: var(--theme-textTertiary) !important;
   font-style: italic;
 }
 
-/* 消息状态区域 */
 .message-status {
   display: flex;
   align-items: center;
@@ -257,45 +281,34 @@ const formatMessageTime = (time) => {
 
 .message-time {
   font-size: 11px;
-  color: #999;
+  color: var(--theme-textTertiary);
 }
 
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   .message-bubble {
-    max-width: 90%;
+    max-width: 65%;
+    gap: 12px;
+  }
+
+  .message-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .message-content:not(.image-content) {
+    padding: 12px 16px;
+  }
+
+  .message-text {
+    font-size: 15px;
   }
 
   .message-content.image-content {
-    max-width: 180px;
+    max-width: 250px;
   }
-}
 
-.message-bubble {
-  /* 添加长按反馈 */
-  transition: background-color 0.2s;
-}
-
-.message-bubble:active {
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-}
-
-/* 为移动端优化菜单样式 */
-@media (max-width: 768px) {
-  /* 为移动端添加更大的点击区域 */
-  .message-avatar,
-  .message-content-wrapper {
-    cursor: pointer;
+  .message-image img {
+    max-height: 250px;
   }
-}
-
-/* 防止文本选择 */
-.message-bubble {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
 }
 </style>
