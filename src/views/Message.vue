@@ -221,61 +221,95 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Message Page - Theme-aware Design */
 .message-list-page {
   height: 100vh;
-  background: white;
+  background: var(--theme-cardBackground);
   display: flex;
   flex-direction: column;
+  transition: background var(--transition-normal);
 }
 
+/* Message Header */
 .message-header {
-  padding: 16px;
-  border-bottom: 1px solid #e8e8e8;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--theme-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
+  background: var(--theme-cardBackground);
+  transition: all var(--transition-normal);
 }
 
 .message-header h2 {
   margin: 0;
-  color: #333;
-  font-size: 18px;
+  color: var(--theme-textPrimary);
+  font-size: 1.125rem;
   font-weight: 600;
 }
 
+/* Message List */
 .message-list {
   flex: 1;
   overflow-y: auto;
-  background: #f5f5f5;
+  background: var(--theme-surfaceBackground);
+  transition: background var(--transition-normal);
 }
 
+.message-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.message-list::-webkit-scrollbar-track {
+  background: var(--theme-surfaceBackground);
+}
+
+.message-list::-webkit-scrollbar-thumb {
+  background: var(--theme-border);
+  border-radius: var(--radius-md);
+}
+
+.message-list::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-primary);
+}
+
+/* Message Item */
 .message-item {
   display: flex;
-  padding: 12px 16px;
-  background: white;
-  border-bottom: 1px solid #f0f0f0;
+  padding: var(--spacing-md);
+  background: var(--theme-cardBackground);
+  border-bottom: 1px solid var(--theme-borderLight);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all var(--transition-fast);
   position: relative;
 }
 
 .message-item:hover {
-  background-color: #f8f8f8;
+  background: var(--theme-surfaceBackground);
+  transform: translateX(4px);
 }
 
 .message-item:active {
-  background-color: #e6e6e6;
+  background: var(--theme-surfaceBackground);
+  transform: translateX(2px);
 }
 
+/* Avatar */
 .avatar {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   overflow: hidden;
-  margin-right: 12px;
+  margin-right: var(--spacing-md);
   flex-shrink: 0;
-  background: #f0f0f0;
+  background: var(--theme-surfaceBackground);
+  border: 2px solid var(--theme-borderLight);
+  transition: all var(--transition-normal);
+}
+
+.message-item:hover .avatar {
+  border-color: var(--theme-primary);
+  transform: scale(1.05);
 }
 
 .avatar img {
@@ -284,6 +318,7 @@ onMounted(() => {
   object-fit: cover;
 }
 
+/* Message Content */
 .message-content {
   flex: 1;
   min-width: 0;
@@ -300,20 +335,22 @@ onMounted(() => {
 }
 
 .name {
-  font-weight: 500;
-  font-size: 16px;
-  color: #000;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--theme-textPrimary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
-  margin-right: 8px;
+  margin-right: var(--spacing-sm);
+  transition: color var(--transition-normal);
 }
 
 .time {
-  font-size: 12px;
-  color: #999;
+  font-size: 0.75rem;
+  color: var(--theme-textTertiary);
   flex-shrink: 0;
+  transition: color var(--transition-normal);
 }
 
 .message-bottom {
@@ -323,38 +360,40 @@ onMounted(() => {
 }
 
 .last-message {
-  font-size: 14px;
-  color: #666;
+  font-size: 0.875rem;
+  color: var(--theme-textSecondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
-  margin-right: 8px;
+  margin-right: var(--spacing-sm);
+  transition: color var(--transition-normal);
 }
 
 .message-badges {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--spacing-xs);
 }
 
 .unread-badge {
   :deep(.ant-badge-count) {
     background: #ff3b30;
-    box-shadow: none;
+    box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3);
     min-width: 18px;
     height: 18px;
     line-height: 18px;
     font-size: 11px;
+    font-weight: 600;
   }
 }
 
 .mute-icon {
-  font-size: 12px;
-  color: #999;
+  font-size: 0.75rem;
+  color: var(--theme-textTertiary);
 }
 
-/* 分割线样式 */
+/* Message Item Border */
 .message-item::after {
   content: '';
   position: absolute;
@@ -362,51 +401,62 @@ onMounted(() => {
   right: 0;
   bottom: 0;
   height: 1px;
-  background: #f0f0f0;
+  background: var(--theme-borderLight);
+  transition: background var(--transition-normal);
 }
 
 .message-item:last-child::after {
   display: none;
 }
 
-/* 空状态样式 */
+/* Empty State */
 .empty-state {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: #f5f5f5;
-  padding: 40px 20px;
+  background: var(--theme-surfaceBackground);
+  padding: var(--spacing-2xl) var(--spacing-lg);
   text-align: center;
+  transition: background var(--transition-normal);
 }
 
 .empty-icon {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
   opacity: 0.6;
+  transition: opacity var(--transition-normal);
+}
+
+.empty-icon svg {
+  width: 64px;
+  height: 64px;
 }
 
 .empty-text h3 {
-  margin: 0 0 8px 0;
-  font-size: 16px;
-  color: #666;
-  font-weight: 500;
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: 1rem;
+  color: var(--theme-textSecondary);
+  font-weight: 600;
+  transition: color var(--transition-normal);
 }
 
 .empty-text p {
   margin: 0;
-  font-size: 14px;
-  color: #999;
+  font-size: 0.875rem;
+  color: var(--theme-textTertiary);
   line-height: 1.5;
+  transition: color var(--transition-normal);
 }
 
+/* Responsive Design - Mobile First */
 @media (max-width: 768px) {
   .message-header {
-    padding: 12px;
+    padding: var(--spacing-sm);
   }
 
   .message-item {
-    padding: 10px 12px;
+    padding: 10px var(--spacing-sm);
   }
 
   .avatar {
@@ -415,15 +465,15 @@ onMounted(() => {
   }
 
   .name {
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
 
   .last-message {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
 
   .empty-state {
-    padding: 30px 16px;
+    padding: var(--spacing-xl) var(--spacing-md);
   }
 
   .empty-icon svg {
@@ -432,11 +482,34 @@ onMounted(() => {
   }
 
   .empty-text h3 {
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
 
   .empty-text p {
-    font-size: 13px;
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .message-header h2 {
+    font-size: 1rem;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .name {
+    font-size: 0.875rem;
+  }
+
+  .time {
+    font-size: 0.6875rem;
+  }
+
+  .last-message {
+    font-size: 0.75rem;
   }
 }
 </style>
