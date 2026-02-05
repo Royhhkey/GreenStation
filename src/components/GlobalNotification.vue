@@ -350,13 +350,13 @@ defineExpose({
   color: var(--theme-textTertiary);
   font-size: 20px;
   font-weight: bold;
-  padding: 0 4px;
+  padding: 0;
   cursor: pointer;
   flex-shrink: 0;
   align-self: flex-start;
   line-height: 1;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -409,10 +409,8 @@ defineExpose({
   }
 
   .notification-close {
-    width: 32px;
-    height: 32px;
-    min-width: 44px;
-    min-height: 44px;
+    width: 44px;
+    height: 44px;
     font-size: 18px;
   }
 }
