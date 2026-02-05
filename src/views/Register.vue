@@ -1,122 +1,159 @@
 <template>
-  <div class="register-page">
-    <div class="page-shell">
-      <header class="page-header">
-      <a-button type="link" @click="goBack" class="back-btn">
-        <ArrowLeftOutlined class="arrow-icon" />
-      </a-button>
-        <div class="header-text">
-          <h1 class="title">创建账号</h1>
-          <p class="subtitle">填写基础信息，完成校园绿色驿站账号注册</p>
-        </div>
-      </header>
-
-      <main class="page-main">
-        <a-card :bordered="false" class="register-card">
-        <a-form
-            ref="formRef"
-          :model="form"
-          :rules="rules"
-          layout="vertical"
-          @finish="handleRegister"
-          class="register-form"
-        >
-            <!-- 基础信息 -->
-            <section class="form-section">
-              <h2 class="section-title">基础信息</h2>
-              <a-form-item
-                label="用户名"
-                name="username"
-                :rules="rules.username"
-              >
-            <a-input v-model:value="form.username" placeholder="请输入用户名" />
+  <div class="register-container">
+    <!-- Theme Switcher in top-right corner -->
+    <div class="theme-switcher-position">
+      <ThemeSwitcher />
+    </div>
+    
+    <a-card class="register-card" bordered>
+      <div class="logo-section">
+        <h1 class="title">创建账号</h1>
+        <p class="subtitle">填写基础信息，完成校园绿色驿站账号注册</p>
+      </div>
+      <a-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        layout="vertical"
+        @finish="handleRegister"
+        class="register-form"
+      >
+        <!-- 基础信息 -->
+        <section class="form-section">
+          <h2 class="section-title">基础信息</h2>
+          <a-form-item label="用户名" name="username" :rules="rules.username">
+            <a-input 
+              v-model:value="form.username" 
+              placeholder="请输入用户名" 
+              size="large"
+              class="modern-input"
+            />
           </a-form-item>
           <a-form-item label="学号" name="XH" :rules="rules.XH">
-            <a-input v-model:value="form.XH" placeholder="请输入学号" />
+            <a-input 
+              v-model:value="form.XH" 
+              placeholder="请输入学号" 
+              size="large"
+              class="modern-input"
+            />
           </a-form-item>
-              <a-form-item label="手机号" name="phone" :rules="rules.phone">
-                <a-input v-model:value="form.phone" placeholder="请输入手机号" />
-              </a-form-item>
-            </section>
+          <a-form-item label="手机号" name="phone" :rules="rules.phone">
+            <a-input 
+              v-model:value="form.phone" 
+              placeholder="请输入手机号" 
+              size="large"
+              class="modern-input"
+            />
+          </a-form-item>
+        </section>
 
-            <!-- 账号安全 -->
-            <section class="form-section">
-              <h2 class="section-title">账号安全</h2>
+        <!-- 账号安全 -->
+        <section class="form-section">
+          <h2 class="section-title">账号安全</h2>
           <a-form-item label="邮箱" name="email" :rules="rules.email">
-            <a-input v-model:value="form.email" placeholder="请输入邮箱" />
+            <a-input 
+              v-model:value="form.email" 
+              placeholder="请输入邮箱" 
+              size="large"
+              class="modern-input"
+            />
           </a-form-item>
           <a-form-item label="验证码" name="captcha" :rules="rules.captcha">
-                <div class="captcha-row">
+            <div class="captcha-row">
               <a-input
                 v-model:value="form.captcha"
                 placeholder="请输入验证码"
-                    class="captcha-input"
+                size="large"
+                class="modern-input captcha-input"
               />
               <a-button
                 type="primary"
+                size="large"
                 class="captcha-btn"
                 @click="HandesendCode"
                 :disabled="countdown > 0"
               >
-                {{ countdown > 0 ? countdown + 's后重新发送' : '获取验证码' }}
+                {{ countdown > 0 ? countdown + 's' : '获取验证码' }}
               </a-button>
             </div>
           </a-form-item>
 
-              <div class="password-row">
-                <a-form-item
-                  label="密码"
-                  name="password"
-                  :rules="rules.password"
-                  class="password-item"
-                >
-            <a-input-password
-              v-model:value="form.password"
-              placeholder="请输入密码"
-            />
-          </a-form-item>
-          <a-form-item
-            label="确认密码"
-            name="confirmPassword"
-            :rules="rules.confirmPassword"
-                  class="password-item"
-          >
-            <a-input-password
-              v-model:value="form.confirmPassword"
-              placeholder="请再次输入密码"
-            />
-          </a-form-item>
-              </div>
-            </section>
+          <div class="password-row">
+            <a-form-item
+              label="密码"
+              name="password"
+              :rules="rules.password"
+              class="password-item"
+            >
+              <a-input-password
+                v-model:value="form.password"
+                placeholder="请输入密码"
+                size="large"
+                class="modern-input"
+              />
+            </a-form-item>
+            <a-form-item
+              label="确认密码"
+              name="confirmPassword"
+              :rules="rules.confirmPassword"
+              class="password-item"
+            >
+              <a-input-password
+                v-model:value="form.confirmPassword"
+                placeholder="请再次输入密码"
+                size="large"
+                class="modern-input"
+              />
+            </a-form-item>
+          </div>
+        </section>
 
-            <!-- 学籍信息（可选） -->
-            <section class="form-section">
-              <h2 class="section-title">学籍信息（可选）</h2>
+        <!-- 学籍信息（可选） -->
+        <section class="form-section">
+          <h2 class="section-title">学籍信息（可选）</h2>
           <a-form-item label="年级" name="grade" :rules="rules.grade">
-            <a-input v-model:value="form.grade" placeholder="请输入年级" />
+            <a-input 
+              v-model:value="form.grade" 
+              placeholder="请输入年级" 
+              size="large"
+              class="modern-input"
+            />
           </a-form-item>
           <a-form-item label="专业" name="zy" :rules="rules.zy">
-            <a-input v-model:value="form.zy" placeholder="请填写专业" />
+            <a-input 
+              v-model:value="form.zy" 
+              placeholder="请填写专业" 
+              size="large"
+              class="modern-input"
+            />
           </a-form-item>
           <a-form-item label="寝室号" name="dorm" :rules="rules.QSH">
-            <a-input v-model:value="form.QSH" placeholder="请填写寝室号" />
+            <a-input 
+              v-model:value="form.QSH" 
+              placeholder="请填写寝室号" 
+              size="large"
+              class="modern-input"
+            />
           </a-form-item>
-            </section>
+        </section>
 
-            <a-form-item class="submit-item">
-            <a-button
-              type="primary"
-              html-type="submit"
-              block
-              class="register-btn"
-            >
-                注册
-              </a-button>
-          </a-form-item>
-        </a-form>
-      </a-card>
-      </main>
-    </div>
+        <a-form-item class="submit-item">
+          <a-button
+            type="primary"
+            html-type="submit"
+            block
+            size="large"
+            class="register-btn"
+          >
+            注册
+          </a-button>
+        </a-form-item>
+      </a-form>
+      
+      <div class="extra-links">
+        <a @click.prevent="goBack" class="link">返回登录</a>
+      </div>
+    </a-card>
   </div>
 </template>
 
@@ -124,8 +161,8 @@
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
-import { ArrowLeftOutlined } from '@ant-design/icons-vue';
 import { sendCode, register } from '@/api';
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 
 const router = useRouter();
 
@@ -246,92 +283,116 @@ const handleRegister = async () => {
 function goBack() {
   router.push('/');
 }
+
 </script>
 
 <style scoped>
-.register-page {
+/* Mobile-First Approach */
+.register-container {
   min-height: 100vh;
-  width: 100%;
-  background: #e6f0ff;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding: 32px 16px;
-}
-
-.page-shell {
-  width: 100%;
-  max-width: 520px;
-}
-
-.page-header {
-  display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
+  padding: var(--spacing-md);
+  background: var(--theme-surfaceGradient);
+  position: relative;
+  background-image: url('../image/background4.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.header-text {
-  flex: 1;
+.theme-switcher-position {
+  position: absolute;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  z-index: 10;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 580px;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-xl);
+  background: var(--theme-cardBackground);
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 20px 25px -5px var(--theme-shadowHeavy),
+    0 10px 10px -5px var(--theme-shadowMedium);
+  border: 1px solid var(--theme-borderLight);
+  animation: slideUp 0.5s ease-out;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
 }
 
 .title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #1d39c4;
+  font-size: 32px;
+  font-weight: 700;
+  background: var(--theme-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 var(--spacing-xs) 0;
+  letter-spacing: 2px;
 }
 
 .subtitle {
-  margin: 4px 0 0;
   font-size: 13px;
-  color: #86909c;
-}
-
-.page-main {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-  padding: 20px 24px 24px;
-}
-
-.register-card :deep(.ant-card-body) {
-  padding: 0;
-}
-
-.back-btn {
-  padding: 0;
-  height: 32px;
-  line-height: 32px;
-  color: #2c3e8f;
+  color: var(--theme-textSecondary);
   font-weight: 500;
+  margin: 0;
+  letter-spacing: 0.5px;
 }
 
-.back-btn:hover {
-  color: #1d39c4;
-  text-decoration: underline;
-  background: transparent;
-}
-
-.arrow-icon {
-  font-size: 20px;
-  color: #1d39c4;
+.register-form {
+  margin-top: var(--spacing-md);
 }
 
 .form-section {
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .section-title {
-  margin: 0 0 8px;
-  font-size: 14px;
+  margin: 0 0 var(--spacing-md);
+  font-size: 15px;
   font-weight: 600;
-  color: #1f2933;
+  color: var(--theme-textPrimary);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 2px solid var(--theme-border);
+}
+
+:deep(.ant-form-item-label > label) {
+  font-weight: 600;
+  color: var(--theme-textPrimary);
+  font-size: 14px;
+}
+
+.modern-input :deep(.ant-input),
+.modern-input :deep(.ant-input-password) {
+  border-radius: var(--radius-md);
+  border: 2px solid var(--theme-border);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 15px;
+  transition: all var(--transition-normal);
+  background: var(--theme-background);
+  color: var(--theme-textPrimary);
+}
+
+.modern-input :deep(.ant-input:focus),
+.modern-input :deep(.ant-input-password:focus),
+.modern-input :deep(.ant-input-affix-wrapper-focused) {
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
 }
 
 .captcha-row {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-sm);
 }
 
 .captcha-input {
@@ -339,35 +400,138 @@ function goBack() {
 }
 
 .captcha-btn {
+  border-radius: var(--radius-md);
+  background: var(--theme-gradient);
+  border: none;
+  font-weight: 600;
   white-space: nowrap;
+  min-width: 110px;
+  transition: all var(--transition-normal);
+}
+
+.captcha-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--theme-shadowMedium);
+}
+
+.captcha-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .password-row {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-sm);
   flex-wrap: wrap;
 }
 
 .password-item {
   flex: 1 1 0;
+  min-width: 200px;
 }
 
 .submit-item {
-  margin-top: 12px;
+  margin-top: var(--spacing-lg);
+  margin-bottom: 0;
 }
 
 .register-btn {
-  height: 44px;
-  font-size: 15px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--theme-gradient);
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px var(--theme-shadowMedium);
+  transition: all var(--transition-normal);
 }
 
-@media (max-width: 480px) {
-  .page-main {
-    padding: 16px 16px 20px;
-  }
+.register-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--theme-shadowHeavy);
+}
 
+.register-btn:active {
+  transform: translateY(0);
+}
+
+.extra-links {
+  margin-top: var(--spacing-md);
+  text-align: center;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--theme-border);
+}
+
+.link {
+  cursor: pointer;
+  color: var(--theme-textSecondary);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+}
+
+.link:hover {
+  color: var(--theme-primary);
+  background: var(--theme-surfaceBackground);
+}
+
+/* Tablet and Desktop */
+@media (min-width: 768px) {
+  .register-container {
+    padding: var(--spacing-2xl);
+    background-image: url('../image/background2.jpg');
+  }
+  
+  .register-card {
+    padding: var(--spacing-2xl) var(--spacing-xl);
+  }
+  
+  .title {
+    font-size: 40px;
+  }
+  
+  .subtitle {
+    font-size: 14px;
+  }
+}
+
+/* Small mobile optimization */
+@media (max-width: 480px) {
+  .register-card {
+    padding: var(--spacing-lg);
+  }
+  
+  .title {
+    font-size: 28px;
+    letter-spacing: 1px;
+  }
+  
   .password-row {
     flex-direction: column;
+  }
+  
+  .password-item {
+    min-width: 100%;
+  }
+  
+  .theme-switcher-position {
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
