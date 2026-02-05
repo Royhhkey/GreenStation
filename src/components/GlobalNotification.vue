@@ -241,32 +241,60 @@ defineExpose({
   top: 80px;
   right: 20px;
   z-index: 10000;
-  max-width: 300px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .notification-item {
-  background: white;
-  border-left: 4px solid #1890ff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
+  background: var(--theme-cardBackground);
+  border-left: 4px solid var(--theme-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--theme-shadowMedium);
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all var(--transition-normal);
   display: flex;
-  padding: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  gap: 12px;
+  animation: slideIn 0.3s ease-out;
+  border: 1px solid var(--theme-borderLight);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .notification-item:hover {
-  transform: translateX(-5px);
+  transform: translateX(-6px);
+  box-shadow: var(--theme-shadowHeavy);
+  border-left-width: 5px;
+}
+
+.notification-item:active {
+  transform: translateX(-4px) scale(0.98);
 }
 
 .notification-avatar {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   overflow: hidden;
-  margin-right: 8px;
   flex-shrink: 0;
+  border: 2px solid var(--theme-borderLight);
+  transition: border-color var(--transition-fast);
+}
+
+.notification-item:hover .notification-avatar {
+  border-color: var(--theme-primary);
 }
 
 .notification-avatar img {
@@ -284,54 +312,134 @@ defineExpose({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  gap: 8px;
 }
 
 .notification-header strong {
   font-size: 14px;
-  color: #333;
+  font-weight: 600;
+  color: var(--theme-textPrimary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: color var(--transition-normal);
 }
 
 .notification-time {
   font-size: 12px;
-  color: #999;
+  color: var(--theme-textTertiary);
   flex-shrink: 0;
-  margin-left: 8px;
+  transition: color var(--transition-normal);
 }
 
 .notification-message {
   font-size: 13px;
-  color: #666;
-  line-height: 1.4;
+  color: var(--theme-textSecondary);
+  line-height: 1.5;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  transition: color var(--transition-normal);
 }
 
 .notification-close {
-  color: #999;
-  font-size: 18px;
+  color: var(--theme-textTertiary);
+  font-size: 20px;
   font-weight: bold;
   padding: 0 4px;
   cursor: pointer;
   flex-shrink: 0;
   align-self: flex-start;
+  line-height: 1;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
 }
 
 .notification-close:hover {
-  color: #666;
+  color: var(--theme-textPrimary);
+  background: var(--theme-surfaceBackground);
 }
 
-/* @media (max-width: 768px) {
+.notification-close:active {
+  transform: scale(0.9);
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
   .notifications-container {
-    right: 10px;
-    left: 10px;
+    top: 70px;
+    right: 12px;
+    left: 12px;
     max-width: none;
   }
-} */
+
+  .notification-item {
+    padding: 12px;
+    border-radius: var(--radius-md);
+  }
+
+  .notification-item:hover {
+    transform: translateY(-2px);
+  }
+
+  .notification-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .notification-header strong {
+    font-size: 13px;
+  }
+
+  .notification-time {
+    font-size: 11px;
+  }
+
+  .notification-message {
+    font-size: 12px;
+  }
+
+  .notification-close {
+    width: 32px;
+    height: 32px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 18px;
+  }
+}
+
+/* 超小屏幕优化 */
+@media (max-width: 480px) {
+  .notifications-container {
+    top: 65px;
+    right: 8px;
+    left: 8px;
+  }
+
+  .notification-item {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .notification-avatar {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* 深色主题特定优化（如果需要） */
+@media (prefers-color-scheme: dark) {
+  .notification-item {
+    box-shadow: var(--theme-shadowHeavy), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+}
 </style>
