@@ -51,27 +51,27 @@ const handleAvatarError = (event) => {
 </script>
 
 <style scoped>
+/* Profile Header - Theme-aware Design */
 .profile-header {
   position: relative;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 120px 20px 60px;
+  background: var(--theme-gradient);
+  padding: 7.5rem var(--spacing-lg) 3.75rem;
   color: white;
+  transition: all var(--transition-normal);
 }
 
 .header-bg {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  transition: background var(--transition-normal);
 }
 
 .avatar-section {
   position: relative;
   display: flex;
   align-items: flex-end;
-  gap: 24px;
+  gap: var(--spacing-xl);
   max-width: 1200px;
   margin: 0 auto;
   z-index: 1;
@@ -85,11 +85,16 @@ const handleAvatarError = (event) => {
 .avatar {
   width: 120px;
   height: 120px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: 4px solid white;
   background: white;
   object-fit: cover;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px var(--theme-shadowHeavy);
+  transition: all var(--transition-normal);
+}
+
+.avatar:hover {
+  transform: scale(1.05);
 }
 
 .edit-avatar-btn {
@@ -98,50 +103,51 @@ const handleAvatarError = (event) => {
   right: 5px;
   width: 32px;
   height: 32px;
-  background: #1890ff;
-  border-radius: 50%;
+  background: var(--theme-primary);
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   cursor: pointer;
   border: 2px solid white;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .edit-avatar-btn:hover {
-  background: #40a9ff;
-  transform: scale(1.1);
+  background: var(--theme-primaryHover);
+  transform: scale(1.1) rotate(15deg);
 }
 
 .user-info {
   flex: 1;
-  padding-bottom: 20px;
+  padding-bottom: var(--spacing-lg);
 }
 
 .username {
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: 600;
-  margin-bottom: 8px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: var(--spacing-sm);
+  text-shadow: 0 2px 4px var(--theme-shadowHeavy);
 }
 
 .user-id {
-  font-size: 16px;
+  font-size: 1rem;
   opacity: 0.9;
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-md);
 }
 
+/* Responsive Design - Mobile First */
 @media (max-width: 768px) {
   .profile-header {
-    padding: 100px 16px 50px;
+    padding: 6.25rem var(--spacing-md) 3.125rem;
   }
 
   .avatar-section {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 16px;
+    gap: var(--spacing-md);
   }
 
   .avatar {
@@ -159,13 +165,13 @@ const handleAvatarError = (event) => {
   }
 
   .username {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .profile-header {
-    padding: 80px 12px 40px;
+    padding: 5rem var(--spacing-sm) 2.5rem;
   }
 
   .avatar {
@@ -174,7 +180,11 @@ const handleAvatarError = (event) => {
   }
 
   .username {
-    font-size: 20px;
+    font-size: 1.25rem;
+  }
+
+  .user-id {
+    font-size: 0.875rem;
   }
 }
 </style>
