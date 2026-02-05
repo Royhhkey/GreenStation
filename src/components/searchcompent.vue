@@ -92,6 +92,10 @@ const props = defineProps({
 
 const emit = defineEmits(['search']);
 
+// 常量配置
+const MAX_SEARCH_HISTORY = 10; // 最多保存的搜索历史数量
+const SUGGESTION_HIDE_DELAY = 200; // 建议框隐藏延迟（毫秒）
+
 const searchKeyword = ref('');
 const selectedTypes = ref(['']);
 const showSuggestions = ref(false);
@@ -127,8 +131,8 @@ const saveSearchHistory = (keyword) => {
   const history = searchHistory.value.filter(item => item !== keyword);
   // 添加到开头
   history.unshift(keyword);
-  // 最多保存10条
-  searchHistory.value = history.slice(0, 10);
+  // 最多保存配置的数量
+  searchHistory.value = history.slice(0, MAX_SEARCH_HISTORY);
   
   localStorage.setItem('searchHistory', JSON.stringify(searchHistory.value));
 };
@@ -151,7 +155,7 @@ const handleBlur = () => {
   // 延迟隐藏，以便点击建议项时能触发
   setTimeout(() => {
     showSuggestions.value = false;
-  }, 200);
+  }, SUGGESTION_HIDE_DELAY);
 };
 
 const toggleCategory = (value) => {
@@ -221,7 +225,7 @@ onMounted(() => {
   z-index: 100;
   background: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
-  border-radius: 10%;
+  border-radius: 8px;
 }
 
 .search-input-container {
