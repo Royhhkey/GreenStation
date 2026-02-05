@@ -1,11 +1,17 @@
 <template>
-  <div  class="h-screen flex flex-col bg-gray-100">
+  <div  class="h-screen flex flex-col" style="background: var(--theme-background)">
     <a-layout>
-      <a-layout-header class=" bg-blue-500 text-white p-4 flex justify-between items-center h-16 min-w-0 sticky top-0 z-10">
+      <a-layout-header 
+        class="p-4 flex justify-between items-center h-16 min-w-0 sticky top-0 z-10"
+        :style="{ background: 'var(--theme-gradient)' }"
+      >
         <div class="text-2xl font-bold text-white">GreenStation</div>
-        <a-button type="text" @click="logout">
-          <LogoutOutlined style="color: #fff" />
-        </a-button>
+        <div class="flex items-center gap-3">
+          <ThemeSwitcher />
+          <a-button type="text" @click="logout">
+            <LogoutOutlined style="color: #fff" />
+          </a-button>
+        </div>
       </a-layout-header>
       <a-layout>
         <!-- 只有在非聊天页面才显示底部导航 -->
@@ -23,6 +29,7 @@
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import FloatingNav from '@/components/FloatingNav.vue';
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 import { LogoutOutlined } from '@ant-design/icons-vue';
 import { useAuthStore } from '@/stores/auth';
 const authStore = useAuthStore();

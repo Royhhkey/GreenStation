@@ -110,13 +110,17 @@ getUnreadMessagesCounts();
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  background: var(--theme-cardBackground);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--radius-xl);
+  box-shadow: 
+    0 10px 25px -5px var(--theme-shadowMedium),
+    0 8px 10px -6px var(--theme-shadowMedium);
   padding: 8px 16px;
-  transition: all 0.3s;
+  transition: all var(--transition-normal);
   width: 90%;
   max-width: 400px;
+  backdrop-filter: blur(10px);
 }
 
 .nav-items {
@@ -132,40 +136,51 @@ getUnreadMessagesCounts();
   align-items: center;
   padding: 12px 0;
   cursor: pointer;
-  transition: all 0.3s;
-  border-radius: 12px;
+  transition: all var(--transition-normal);
+  border-radius: var(--radius-md);
   position: relative;
   flex: 1;
+  min-height: 48px; /* Mobile-friendly touch target */
 }
 
-/* 选中状态的样式 */
+/* 选中状态的样式 - 使用主题色 */
 .nav-item.active {
-  background: #e6f7ff;
+  background: linear-gradient(135deg, 
+    rgba(24, 144, 255, 0.08) 0%, 
+    rgba(24, 144, 255, 0.12) 100%);
 }
 
 .nav-item.active .nav-icon,
 .nav-item.active .nav-text {
-  color: #1890ff;
+  color: var(--theme-primary);
 }
 
 .nav-icon {
-  font-size: 20px;
+  font-size: 22px;
   margin-bottom: 4px;
-  color: #666;
+  color: var(--theme-textSecondary);
+  transition: all var(--transition-normal);
 }
 
 .nav-text {
   font-size: 12px;
-  color: #666;
+  font-weight: 500;
+  color: var(--theme-textSecondary);
+  transition: all var(--transition-normal);
 }
 
 .nav-item:hover {
-  background: #f0f0f0;
+  background: var(--theme-surfaceBackground);
+  transform: translateY(-2px);
 }
 
 .nav-item:hover .nav-icon,
 .nav-item:hover .nav-text {
-  color: #1890ff;
+  color: var(--theme-primary);
+}
+
+.nav-item:active {
+  transform: translateY(0);
 }
 
 /* 消息未读数样式 */
@@ -177,26 +192,67 @@ getUnreadMessagesCounts();
 }
 
 .message-badge :deep(.ant-badge-count) {
-  background: #ff3b30;
-  box-shadow: none;
-  min-width: 16px;
-  height: 16px;
-  line-height: 16px;
-  font-size: 10px;
-  padding: 0 4px;
+  background: linear-gradient(135deg, #ff4d4f 0%, #cf1322 100%);
+  box-shadow: 0 2px 8px rgba(255, 77, 79, 0.3);
+  min-width: 18px;
+  height: 18px;
+  line-height: 18px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0 5px;
+  border-radius: var(--radius-full);
 }
 
-/* 移动端适配 */
+/* 移动端适配 - Mobile First */
 @media (max-width: 768px) {
   .floating-nav {
-    bottom: 10px;
-    width: 95%;
+    bottom: 12px;
+    width: 96%;
+    max-width: 100%;
     padding: 6px 12px;
+    border-radius: var(--radius-lg);
   }
 
   .nav-item {
     padding: 10px 0;
+    min-height: 52px; /* Larger for mobile */
   }
+
+  .nav-icon {
+    font-size: 24px;
+  }
+
+  .nav-text {
+    font-size: 11px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .floating-nav {
+    max-width: 450px;
+  }
+}
+
+/* Desktop - hide floating nav on large screens, use sidebar instead */
+@media (min-width: 1025px) {
+  .floating-nav {
+    bottom: 24px;
+    max-width: 420px;
+  }
+  
+  .nav-item {
+    padding: 14px 0;
+  }
+  
+  .nav-icon {
+    font-size: 24px;
+  }
+  
+  .nav-text {
+    font-size: 13px;
+  }
+}
 
   .nav-icon {
     font-size: 18px;
