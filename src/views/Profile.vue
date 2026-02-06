@@ -1,69 +1,70 @@
 <template>
-  <div class="profile-page">
+  <div class="min-h-screen bg-theme-surface pb-theme-xl transition-colors duration-normal">
     <!-- 现代化头部信息卡片 -->
-    <div class="profile-header">
-      <div class="header-gradient"></div>
-      <div class="header-pattern"></div>
-      <div class="header-content">
-        <div class="avatar-section">
-          <div class="avatar-wrapper">
-            <div class="avatar-container">
+    <div class="relative py-20 px-theme-lg pb-24 -mb-15 overflow-hidden">
+      <div class="absolute inset-0 bg-theme-gradient opacity-90 backdrop-blur-[40px]"></div>
+      <div class="absolute inset-0 opacity-50" style="background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);"></div>
+      <div class="relative max-w-[1200px] mx-auto z-10">
+        <div class="flex items-end gap-theme-xl text-white md:flex-col md:items-center md:text-center md:gap-theme-md">
+          <div class="relative">
+            <div class="relative inline-block">
               <img
                 :src="
                   userInfo.avatar ||
                   'https://eo-oss.roy22.xyz/secondHand/avatar.png'
                 "
                 alt="用户头像"
-                class="avatar-image"
+                class="w-[140px] h-[140px] rounded-full border-[5px] border-white/30 bg-white/20 object-cover shadow-theme-lg transition-all duration-normal relative z-[2] hover:scale-105 md:w-[120px] md:h-[120px] sm:w-[100px] sm:h-[100px]"
+                style="box-shadow: 0 8px 32px var(--theme-shadowHeavy), 0 0 0 8px rgba(255, 255, 255, 0.1);"
                 @error="handleAvatarError"
               />
-              <div class="avatar-ring"></div>
-              <div class="avatar-edit-btn" @click="showAvatarEdit = true">
+              <div class="absolute -inset-[10px] rounded-full border-2 border-white/20 animate-rotate"></div>
+              <div class="absolute bottom-2 right-2 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center text-theme-primary cursor-pointer border-2 border-white transition-all duration-normal shadow-theme z-[3] hover:bg-white hover:scale-115 hover:rotate-90" @click="showAvatarEdit = true">
                 <EditOutlined />
               </div>
             </div>
           </div>
-          <div class="user-info-section">
-            <h2 class="username">{{ userInfo.username }}</h2>
-            <p class="user-id">ID: {{ userInfo.id }}</p>
+          <div class="flex-1 pb-theme-lg md:pb-0">
+            <h2 class="text-4xl font-bold mb-2 tracking-tight md:text-3xl sm:text-2xl" style="text-shadow: 0 2px 4px var(--theme-shadowHeavy); background: linear-gradient(to bottom right, white, rgba(255, 255, 255, 0.8)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ userInfo.username }}</h2>
+            <p class="text-base opacity-90 mb-4 font-medium sm:text-sm" style="text-shadow: 0 1px 2px var(--theme-shadow);">ID: {{ userInfo.id }}</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 内容区域 -->
-    <div class="content-container">
+    <div class="max-w-[1200px] mx-auto pt-15 px-theme-lg pb-theme-xl grid grid-cols-[1fr_2fr] gap-theme-xl relative z-10 lg:grid-cols-1 lg:gap-theme-lg md:pt-12 md:px-theme-md md:pb-theme-lg sm:pt-10 sm:px-theme-sm sm:pb-theme-md">
       <!-- 个人信息卡片 - 现代化玻璃态设计 -->
-      <div class="info-card">
-        <div class="card-header">
-          <div class="card-title-wrapper">
-            <div class="card-icon">👤</div>
-            <h3 class="card-title">
+      <div class="bg-theme-card backdrop-blur-[40px] rounded-theme-xl shadow-theme overflow-hidden transition-all duration-normal border border-theme-border-light hover:-translate-y-0.5 hover:shadow-theme-md sm:rounded-theme-lg" style="box-shadow: 0 8px 32px var(--theme-shadow), 0 0 0 1px var(--theme-borderLight);">
+        <div class="flex justify-between items-center p-theme-lg px-7 bg-theme-surface-gradient border-b border-theme-border md:flex-col md:items-start md:gap-theme-md md:p-theme-lg sm:p-theme-md">
+          <div class="flex items-center gap-theme-md">
+            <div class="text-2xl w-12 h-12 flex items-center justify-center bg-theme-gradient rounded-theme-md shadow-theme md:w-10 md:h-10 md:text-xl">👤</div>
+            <h3 class="text-xl font-bold m-0 text-theme-text tracking-tight md:text-lg">
               {{ isEditing ? '编辑个人信息' : '个人信息' }}
             </h3>
           </div>
-          <div class="card-actions">
+          <div class="flex gap-theme-md">
             <a-button
               v-if="!isEditing"
               type="primary"
-              class="action-btn"
+              class="rounded-theme-md font-semibold px-5 py-2.5 h-auto transition-all duration-normal shadow-theme hover:-translate-y-0.5 hover:shadow-theme-md"
               @click="isEditing = true"
             >
               <template #icon><EditOutlined /></template>
               编辑资料
             </a-button>
 
-            <div v-else class="edit-actions-group">
+            <div v-else class="flex gap-theme-md">
               <a-button
                 type="primary"
-                class="action-btn save-btn"
+                class="rounded-theme-md font-semibold px-5 py-2.5 h-auto transition-normal shadow-theme hover:-translate-y-0.5 hover:shadow-theme-md bg-theme-secondary border-theme-secondary hover:bg-theme-secondary hover:brightness-110"
                 @click="saveEditing"
               >
                 <template #icon><CheckOutlined /></template>
                 保存
               </a-button>
               <a-button
-                class="action-btn cancel-btn"
+                class="rounded-theme-md font-semibold px-5 py-2.5 h-auto transition-all duration-normal shadow-theme hover:-translate-y-0.5 hover:shadow-theme-md"
                 @click="isEditing = false"
               >
                 <template #icon><CloseOutlined /></template>
@@ -72,98 +73,98 @@
             </div>
           </div>
         </div>
-        <div class="card-body">
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="info-label">用户名</div>
-              <div class="info-value">
+        <div class="p-7 md:p-theme-lg sm:p-theme-md">
+          <div class="flex flex-col gap-theme-lg">
+            <div class="flex flex-col gap-2 p-theme-md bg-theme-surface rounded-theme-md border border-theme-border transition-all duration-normal hover:bg-theme-card hover:border-theme-primary hover:translate-x-1 sm:p-theme-sm">
+              <div class="text-xs font-semibold text-theme-primary uppercase tracking-wider">用户名</div>
+              <div class="text-sm text-theme-text font-medium">
                 <span v-if="!isEditing">{{
                   userInfo.username || '未设置'
                 }}</span>
                 <a-input
                   v-else
                   v-model:value="editForm.username"
-                  class="info-input"
+                  class="w-full"
                   placeholder="请输入用户名"
                 />
               </div>
             </div>
 
-            <div class="info-item">
-              <div class="info-label">学号</div>
-              <div class="info-value">
+            <div class="flex flex-col gap-2 p-theme-md bg-theme-surface rounded-theme-md border border-theme-border transition-all duration-normal hover:bg-theme-card hover:border-theme-primary hover:translate-x-1 sm:p-theme-sm">
+              <div class="text-xs font-semibold text-theme-primary uppercase tracking-wider">学号</div>
+              <div class="text-sm text-theme-text font-medium">
                 <span v-if="!isEditing">{{ userInfo.XH || '未设置' }}</span>
                 <a-input
                   v-else
                   v-model:value="editForm.XH"
-                  class="info-input"
+                  class="w-full"
                   placeholder="请输入学号"
                 />
               </div>
             </div>
 
-            <div class="info-item">
-              <div class="info-label">邮箱</div>
-              <div class="info-value">
+            <div class="flex flex-col gap-2 p-theme-md bg-theme-surface rounded-theme-md border border-theme-border transition-all duration-normal hover:bg-theme-card hover:border-theme-primary hover:translate-x-1 sm:p-theme-sm">
+              <div class="text-xs font-semibold text-theme-primary uppercase tracking-wider">邮箱</div>
+              <div class="text-sm text-theme-text font-medium">
                 <span v-if="!isEditing">{{ userInfo.email || '未设置' }}</span>
                 <a-input
                   v-else
                   v-model:value="editForm.email"
-                  class="info-input"
+                  class="w-full"
                   placeholder="请输入邮箱"
                 />
               </div>
             </div>
 
-            <div class="info-item">
-              <div class="info-label">手机号</div>
-              <div class="info-value">
+            <div class="flex flex-col gap-2 p-theme-md bg-theme-surface rounded-theme-md border border-theme-border transition-all duration-normal hover:bg-theme-card hover:border-theme-primary hover:translate-x-1 sm:p-theme-sm">
+              <div class="text-xs font-semibold text-theme-primary uppercase tracking-wider">手机号</div>
+              <div class="text-sm text-theme-text font-medium">
                 <span v-if="!isEditing">{{
                   userInfo.phoneNumber || '未设置'
                 }}</span>
                 <a-input
                   v-else
                   v-model:value="editForm.phoneNumber"
-                  class="info-input"
+                  class="w-full"
                   placeholder="请输入手机号"
                 />
               </div>
             </div>
 
-            <div class="info-item">
-              <div class="info-label">寝室</div>
-              <div class="info-value">
+            <div class="flex flex-col gap-2 p-theme-md bg-theme-surface rounded-theme-md border border-theme-border transition-all duration-normal hover:bg-theme-card hover:border-theme-primary hover:translate-x-1 sm:p-theme-sm">
+              <div class="text-xs font-semibold text-theme-primary uppercase tracking-wider">寝室</div>
+              <div class="text-sm text-theme-text font-medium">
                 <span v-if="!isEditing">{{ userInfo.QSH || '未填写' }}</span>
                 <a-input
                   v-else
                   v-model:value="editForm.QSH"
-                  class="info-input"
+                  class="w-full"
                   placeholder="请输入寝室"
                 />
               </div>
             </div>
 
-            <div class="info-item">
-              <div class="info-label">年级</div>
-              <div class="info-value">
+            <div class="flex flex-col gap-2 p-theme-md bg-theme-surface rounded-theme-md border border-theme-border transition-all duration-normal hover:bg-theme-card hover:border-theme-primary hover:translate-x-1 sm:p-theme-sm">
+              <div class="text-xs font-semibold text-theme-primary uppercase tracking-wider">年级</div>
+              <div class="text-sm text-theme-text font-medium">
                 <span v-if="!isEditing">{{ userInfo.grade || '未填写' }}</span>
                 <a-input
                   v-else
                   v-model:value="editForm.grade"
-                  class="info-input"
+                  class="w-full"
                   placeholder="请输入年级"
                 />
               </div>
             </div>
 
-            <div class="info-item">
-              <div class="info-label">专业</div>
-              <div class="info-value">
+            <div class="flex flex-col gap-2 p-theme-md bg-theme-surface rounded-theme-md border border-theme-border transition-all duration-normal hover:bg-theme-card hover:border-theme-primary hover:translate-x-1 sm:p-theme-sm">
+              <div class="text-xs font-semibold text-theme-primary uppercase tracking-wider">专业</div>
+              <div class="text-sm text-theme-text font-medium">
                 <span v-if="!isEditing">{{ userInfo.ZY || '未填写' }}</span>
                 <a-input
                   v-else
                   v-model:value="editForm.ZY"
-                  class="info-input"
+                  class="w-full"
                   placeholder="请输入专业"
                 />
               </div>
@@ -173,16 +174,16 @@
       </div>
 
       <!-- 我的商品 - 现代化设计 -->
-      <div class="products-card">
-        <div class="card-header">
-          <div class="card-title-wrapper">
-            <div class="card-icon">🛍️</div>
-            <h3 class="card-title">我的商品</h3>
+      <div class="bg-theme-card backdrop-blur-[40px] rounded-theme-xl shadow-theme overflow-hidden transition-all duration-normal border border-theme-border-light hover:-translate-y-0.5 hover:shadow-theme-md sm:rounded-theme-lg" style="box-shadow: 0 8px 32px var(--theme-shadow), 0 0 0 1px var(--theme-borderLight);">
+        <div class="flex justify-between items-center p-theme-lg px-7 bg-theme-surface-gradient border-b border-theme-border md:flex-col md:items-start md:gap-theme-md md:p-theme-lg sm:p-theme-md">
+          <div class="flex items-center gap-theme-md">
+            <div class="text-2xl w-12 h-12 flex items-center justify-center bg-theme-gradient rounded-theme-md shadow-theme md:w-10 md:h-10 md:text-xl">🛍️</div>
+            <h3 class="text-xl font-bold m-0 text-theme-text tracking-tight md:text-lg">我的商品</h3>
           </div>
-          <div class="card-actions">
+          <div class="flex gap-theme-md">
             <a-button
               type="primary"
-              class="action-btn"
+              class="rounded-theme-md font-semibold px-5 py-2.5 h-auto transition-all duration-normal shadow-theme hover:-translate-y-0.5 hover:shadow-theme-md"
               @click="showProductModal = true"
             >
               <template #icon><PlusOutlined /></template>
@@ -190,33 +191,33 @@
             </a-button>
           </div>
         </div>
-        <div class="card-body">
+        <div class="p-7 md:p-theme-lg sm:p-theme-md">
           <a-spin :spinning="loading" tip="加载中...">
-            <div class="products-grid">
+            <div class="products-grid grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-theme-lg max-h-[600px] overflow-y-auto pr-2 md:grid-cols-1 md:max-h-none">
               <div
                 v-for="item in myProducts"
                 :key="item.id"
-                class="product-item"
+                class="group bg-theme-card backdrop-blur-sm rounded-theme-lg overflow-hidden transition-all duration-normal cursor-pointer border border-theme-border-light shadow-theme hover:-translate-y-2 hover:scale-[1.02] hover:shadow-theme-md hover:border-theme-primary"
                 @click="editProduct(item)"
               >
-                <div class="product-image-container">
-                  <div class="product-category-tag">
-                    <span class="category-badge">{{
+                <div class="relative w-full h-[220px] overflow-hidden bg-theme-surface-gradient md:h-[200px] sm:h-[180px]">
+                  <div class="absolute top-theme-md left-theme-md z-[2]">
+                    <span class="bg-white/95 backdrop-blur-sm text-theme-primary px-3 py-1.5 rounded-full text-xs font-semibold shadow-theme border border-theme-border-light">{{
                       item.category_info.cname
                     }}</span>
                   </div>
                   <img
                     :src="replaceUrlRegex(item.image)"
                     :alt="item.name"
-                    class="product-image"
+                    class="w-full h-full object-cover transition-transform duration-[600ms] group-hover:scale-110"
                     @error="handleProductImageError"
                   />
-                  <div class="product-overlay">
-                    <div class="product-actions">
+                  <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 flex items-end justify-center p-theme-md opacity-0 transition-opacity group-hover:opacity-100">
+                    <div class="flex gap-2 w-full justify-center">
                       <a-button
                         size="small"
                         @click.stop="toggleProductStatus(item)"
-                        class="action-overlay-btn"
+                        class="flex-1 bg-white/95 backdrop-blur-sm border border-theme-border-light rounded-theme-md text-theme-primary font-semibold transition-all duration-normal shadow-theme hover:bg-white hover:-translate-y-0.5 hover:shadow-theme-md"
                       >
                         <template #icon>
                           <SwapOutlined />
@@ -225,14 +226,14 @@
                       </a-button>
                       <a-button
                         size="small"
-                        class="action-icon-btn"
+                        class="min-w-[40px] bg-white/95 backdrop-blur-sm border border-theme-border-light rounded-theme-md text-theme-primary font-semibold transition-all duration-normal shadow-theme hover:bg-white hover:-translate-y-0.5 hover:shadow-theme-md"
                         @click.stop="editProduct(item)"
                       >
                         <EditOutlined />
                       </a-button>
                       <a-button
                         size="small"
-                        class="action-icon-btn danger"
+                        class="min-w-[40px] bg-white/95 backdrop-blur-sm border border-theme-border-light rounded-theme-md text-theme-primary font-semibold transition-all duration-normal shadow-theme hover:bg-white hover:-translate-y-0.5 hover:shadow-theme-md"
                         danger
                         @click.stop="deleteProduct(item.id)"
                       >
@@ -241,24 +242,24 @@
                     </div>
                   </div>
                 </div>
-                <div class="product-info">
-                  <div class="product-header-row">
-                    <h4 class="product-title">{{ item.name }}</h4>
-                    <div class="product-status">
+                <div class="p-theme-lg">
+                  <div class="flex justify-between items-start mb-theme-md gap-theme-md">
+                    <h4 class="text-base font-bold text-theme-text m-0 flex-1 line-clamp-2 leading-snug">{{ item.name }}</h4>
+                    <div class="flex items-center gap-1.5 px-2.5 py-1 bg-theme-surface rounded-theme-md flex-shrink-0">
                       <span
                         :class="[
-                          'status-indicator',
-                          item.is_sold ? 'sold' : 'available',
+                          'w-2 h-2 rounded-full animate-pulse',
+                          item.is_sold ? 'bg-[#ff4d4f]' : 'bg-theme-secondary',
                         ]"
                       ></span>
-                      <span class="status-text">{{
+                      <span class="text-[11px] font-semibold text-theme-primary uppercase tracking-wider">{{
                         item.is_sold ? '已售出' : '在售中'
                       }}</span>
                     </div>
                   </div>
-                  <div class="product-footer-row">
-                    <p class="product-price">￥{{ item.price }}</p>
-                    <p class="product-date">
+                  <div class="flex justify-between items-center">
+                    <p class="text-xl font-extrabold m-0 bg-theme-gradient bg-clip-text text-transparent">￥{{ item.price }}</p>
+                    <p class="text-xs text-theme-text-tertiary m-0 font-medium">
                       {{ extractDateFromISO(item.created_at) }}
                     </p>
                   </div>
@@ -269,13 +270,13 @@
             <!-- 空状态 -->
             <div
               v-if="!loading && myProducts.length === 0"
-              class="empty-state"
+              class="py-20 px-theme-lg text-center"
             >
-              <div class="empty-icon">📦</div>
-              <p class="empty-text">暂无商品</p>
+              <div class="text-6xl mb-theme-md opacity-60">📦</div>
+              <p class="text-lg text-theme-text-tertiary mb-theme-lg font-medium">暂无商品</p>
               <a-button
                 type="primary"
-                class="action-btn"
+                class="rounded-theme-md font-semibold px-5 py-2.5 h-auto transition-all duration-normal shadow-theme hover:-translate-y-0.5 hover:shadow-theme-md"
                 @click="showProductModal = true"
               >
                 <template #icon><PlusOutlined /></template>
@@ -293,11 +294,10 @@
       title="更换头像"
       width="400px"
       :footer="null"
-      class="avatar-modal"
     >
-      <div class="avatar-modal-content">
-        <div class="avatar-preview-wrapper">
-          <img :src="avatarPreview" alt="头像预览" class="avatar-preview-image" />
+      <div class="text-center p-theme-lg">
+        <div class="mb-theme-xl flex justify-center">
+          <img :src="avatarPreview" alt="头像预览" class="w-[180px] h-[180px] rounded-full object-cover border-4 border-theme-border shadow-theme transition-all duration-normal hover:scale-105 hover:shadow-theme-md" />
         </div>
 
         <!-- 修改上传组件，添加 ref -->
@@ -313,7 +313,7 @@
           </a-button>
         </a-upload>
 
-        <div class="avatar-modal-actions">
+        <div class="mt-theme-xl flex gap-theme-md justify-center">
           <a-button @click="showAvatarEdit = false">取消</a-button>
           <a-button
             type="primary"
@@ -643,587 +643,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Profile Page - Theme-aware Design */
-.profile-page {
-  min-height: 100vh;
-  background: var(--theme-surfaceBackground);
-  padding-bottom: var(--spacing-xl);
-  transition: background var(--transition-normal);
-}
-
-/* Profile Header */
-.profile-header {
-  position: relative;
-  padding: 5rem var(--spacing-lg) 6rem;
-  overflow: hidden;
-  margin-bottom: -3.75rem;
-}
-
-.header-gradient {
-  position: absolute;
-  inset: 0;
-  background: var(--theme-gradient);
-  opacity: 0.9;
-  backdrop-filter: blur(40px);
-}
-
-.header-pattern {
-  position: absolute;
-  inset: 0;
-  opacity: 0.5;
-  background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), 
-                    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
-}
-
-.header-content {
-  position: relative;
-  max-width: 1200px;
-  margin: 0 auto;
-  z-index: 10;
-}
-
-.avatar-section {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--spacing-xl);
-  color: white;
-}
-
-.avatar-wrapper {
-  position: relative;
-}
-
-.avatar-container {
-  position: relative;
-  display: inline-block;
-}
-
-.avatar-image {
-  width: 140px;
-  height: 140px;
-  border-radius: var(--radius-full);
-  border: 5px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.2);
-  object-fit: cover;
-  box-shadow: 
-    0 8px 32px var(--theme-shadowHeavy),
-    0 0 0 8px rgba(255, 255, 255, 0.1);
-  transition: all var(--transition-normal);
-  position: relative;
-  z-index: 2;
-}
-
-.avatar-image:hover {
-  transform: scale(1.05);
-  box-shadow: 
-    0 12px 40px var(--theme-shadowHeavy),
-    0 0 0 10px rgba(255, 255, 255, 0.15);
-}
-
-.avatar-ring {
-  position: absolute;
-  inset: -10px;
-  border-radius: var(--radius-full);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  animation: rotate 8s linear infinite;
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.avatar-edit-btn {
-  position: absolute;
-  bottom: 0.5rem;
-  right: 0.5rem;
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--theme-primary);
-  cursor: pointer;
-  border: 2px solid white;
-  transition: all var(--transition-normal);
-  box-shadow: 0 4px 12px var(--theme-shadow);
-  z-index: 3;
-}
-
-.avatar-edit-btn:hover {
-  background: white;
-  transform: scale(1.15) rotate(90deg);
-  box-shadow: 0 6px 16px var(--theme-shadowMedium);
-}
-
-.user-info-section {
-  flex: 1;
-  padding-bottom: var(--spacing-lg);
-}
-
-.username {
-  font-size: 2.25rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  text-shadow: 0 2px 4px var(--theme-shadowHeavy);
-  letter-spacing: -0.025em;
-  background: linear-gradient(to bottom right, white, rgba(255, 255, 255, 0.8));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.user-id {
-  font-size: 1rem;
-  opacity: 0.9;
-  margin-bottom: 1rem;
-  text-shadow: 0 1px 2px var(--theme-shadow);
-  font-weight: 500;
-}
-
-/* Content Container */
-.content-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 3.75rem var(--spacing-lg) var(--spacing-xl);
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: var(--spacing-xl);
-  position: relative;
-  z-index: 10;
-}
-
-/* Card Styles */
-.info-card,
-.products-card {
-  background: var(--theme-cardBackground);
-  backdrop-filter: blur(40px);
-  border-radius: var(--radius-xl);
-  box-shadow: 
-    0 8px 32px var(--theme-shadow),
-    0 0 0 1px var(--theme-borderLight);
-  overflow: hidden;
-  transition: all var(--transition-normal);
-  border: 1px solid var(--theme-borderLight);
-}
-
-.info-card:hover,
-.products-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 
-    0 12px 48px var(--theme-shadowMedium),
-    0 0 0 1px var(--theme-border);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-lg) 1.75rem;
-  background: var(--theme-surfaceGradient);
-  border-bottom: 1px solid var(--theme-border);
-}
-
-.card-title-wrapper {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.card-icon {
-  font-size: 1.5rem;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--theme-gradient);
-  border-radius: var(--radius-md);
-  box-shadow: 0 4px 12px var(--theme-shadow);
-}
-
-.card-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0;
-  color: var(--theme-textPrimary);
-  letter-spacing: -0.025em;
-}
-
-.card-actions {
-  display: flex;
-  gap: var(--spacing-md);
-}
-
-.edit-actions-group {
-  display: flex;
-  gap: var(--spacing-md);
-}
-
-.action-btn {
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  padding: 0.625rem 1.25rem;
-  height: auto;
-  transition: all var(--transition-normal);
-  box-shadow: 0 4px 12px var(--theme-shadow);
-}
-
-.action-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px var(--theme-shadowMedium);
-}
-
-.save-btn {
-  background: var(--theme-secondary);
-  border-color: var(--theme-secondary);
-}
-
-.save-btn:hover {
-  background: var(--theme-secondary);
-  filter: brightness(1.1);
-}
-
-.card-body {
-  padding: 1.75rem;
-}
-
-/* Info Grid */
-.info-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-}
-
-.info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: var(--spacing-md);
-  background: var(--theme-surfaceBackground);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--theme-border);
-  transition: all var(--transition-normal);
-}
-
-.info-item:hover {
-  background: var(--theme-cardBackground);
-  border-color: var(--theme-primary);
-  transform: translateX(4px);
-}
-
-.info-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--theme-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.info-value {
-  font-size: 0.875rem;
-  color: var(--theme-textPrimary);
-  font-weight: 500;
-}
-
-.info-input {
-  width: 100%;
-}
-
-/* Products Grid */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--spacing-lg);
-  max-height: 600px;
-  overflow-y: auto;
-  padding-right: 0.5rem;
-}
-
-.products-grid::-webkit-scrollbar {
-  width: 6px;
-}
-
-.products-grid::-webkit-scrollbar-track {
-  background: var(--theme-surfaceBackground);
-  border-radius: var(--radius-md);
-}
-
-.products-grid::-webkit-scrollbar-thumb {
-  background: var(--theme-gradient);
-  border-radius: var(--radius-md);
-}
-
-.products-grid::-webkit-scrollbar-thumb:hover {
-  opacity: 0.8;
-}
-
-/* Product Item */
-.product-item {
-  background: var(--theme-cardBackground);
-  backdrop-filter: blur(8px);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: all var(--transition-normal);
-  cursor: pointer;
-  border: 1px solid var(--theme-borderLight);
-  box-shadow: 0 4px 12px var(--theme-shadow);
-}
-
-.product-item:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 12px 32px var(--theme-shadowMedium);
-  border-color: var(--theme-primary);
-}
-
-.product-image-container {
-  position: relative;
-  width: 100%;
-  height: 220px;
-  overflow: hidden;
-  background: var(--theme-surfaceGradient);
-}
-
-.product-category-tag {
-  position: absolute;
-  top: var(--spacing-md);
-  left: var(--spacing-md);
-  z-index: 2;
-}
-
-.category-badge {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  color: var(--theme-primary);
-  padding: 0.375rem 0.75rem;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  box-shadow: 0 2px 8px var(--theme-shadow);
-  border: 1px solid var(--theme-borderLight);
-}
-
-.product-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 600ms var(--transition-normal);
-}
-
-.product-item:hover .product-image {
-  transform: scale(1.1);
-}
-
-.product-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.6));
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: var(--spacing-md);
-  opacity: 0;
-  transition: opacity var(--transition-normal);
-}
-
-.product-item:hover .product-overlay {
-  opacity: 1;
-}
-
-.product-actions {
-  display: flex;
-  gap: 0.5rem;
-  width: 100%;
-  justify-content: center;
-}
-
-.action-overlay-btn {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--theme-borderLight);
-  border-radius: var(--radius-md);
-  color: var(--theme-primary);
-  font-weight: 600;
-  transition: all var(--transition-normal);
-  box-shadow: 0 2px 8px var(--theme-shadow);
-}
-
-.action-overlay-btn:hover {
-  background: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--theme-shadowMedium);
-}
-
-.action-icon-btn {
-  min-width: 40px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--theme-borderLight);
-  border-radius: var(--radius-md);
-  color: var(--theme-primary);
-  font-weight: 600;
-  transition: all var(--transition-normal);
-  box-shadow: 0 2px 8px var(--theme-shadow);
-}
-
-.action-icon-btn:hover {
-  background: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--theme-shadowMedium);
-}
-
-.product-info {
-  padding: var(--spacing-lg);
-}
-
-.product-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: var(--spacing-md);
-  gap: var(--spacing-md);
-}
-
-.product-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--theme-textPrimary);
-  margin: 0;
-  flex: 1;
-  line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-.product-status {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.625rem;
-  background: var(--theme-surfaceBackground);
-  border-radius: var(--radius-md);
-  flex-shrink: 0;
-}
-
-.status-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-full);
-  animation: pulse 2s infinite;
-}
-
-.status-indicator.available {
-  background: var(--theme-secondary);
-}
-
-.status-indicator.sold {
-  background: #ff4d4f;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-.status-text {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: var(--theme-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.product-footer-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.product-price {
-  font-size: 1.25rem;
-  font-weight: 800;
-  margin: 0;
-  background: var(--theme-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.product-date {
-  font-size: 0.75rem;
-  color: var(--theme-textTertiary);
-  margin: 0;
-  font-weight: 500;
-}
-
-/* Empty State */
-.empty-state {
-  padding: 5rem var(--spacing-lg);
-  text-align: center;
-}
-
-.empty-icon {
-  font-size: 4rem;
-  margin-bottom: var(--spacing-md);
-  opacity: 0.6;
-}
-
-.empty-text {
-  font-size: 1.125rem;
-  color: var(--theme-textTertiary);
-  margin-bottom: var(--spacing-lg);
-  font-weight: 500;
-}
-
-/* Avatar Modal */
-.avatar-modal-content {
-  text-align: center;
-  padding: var(--spacing-lg);
-}
-
-.avatar-preview-wrapper {
-  margin-bottom: var(--spacing-xl);
-  display: flex;
-  justify-content: center;
-}
-
-.avatar-preview-image {
-  width: 180px;
-  height: 180px;
-  border-radius: var(--radius-full);
-  object-fit: cover;
-  border: 4px solid var(--theme-border);
-  box-shadow: 0 8px 24px var(--theme-shadow);
-  transition: all var(--transition-normal);
-}
-
-.avatar-preview-image:hover {
-  transform: scale(1.05);
-  box-shadow: 0 12px 32px var(--theme-shadowMedium);
-}
-
-.avatar-modal-actions {
-  margin-top: var(--spacing-xl);
-  display: flex;
-  gap: var(--spacing-md);
-  justify-content: center;
-}
-
 /* Ant Design Input Overrides */
 :deep(.ant-input) {
   border: 2px solid var(--theme-border);
@@ -1246,113 +665,31 @@ onMounted(() => {
   background: var(--theme-cardBackground);
 }
 
-/* Responsive Design - Mobile First */
-@media (max-width: 1024px) {
-  .content-container {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
-  }
+/* Custom scrollbar for products grid */
+:deep(.products-grid)::-webkit-scrollbar {
+  width: 6px;
 }
 
-@media (max-width: 768px) {
-  .profile-header {
-    padding: 4rem var(--spacing-md) 5rem;
-  }
-
-  .avatar-section {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: var(--spacing-md);
-  }
-
-  .avatar-image {
-    width: 120px;
-    height: 120px;
-  }
-
-  .username {
-    font-size: 1.875rem;
-  }
-
-  .content-container {
-    padding: 3rem var(--spacing-md) var(--spacing-lg);
-    gap: var(--spacing-lg);
-  }
-
-  .card-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-md);
-    padding: var(--spacing-lg);
-  }
-
-  .card-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 1.25rem;
-  }
-
-  .card-title {
-    font-size: 1.125rem;
-  }
-
-  .card-body {
-    padding: var(--spacing-lg);
-  }
-
-  .products-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
-    max-height: none;
-  }
-
-  .product-image-container {
-    height: 200px;
-  }
+:deep(.products-grid)::-webkit-scrollbar-track {
+  background: var(--theme-surfaceBackground);
+  border-radius: var(--radius-md);
 }
 
-@media (max-width: 480px) {
-  .profile-header {
-    padding: 3rem var(--spacing-sm) 4.5rem;
-  }
+:deep(.products-grid)::-webkit-scrollbar-thumb {
+  background: var(--theme-gradient);
+  border-radius: var(--radius-md);
+}
 
-  .avatar-image {
-    width: 100px;
-    height: 100px;
-  }
+:deep(.products-grid)::-webkit-scrollbar-thumb:hover {
+  opacity: 0.8;
+}
 
-  .username {
-    font-size: 1.5rem;
-  }
+/* Product item hover effects */
+.group:hover .group-hover\:scale-110 {
+  transform: scale(1.1);
+}
 
-  .user-id {
-    font-size: 0.875rem;
-  }
-
-  .content-container {
-    padding: 2.5rem var(--spacing-sm) var(--spacing-md);
-  }
-
-  .card-header {
-    padding: var(--spacing-md);
-  }
-
-  .card-body {
-    padding: var(--spacing-md);
-  }
-
-  .info-item {
-    padding: var(--spacing-sm);
-  }
-
-  .product-image-container {
-    height: 180px;
-  }
-
-  .info-card,
-  .products-card {
-    border-radius: var(--radius-lg);
-  }
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
 }
 </style>

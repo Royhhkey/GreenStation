@@ -1,14 +1,14 @@
 <template>
-  <div class="forgot-password-container">
+  <div class="min-h-screen flex justify-center items-center p-theme-md bg-theme-surface-gradient relative bg-cover bg-center bg-no-repeat md:p-theme-2xl" style="background-image: url('../image/background4.jpg');">
     <!-- Theme Switcher in top-right corner -->
-    <div class="theme-switcher-position">
+    <div class="absolute top-theme-lg right-theme-lg z-10 sm:top-theme-md sm:right-theme-md">
       <ThemeSwitcher />
     </div>
     
-    <a-card class="forgot-password-card" bordered>
-      <div class="logo-section">
-        <h1 class="title">重置密码</h1>
-        <p class="subtitle">通过邮箱验证码重置您的密码</p>
+    <a-card class="w-full max-w-[450px] p-theme-xl rounded-theme-xl bg-theme-card backdrop-blur-[20px] border border-theme-border-light shadow-theme-lg animate-slide-up md:p-theme-2xl md:px-theme-xl sm:p-theme-lg" bordered>
+      <div class="text-center mb-theme-2xl">
+        <h1 class="text-4xl font-bold mb-theme-sm m-0 tracking-[4px] bg-theme-gradient bg-clip-text text-transparent md:text-6xl sm:text-4xl sm:tracking-[3px]">重置密码</h1>
+        <p class="text-[13px] text-theme-text-secondary font-medium m-0 tracking-[0.5px] md:text-sm">通过邮箱验证码重置您的密码</p>
       </div>
       <a-form
         :model="form"
@@ -16,7 +16,7 @@
         ref="formRef"
         layout="vertical"
         @finish="handleSubmit"
-        class="forgot-password-form"
+        class="mt-theme-lg"
       >
         <a-form-item label="邮箱" name="email" :rules="rules.email">
           <a-input 
@@ -28,17 +28,17 @@
         </a-form-item>
         
         <a-form-item label="验证码" name="code" :rules="rules.code">
-          <div class="code-container">
+          <div class="flex gap-theme-sm items-center">
             <a-input 
               v-model:value="form.code" 
               placeholder="请输入验证码" 
               size="large"
-              class="modern-input code-input"
+              class="modern-input flex-1"
             />
             <a-button
               type="primary"
               size="large"
-              class="code-btn"
+              class="rounded-theme-md bg-theme-gradient border-none font-semibold whitespace-nowrap min-w-[110px] transition-all duration-normal hover:-translate-y-0.5 hover:shadow-theme-md disabled:opacity-60 disabled:cursor-not-allowed"
               @click="HandesendCode"
               :disabled="countdown > 0"
             >
@@ -56,21 +56,21 @@
           />
         </a-form-item>
 
-        <a-form-item v-if="showSubmit" class="submit-item">
+        <a-form-item v-if="showSubmit" class="mt-theme-lg mb-0">
           <a-button 
             type="primary" 
             html-type="submit" 
             block 
             size="large"
-            class="submit-btn"
+            class="h-12 rounded-theme-md bg-theme-gradient border-none text-base font-semibold tracking-[1px] shadow-theme-md transition-all duration-normal hover:-translate-y-0.5 hover:shadow-theme-lg active:translate-y-0"
           >
             提交
           </a-button>
         </a-form-item>
       </a-form>
       
-      <div class="extra-links">
-        <a @click.prevent="goBack" class="link">返回登录</a>
+      <div class="mt-theme-lg text-center pt-theme-md border-t border-theme-border">
+        <a @click.prevent="goBack" class="cursor-pointer text-theme-text-secondary text-sm font-medium no-underline transition-all duration-fast px-theme-sm py-theme-xs rounded-theme-sm hover:text-theme-primary hover:bg-theme-surface">返回登录</a>
       </div>
     </a-card>
   </div>
@@ -162,70 +162,7 @@ watch(
 </script>
 
 <style scoped>
-/* Mobile-First Approach */
-.forgot-password-container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: var(--spacing-md);
-  background: var(--theme-surfaceGradient);
-  position: relative;
-  background-image: url('../image/background4.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.theme-switcher-position {
-  position: absolute;
-  top: var(--spacing-lg);
-  right: var(--spacing-lg);
-  z-index: 10;
-}
-
-.forgot-password-card {
-  width: 100%;
-  max-width: 450px;
-  padding: var(--spacing-xl);
-  border-radius: var(--radius-xl);
-  background: var(--theme-cardBackground);
-  backdrop-filter: blur(20px);
-  box-shadow: 
-    0 20px 25px -5px var(--theme-shadowHeavy),
-    0 10px 10px -5px var(--theme-shadowMedium);
-  border: 1px solid var(--theme-borderLight);
-  animation: slideUp 0.5s ease-out;
-}
-
-.logo-section {
-  text-align: center;
-  margin-bottom: var(--spacing-2xl);
-}
-
-.title {
-  font-size: 40px;
-  font-weight: 700;
-  background: var(--theme-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0 0 var(--spacing-sm) 0;
-  letter-spacing: 4px;
-}
-
-.subtitle {
-  font-size: 13px;
-  color: var(--theme-textSecondary);
-  font-weight: 500;
-  margin: 0;
-  letter-spacing: 0.5px;
-}
-
-.forgot-password-form {
-  margin-top: var(--spacing-lg);
-}
-
+/* Ant Design Form Overrides */
 :deep(.ant-form-item-label > label) {
   font-weight: 600;
   color: var(--theme-textPrimary);
@@ -250,130 +187,10 @@ watch(
   box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
 }
 
-.code-container {
-  display: flex;
-  gap: var(--spacing-sm);
-  align-items: center;
-}
-
-.code-input {
-  flex: 1;
-}
-
-.code-btn {
-  border-radius: var(--radius-md);
-  background: var(--theme-gradient);
-  border: none;
-  font-weight: 600;
-  white-space: nowrap;
-  min-width: 110px;
-  transition: all var(--transition-normal);
-}
-
-.code-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px var(--theme-shadowMedium);
-}
-
-.code-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.submit-item {
-  margin-top: var(--spacing-lg);
-  margin-bottom: 0;
-}
-
-.submit-btn {
-  height: 48px;
-  border-radius: var(--radius-md);
-  background: var(--theme-gradient);
-  border: none;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 12px var(--theme-shadowMedium);
-  transition: all var(--transition-normal);
-}
-
-.submit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--theme-shadowHeavy);
-}
-
-.submit-btn:active {
-  transform: translateY(0);
-}
-
-.extra-links {
-  margin-top: var(--spacing-lg);
-  text-align: center;
-  padding-top: var(--spacing-md);
-  border-top: 1px solid var(--theme-border);
-}
-
-.link {
-  cursor: pointer;
-  color: var(--theme-textSecondary);
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all var(--transition-fast);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-sm);
-}
-
-.link:hover {
-  color: var(--theme-primary);
-  background: var(--theme-surfaceBackground);
-}
-
 /* Tablet and Desktop */
 @media (min-width: 768px) {
-  .forgot-password-container {
-    padding: var(--spacing-2xl);
+  .min-h-screen {
     background-image: url('../image/background2.jpg');
-  }
-  
-  .forgot-password-card {
-    padding: var(--spacing-2xl) var(--spacing-xl);
-  }
-  
-  .title {
-    font-size: 48px;
-  }
-  
-  .subtitle {
-    font-size: 14px;
-  }
-}
-
-/* Small mobile optimization */
-@media (max-width: 375px) {
-  .forgot-password-card {
-    padding: var(--spacing-lg);
-  }
-  
-  .title {
-    font-size: 36px;
-    letter-spacing: 3px;
-  }
-  
-  .theme-switcher-position {
-    top: var(--spacing-md);
-    right: var(--spacing-md);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 </style>

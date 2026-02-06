@@ -41,6 +41,10 @@ export default {
         'theme-md': '0 10px 15px -3px var(--theme-shadowMedium), 0 4px 6px -2px var(--theme-shadowMedium)',
         'theme-lg': '0 20px 25px -5px var(--theme-shadowHeavy), 0 10px 10px -5px var(--theme-shadowHeavy)',
       },
+      backgroundImage: {
+        'theme-gradient': 'var(--theme-gradient)',
+        'theme-surface-gradient': 'var(--theme-surfaceGradient)',
+      },
       animation: {
         'gradient-shift': 'gradientShift 20s ease infinite',
         'rotate': 'rotate 20s linear infinite',

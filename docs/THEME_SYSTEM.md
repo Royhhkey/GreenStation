@@ -1,451 +1,384 @@
-# 全局主题系统与现代化UI实施文档
-# Global Theme System and Modern UI Implementation
+# 主题系统实现原理
 
-## 📋 项目概述 | Project Overview
+## 📋 概述
 
-本项目完成了GreenStation应用的**全面UI现代化改造**，实现了：
-1. ✅ **全局主题切换系统** - 支持5种主题的一键切换
-2. ✅ **移动端优先设计** - 完全响应式的移动优先架构
-3. ✅ **23个组件全面升级** - 所有UI组件支持主题切换
+项目使用 **CSS 变量（CSS Custom Properties）** + **Pinia Store** 实现主题切换系统，支持 5 种预设主题，并可持久化保存用户选择。
 
-This project completed a **comprehensive UI modernization** of the GreenStation app:
-1. ✅ **Global Theme System** - One-click switching between 5 themes
-2. ✅ **Mobile-First Design** - Fully responsive mobile-first architecture
-3. ✅ **23 Components Upgraded** - All UI components support theme switching
+## 🔧 实现机制
 
----
+### 1. 主题预设配置
 
-## 🌈 主题系统 | Theme System
-
-### 主题预设 | Theme Presets
-
-#### 1. 浅色主题 (Light Theme) - 默认
-- **主色调**: #1890ff (蓝色)
-- **背景**: 白色渐变
-- **适用场景**: 日间使用，默认主题
-
-#### 2. 深色主题 (Dark Theme)
-- **主色调**: #1890ff (蓝色)
-- **背景**: 深灰色系
-- **适用场景**: 夜间使用，护眼模式
-
-#### 3. 绿色主题 (Green Theme)
-- **主色调**: #52c41a (绿色)
-- **背景**: 浅绿渐变
-- **适用场景**: 环保主题，清新风格
-
-#### 4. 紫色主题 (Purple Theme)
-- **主色调**: #722ed1 (紫色)
-- **背景**: 浅紫渐变
-- **适用场景**: 高端优雅，个性化
-
-#### 5. 橙色主题 (Orange Theme)
-- **主色调**: #fa8c16 (橙色)
-- **背景**: 浅橙渐变
-- **适用场景**: 温暖活力，年轻化
-
----
-
-## 🎨 设计系统 | Design System
-
-### CSS 变量体系 | CSS Variables
-
-```css
-/* 主色调 | Primary Colors */
---theme-primary: 主题色
---theme-primaryHover: 悬停色
---theme-primaryActive: 激活色
---theme-secondary: 辅助色
-
-/* 背景 | Backgrounds */
---theme-background: 主背景
---theme-surfaceBackground: 表面背景
---theme-cardBackground: 卡片背景
-
-/* 文字 | Text Colors */
---theme-textPrimary: 主要文字
---theme-textSecondary: 次要文字
---theme-textTertiary: 辅助文字
-
-/* 边框 | Borders */
---theme-border: 主边框
---theme-borderLight: 浅边框
-
-/* 阴影 | Shadows */
---theme-shadow: 基础阴影
---theme-shadowMedium: 中等阴影
---theme-shadowHeavy: 重阴影
-
-/* 渐变 | Gradients */
---theme-gradient: 主渐变
---theme-surfaceGradient: 表面渐变
-
-/* 间距 | Spacing */
---spacing-xs: 4px
---spacing-sm: 8px
---spacing-md: 16px
---spacing-lg: 24px
---spacing-xl: 32px
---spacing-2xl: 48px
-
-/* 圆角 | Border Radius */
---radius-sm: 8px
---radius-md: 12px
---radius-lg: 16px
---radius-xl: 24px
---radius-full: 9999px
-
-/* 过渡 | Transitions */
---transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1)
---transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1)
---transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1)
-```
-
----
-
-## 📱 响应式设计 | Responsive Design
-
-### 断点系统 | Breakpoints
-
-```css
-/* 小型移动设备 | Small Mobile */
-@media (max-width: 375px) { }
-
-/* 移动设备 | Mobile */
-@media (max-width: 768px) { }
-
-/* 平板设备 | Tablet */
-@media (min-width: 768px) and (max-width: 1024px) { }
-
-/* 桌面设备 | Desktop */
-@media (min-width: 1024px) { }
-```
-
-### 移动优先原则 | Mobile-First Principles
-
-1. **触控目标**: 所有可点击元素最小 44px × 44px
-2. **字体大小**: 移动端最小 14px，桌面端 16px
-3. **间距系统**: 移动端紧凑，桌面端宽松
-4. **导航方式**: 移动端底部浮动导航，桌面端侧边栏
-5. **图片适配**: 响应式图片，移动端优化加载
-
----
-
-## 🛠️ 使用指南 | Usage Guide
-
-### 如何切换主题 | How to Switch Themes
-
-1. **用户操作**:
-   - 点击页面右上角的 🎨 主题按钮
-   - 从下拉菜单选择想要的主题
-   - 主题会立即应用并保存
-
-2. **程序调用**:
-```javascript
-import { useThemeStore } from '@/stores/theme';
-
-const themeStore = useThemeStore();
-
-// 切换到深色主题
-themeStore.setTheme('dark');
-
-// 获取当前主题
-const currentTheme = themeStore.currentTheme;
-
-// 获取主题配置
-const config = themeStore.getThemeConfig();
-```
-
-### 在组件中使用主题 | Using Themes in Components
-
-#### 方法1: 使用CSS变量 (推荐)
-
-```vue
-<template>
-  <div class="my-component">
-    <h1 class="title">标题</h1>
-    <button class="action-btn">按钮</button>
-  </div>
-</template>
-
-<style scoped>
-.my-component {
-  background: var(--theme-cardBackground);
-  border: 1px solid var(--theme-border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 4px 6px var(--theme-shadow);
-}
-
-.title {
-  color: var(--theme-textPrimary);
-  font-size: 24px;
-}
-
-.action-btn {
-  background: var(--theme-gradient);
-  color: white;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-normal);
-}
-
-.action-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px var(--theme-shadowMedium);
-}
-</style>
-```
-
-#### 方法2: 在Style属性中使用
-
-```vue
-<template>
-  <div 
-    :style="{ 
-      background: 'var(--theme-cardBackground)',
-      border: '1px solid var(--theme-border)',
-      borderRadius: 'var(--radius-lg)'
-    }"
-  >
-    内容
-  </div>
-</template>
-```
-
-#### 方法3: 动态主题响应
-
-```vue
-<script setup>
-import { computed } from 'vue';
-import { useThemeStore } from '@/stores/theme';
-
-const themeStore = useThemeStore();
-const themeConfig = computed(() => themeStore.getThemeConfig());
-</script>
-
-<template>
-  <div>
-    当前主题: {{ themeConfig.name }}
-  </div>
-</template>
-```
-
----
-
-## 📦 组件清单 | Component List
-
-### 已升级组件 (23个) | Upgraded Components (23)
-
-#### 核心UI | Core UI (3)
-- ✅ **ThemeSwitcher.vue** - 主题切换器
-- ✅ **FloatingNav.vue** - 底部导航
-- ✅ **searchcompent.vue** - 搜索组件
-
-#### 视图 | Views (7)
-- ✅ **Home.vue** - 主页
-- ✅ **Login.vue** - 登录页
-- ✅ **Register.vue** - 注册页
-- ✅ **ForgotPassword.vue** - 忘记密码
-- ✅ **Items.vue** - 商品列表
-- ✅ **Profile.vue** - 个人资料
-- ✅ **Message.vue** - 消息列表
-
-#### 个人资料组件 | Profile Components (5)
-- ✅ **ProfileHeader.vue** - 个人资料头部
-- ✅ **UserInfoCard.vue** - 用户信息卡片
-- ✅ **UserProductsCard.vue** - 用户商品卡片
-- ✅ **ProductModal.vue** - 商品编辑弹窗
-- ✅ **AvatarEditModal.vue** - 头像编辑弹窗
-
-#### 聊天组件 | Chat Components (6)
-- ✅ **ChatWindow.vue** - 聊天窗口
-- ✅ **ChatHeader.vue** - 聊天头部
-- ✅ **ChatInput.vue** - 消息输入
-- ✅ **MessageBubble.vue** - 消息气泡
-- ✅ **ImagePreview.vue** - 图片预览
-- ✅ **MessageContextMenu.vue** - 消息菜单
-
-#### 模态框 | Modals (2)
-- ✅ **ProductDetailModal.vue** - 商品详情
-- ✅ **GlobalNotification.vue** - 全局通知
-
----
-
-## 🎯 技术特性 | Technical Features
-
-### 1. 主题持久化 | Theme Persistence
-- 使用 `localStorage` 保存用户选择
-- 页面刷新后自动恢复主题
-- 跨标签页同步主题设置
-
-### 2. 平滑过渡 | Smooth Transitions
-- 所有颜色变化使用 CSS transition
-- Cubic-bezier 缓动函数
-- 统一的过渡时长
-
-### 3. 性能优化 | Performance Optimization
-- CSS 变量减少重复代码
-- 硬件加速的动画
-- 懒加载和代码分割
-
-### 4. 无障碍访问 | Accessibility
-- 足够的颜色对比度
-- 移动端大触控目标
-- 语义化HTML结构
-
----
-
-## 🔧 开发指南 | Development Guide
-
-### 添加新主题 | Adding New Themes
-
-在 `src/stores/theme.js` 中添加新主题:
+在 `src/stores/theme.js` 中定义了 5 种主题预设：
 
 ```javascript
 export const themePresets = {
-  // ... 现有主题
-  newTheme: {
-    name: '新主题名称',
-    primary: '#your-color',
-    primaryHover: '#hover-color',
-    // ... 其他颜色配置
+  light: {
+    name: '浅色主题',
+    primary: '#1890ff',        // 主色
+    primaryHover: '#40a9ff',    // 主色悬停
+    background: '#ffffff',     // 背景色
+    cardBackground: '#ffffff', // 卡片背景
+    textPrimary: '#262626',    // 主要文字
+    // ... 更多颜色配置
+  },
+  dark: { /* 深色主题配置 */ },
+  green: { /* 绿色主题配置 */ },
+  purple: { /* 紫色主题配置 */ },
+  orange: { /* 橙色主题配置 */ },
+};
+```
+
+### 2. 核心实现：CSS 变量注入
+
+**关键代码：**
+
+```javascript
+const applyTheme = (themeName) => {
+  const theme = themePresets[themeName] || themePresets.light;
+  const root = document.documentElement; // 获取 <html> 元素
+
+  // 遍历主题配置，将每个属性转换为 CSS 变量
+  Object.entries(theme).forEach(([key, value]) => {
+    if (key !== 'name') {
+      // 在根元素上设置 CSS 变量：--theme-primary, --theme-background 等
+      root.style.setProperty(`--theme-${key}`, value);
+    }
+  });
+
+  // 深色主题特殊处理
+  if (themeName === 'dark') {
+    root.classList.add('dark-theme');
+  } else {
+    root.classList.remove('dark-theme');
   }
 };
 ```
 
-### 创建新组件 | Creating New Components
+**工作原理：**
 
-1. 使用 CSS 变量定义样式
-2. 确保移动优先响应式
-3. 添加适当的过渡效果
-4. 测试所有主题下的表现
+1. 获取当前主题配置对象
+2. 在 `<html>` 元素上动态设置 CSS 变量
+3. 所有组件通过 `var(--theme-xxx)` 引用这些变量
 
-```vue
-<style scoped>
-.new-component {
-  /* 使用主题变量 */
-  background: var(--theme-cardBackground);
+**示例：**
+```javascript
+// 当切换到 light 主题时，会在 <html> 上设置：
+document.documentElement.style.setProperty('--theme-primary', '#1890ff');
+document.documentElement.style.setProperty('--theme-background', '#ffffff');
+// ... 等等
+```
+
+### 3. 组件中使用主题变量
+
+在 Vue 组件中，通过 CSS 变量使用主题颜色有多种方式：
+
+**方式一：在 `<style>` 中使用 CSS 变量**
+```css
+.my-button {
+  background: var(--theme-primary);
   color: var(--theme-textPrimary);
   border: 1px solid var(--theme-border);
-  
-  /* 添加过渡 */
-  transition: all var(--transition-normal);
-  
-  /* 移动优先 */
-  padding: var(--spacing-md);
+}
+```
+
+**方式二：在模板中内联使用**
+```vue
+<template>
+  <div :style="{ background: 'var(--theme-background)' }">
+    <p :style="{ color: 'var(--theme-textPrimary)' }">文本</p>
+  </div>
+</template>
+```
+
+**方式三：使用 Tailwind CSS 工具类（推荐）✨**
+
+项目已完美集成 Tailwind CSS，可以直接使用主题相关的工具类：
+
+```vue
+<template>
+  <!-- 使用 Tailwind 主题类 -->
+  <div class="bg-theme-bg text-theme-text p-4">
+    <h1 class="text-theme-text">标题</h1>
+    <p class="text-theme-text-secondary">副标题</p>
+    
+    <!-- 按钮 -->
+    <button class="bg-theme-primary hover:bg-theme-primary-hover text-white px-4 py-2 rounded-lg shadow-theme">
+      按钮
+    </button>
+    
+    <!-- 卡片 -->
+    <div class="bg-theme-card border border-theme-border rounded-xl shadow-theme-md p-6">
+      卡片内容
+    </div>
+    
+    <!-- 渐变背景 -->
+    <div class="bg-theme-gradient text-white p-4 rounded-lg">
+      渐变背景
+    </div>
+  </div>
+</template>
+```
+
+**可用的 Tailwind 主题类：**
+
+| Tailwind 类 | CSS 变量 | 说明 |
+|------------|----------|------|
+| `bg-theme-bg` | `--theme-background` | 背景色 |
+| `bg-theme-surface` | `--theme-surfaceBackground` | 表面背景 |
+| `bg-theme-card` | `--theme-cardBackground` | 卡片背景 |
+| `bg-theme-primary` | `--theme-primary` | 主色背景 |
+| `text-theme-text` | `--theme-textPrimary` | 主要文字 |
+| `text-theme-text-secondary` | `--theme-textSecondary` | 次要文字 |
+| `text-theme-text-tertiary` | `--theme-textTertiary` | 三级文字 |
+| `border-theme-border` | `--theme-border` | 边框色 |
+| `border-theme-border-light` | `--theme-borderLight` | 浅边框 |
+| `shadow-theme` | `--theme-shadow` | 阴影 |
+| `shadow-theme-md` | `--theme-shadowMedium` | 中等阴影 |
+| `shadow-theme-lg` | `--theme-shadowHeavy` | 重阴影 |
+| `bg-theme-gradient` | `--theme-gradient` | 渐变背景 |
+| `bg-theme-surface-gradient` | `--theme-surfaceGradient` | 表面渐变 |
+
+**完整示例：**
+```vue
+<template>
+  <div class="min-h-screen bg-theme-surface-gradient">
+    <!-- 卡片 -->
+    <div class="max-w-4xl mx-auto p-6">
+      <div class="bg-theme-card border border-theme-border rounded-2xl shadow-theme-lg p-8">
+        <h2 class="text-2xl font-bold text-theme-text mb-4">标题</h2>
+        <p class="text-theme-text-secondary mb-6">描述文本</p>
+        
+        <!-- 按钮组 -->
+        <div class="flex gap-4">
+          <button class="bg-theme-primary hover:bg-theme-primary-hover text-white px-6 py-3 rounded-lg shadow-theme transition-all">
+            主要按钮
+          </button>
+          <button class="bg-theme-secondary text-white px-6 py-3 rounded-lg shadow-theme">
+            次要按钮
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+### 4. 主题切换流程
+
+```mermaid
+graph LR
+    A[用户选择主题] --> B[调用 setTheme]
+    B --> C[更新 currentTheme]
+    C --> D[保存到 localStorage]
+    D --> E[调用 applyTheme]
+    E --> F[设置 CSS 变量到 html]
+    F --> G[组件自动更新样式]
+```
+
+**代码流程：**
+
+```javascript
+// 1. 用户调用切换主题
+themeStore.setTheme('dark');
+
+// 2. setTheme 方法执行
+const setTheme = (themeName) => {
+  currentTheme.value = themeName;              // 更新状态
+  localStorage.setItem('app-theme', themeName); // 持久化
+  applyTheme(themeName);                        // 应用主题
+};
+
+// 3. applyTheme 设置 CSS 变量
+applyTheme('dark');
+// → 在 <html> 上设置所有 --theme-* 变量
+
+// 4. 所有使用 var(--theme-*) 的组件自动更新
+```
+
+### 5. 持久化存储
+
+```javascript
+// 初始化时从 localStorage 读取
+const currentTheme = ref(localStorage.getItem('app-theme') || 'light');
+
+// 切换时保存
+localStorage.setItem('app-theme', themeName);
+```
+
+### 6. 自动监听和初始化
+
+```javascript
+// 监听主题变化，自动应用
+watch(currentTheme, (newTheme) => {
+  applyTheme(newTheme);
+});
+
+// 组件加载时立即应用主题
+applyTheme(currentTheme.value);
+```
+
+## 🎨 使用示例
+
+### 在组件中使用主题
+
+```vue
+<template>
+  <div class="card">
+    <h2 class="title">标题</h2>
+    <button class="btn-primary">按钮</button>
+  </div>
+</template>
+
+<style scoped>
+.card {
+  background: var(--theme-cardBackground);
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 4px 12px var(--theme-shadow);
 }
 
-@media (min-width: 768px) {
-  .new-component {
-    padding: var(--spacing-lg);
-  }
+.title {
+  color: var(--theme-textPrimary);
+}
+
+.btn-primary {
+  background: var(--theme-gradient);
+  color: white;
+  box-shadow: 0 4px 12px var(--theme-shadowMedium);
+}
+
+.btn-primary:hover {
+  background: var(--theme-primaryHover);
 }
 </style>
 ```
 
----
+### 在 JavaScript 中切换主题
 
-## 🐛 已知问题 | Known Issues
+```vue
+<script setup>
+import { useThemeStore } from '@/stores/theme';
 
-目前无已知问题。
+const themeStore = useThemeStore();
 
----
+// 切换主题
+const switchTheme = (themeName) => {
+  themeStore.setTheme(themeName);
+};
 
-## 📈 性能指标 | Performance Metrics
+// 获取当前主题
+const currentTheme = themeStore.currentTheme;
 
-- **首次内容绘制 (FCP)**: < 1.5s
-- **最大内容绘制 (LCP)**: < 2.5s
-- **首次输入延迟 (FID)**: < 100ms
-- **累积布局偏移 (CLS)**: < 0.1
-- **主题切换时间**: < 300ms
-
----
-
-## 🎓 最佳实践 | Best Practices
-
-### 1. 始终使用主题变量
-```css
-/* ✅ 推荐 */
-color: var(--theme-textPrimary);
-
-/* ❌ 不推荐 */
-color: #262626;
+// 获取所有可用主题
+const availableThemes = themeStore.getAvailableThemes();
+</script>
 ```
 
-### 2. 移动优先媒体查询
-```css
-/* ✅ 推荐 - 移动优先 */
-.element {
-  font-size: 14px;
-}
+### Tailwind CSS 集成配置
 
-@media (min-width: 768px) {
-  .element {
-    font-size: 16px;
-  }
-}
+项目已在 `tailwind.config.js` 中配置了主题相关的工具类：
 
-/* ❌ 不推荐 - 桌面优先 */
-.element {
-  font-size: 16px;
-}
+```javascript
+// tailwind.config.js
+export default {
+  theme: {
+    extend: {
+      colors: {
+        'theme-primary': 'var(--theme-primary)',
+        'theme-primary-hover': 'var(--theme-primaryHover)',
+        'theme-bg': 'var(--theme-background)',
+        'theme-surface': 'var(--theme-surfaceBackground)',
+        'theme-card': 'var(--theme-cardBackground)',
+        'theme-text': 'var(--theme-textPrimary)',
+        'theme-text-secondary': 'var(--theme-textSecondary)',
+        'theme-border': 'var(--theme-border)',
+        // ... 更多主题颜色
+      },
+      boxShadow: {
+        'theme': '0 4px 6px -1px var(--theme-shadow), ...',
+        'theme-md': '0 10px 15px -3px var(--theme-shadowMedium), ...',
+        'theme-lg': '0 20px 25px -5px var(--theme-shadowHeavy), ...',
+      },
+      backgroundImage: {
+        'theme-gradient': 'var(--theme-gradient)',
+        'theme-surface-gradient': 'var(--theme-surfaceGradient)',
+      },
+    },
+  },
+};
+```
 
-@media (max-width: 767px) {
-  .element {
-    font-size: 14px;
-  }
+这样配置后，你就可以在 Tailwind 类中直接使用主题颜色，切换主题时所有使用这些类的元素都会自动更新！
+
+## 🔍 技术优势
+
+### ✅ 优点
+
+1. **性能优秀**：CSS 变量由浏览器原生支持，无需重新渲染组件
+2. **实时切换**：切换主题时所有组件立即更新，无需刷新页面
+3. **易于维护**：集中管理颜色配置，修改一处即可全局生效
+4. **类型安全**：通过 TypeScript 可以定义主题类型
+5. **持久化**：用户选择自动保存到 localStorage
+
+### 📊 对比其他方案
+
+| 方案 | 性能 | 实时切换 | 维护性 | 兼容性 |
+|------|------|----------|--------|--------|
+| **CSS 变量** ✅ | ⭐⭐⭐⭐⭐ | ✅ | ⭐⭐⭐⭐⭐ | 现代浏览器 |
+| CSS 类切换 | ⭐⭐⭐⭐ | ✅ | ⭐⭐⭐ | 所有浏览器 |
+| 动态样式注入 | ⭐⭐⭐ | ✅ | ⭐⭐ | 所有浏览器 |
+| 编译时切换 | ⭐⭐⭐⭐⭐ | ❌ | ⭐⭐⭐⭐ | 所有浏览器 |
+
+## 🚀 扩展建议
+
+### 1. 添加新主题
+
+在 `themePresets` 中添加新主题：
+
+```javascript
+export const themePresets = {
+  // ... 现有主题
+  blue: {
+    name: '蓝色主题',
+    primary: '#1e40af',
+    // ... 其他配置
+  },
+};
+```
+
+### 2. 动态主题生成
+
+可以根据用户输入动态生成主题：
+
+```javascript
+const createCustomTheme = (primaryColor) => {
+  return {
+    primary: primaryColor,
+    primaryHover: lighten(primaryColor, 10),
+    // ... 基于主色生成其他颜色
+  };
+};
+```
+
+### 3. 系统主题跟随
+
+检测系统主题偏好：
+
+```javascript
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+if (prefersDark.matches) {
+  themeStore.setTheme('dark');
 }
 ```
 
-### 3. 统一的过渡效果
-```css
-/* ✅ 使用预定义的过渡 */
-transition: all var(--transition-normal);
+## 📝 注意事项
 
-/* ❌ 避免自定义时长 */
-transition: all 0.3s;
-```
+1. **CSS 变量命名**：统一使用 `--theme-` 前缀
+2. **默认值**：为 CSS 变量提供合理的默认值
+3. **浏览器兼容**：CSS 变量不支持 IE11，需要 polyfill
+4. **性能优化**：避免在大量元素上频繁切换主题
 
-### 4. 触控目标大小
-```css
-/* ✅ 移动端最小44px */
-@media (max-width: 768px) {
-  button {
-    min-height: 44px;
-    min-width: 44px;
-  }
-}
-```
+## 🔗 相关文件
 
----
-
-## 📞 技术支持 | Technical Support
-
-如有问题，请参考:
-- 项目文档: `/docs`
-- 组件示例: `/src/components`
-- 主题配置: `/src/stores/theme.js`
-
----
-
-## 📝 更新日志 | Changelog
-
-### v2.0.0 (2026-02-05)
-- ✨ 新增全局主题切换系统
-- 🎨 5种主题预设(浅色/深色/绿色/紫色/橙色)
-- 📱 全面移动优先响应式设计
-- ♿ 提升无障碍访问性
-- 🚀 23个组件全面现代化
-- 💾 主题持久化存储
-- ⚡ 性能优化
-
----
-
-## 🙏 致谢 | Acknowledgments
-
-感谢所有为此项目做出贡献的开发者！
-
----
-
-**文档版本**: 2.0.0  
-**最后更新**: 2026-02-05  
-**维护者**: GreenStation Team
+- `src/stores/theme.js` - 主题 Store 定义
+- `src/views/Profile.vue` - 使用主题的组件示例
+- `src/views/Login.vue` - 使用主题的组件示例

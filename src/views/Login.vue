@@ -1,14 +1,14 @@
 <template>
-  <div class="login-container">
+  <div class="min-h-screen flex justify-center items-center p-theme-md bg-theme-surface-gradient relative bg-cover bg-center bg-no-repeat md:p-theme-2xl" style="background-image: url('../image/background4.jpg');">
     <!-- Theme Switcher in top-right corner -->
-    <div class="theme-switcher-position">
+    <div class="absolute top-theme-lg right-theme-lg z-10 sm:top-theme-md sm:right-theme-md">
       <ThemeSwitcher />
     </div>
     
-    <a-card class="login-card" bordered>
-      <div class="logo-section">
-        <h1 class="title">绿驿</h1>
-        <p class="subtitle">GreenStation</p>
+    <a-card class="w-full max-w-[420px] p-theme-xl rounded-theme-xl bg-theme-card backdrop-blur-[20px] border border-theme-border-light shadow-theme-lg animate-slide-up md:p-theme-2xl md:px-theme-xl sm:p-theme-lg" bordered>
+      <div class="text-center mb-theme-2xl">
+        <h1 class="text-5xl font-bold mb-theme-sm m-0 tracking-[8px] bg-theme-gradient bg-clip-text text-transparent md:text-7xl sm:text-4xl sm:tracking-[6px]">绿驿</h1>
+        <p class="text-sm text-theme-text-secondary font-medium m-0 tracking-[2px] md:text-base">GreenStation</p>
       </div>
       
       <a-form
@@ -17,7 +17,7 @@
         ref="loginForm"
         layout="vertical"
         @finish="handleLogin"
-        class="login-form"
+        class="mt-theme-lg"
       >
         <a-form-item label="用户名" name="username" :rules="rules.username">
           <a-input
@@ -28,7 +28,7 @@
             class="modern-input"
           >
             <template #prefix>
-              <UserOutlined class="input-icon" />
+              <UserOutlined class="text-theme-text-tertiary text-lg" />
             </template>
           </a-input>
         </a-form-item>
@@ -42,7 +42,7 @@
             class="modern-input"
           >
             <template #prefix>
-              <LockOutlined class="input-icon" />
+              <LockOutlined class="text-theme-text-tertiary text-lg" />
             </template>
           </a-input-password>
         </a-form-item>
@@ -53,16 +53,16 @@
             size="large"
             block 
             html-type="submit"
-            class="login-button"
+            class="h-12 rounded-theme-md bg-theme-gradient border-none text-base font-semibold tracking-[1px] shadow-theme-md transition-all duration-normal mt-theme-md hover:-translate-y-0.5 hover:shadow-theme-lg active:translate-y-0"
           >
             登录
           </a-button>
         </a-form-item>
       </a-form>
       
-      <div class="extra-links">
-        <a @click.prevent="goToForgot" class="link">忘记密码？</a>
-        <a @click.prevent="goToRegister" class="link primary-link">创建账号</a>
+      <div class="mt-theme-lg text-center flex justify-center gap-theme-lg">
+        <a @click.prevent="goToForgot" class="cursor-pointer text-theme-text-secondary text-sm font-medium no-underline transition-all duration-fast px-theme-sm py-theme-xs rounded-theme-sm hover:text-theme-primary hover:bg-theme-surface">忘记密码？</a>
+        <a @click.prevent="goToRegister" class="cursor-pointer text-theme-primary font-semibold text-sm no-underline transition-all duration-fast px-theme-sm py-theme-xs rounded-theme-sm hover:bg-theme-surface">创建账号</a>
       </div>
     </a-card>
   </div>
@@ -128,70 +128,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Mobile-First Approach */
-.login-container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: var(--spacing-md);
-  background: var(--theme-surfaceGradient);
-  position: relative;
-  background-image: url('../image/background4.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.theme-switcher-position {
-  position: absolute;
-  top: var(--spacing-lg);
-  right: var(--spacing-lg);
-  z-index: 10;
-}
-
-.login-card {
-  width: 100%;
-  max-width: 420px;
-  padding: var(--spacing-xl);
-  border-radius: var(--radius-xl);
-  background: var(--theme-cardBackground);
-  backdrop-filter: blur(20px);
-  box-shadow: 
-    0 20px 25px -5px var(--theme-shadowHeavy),
-    0 10px 10px -5px var(--theme-shadowMedium);
-  border: 1px solid var(--theme-borderLight);
-  animation: slideUp 0.5s ease-out;
-}
-
-.logo-section {
-  text-align: center;
-  margin-bottom: var(--spacing-2xl);
-}
-
-.title {
-  font-size: 48px;
-  font-weight: 700;
-  background: var(--theme-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0 0 var(--spacing-sm) 0;
-  letter-spacing: 8px;
-}
-
-.subtitle {
-  font-size: 14px;
-  color: var(--theme-textSecondary);
-  font-weight: 500;
-  margin: 0;
-  letter-spacing: 2px;
-}
-
-.login-form {
-  margin-top: var(--spacing-lg);
-}
-
+/* Ant Design Form Overrides */
 :deep(.ant-form-item-label > label) {
   font-weight: 600;
   color: var(--theme-textPrimary);
@@ -216,107 +153,10 @@ onMounted(() => {
   box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
 }
 
-.input-icon {
-  color: var(--theme-textTertiary);
-  font-size: 18px;
-}
-
-.login-button {
-  height: 48px;
-  border-radius: var(--radius-md);
-  background: var(--theme-gradient);
-  border: none;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 12px var(--theme-shadowMedium);
-  transition: all var(--transition-normal);
-  margin-top: var(--spacing-md);
-}
-
-.login-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--theme-shadowHeavy);
-}
-
-.login-button:active {
-  transform: translateY(0);
-}
-
-.extra-links {
-  margin-top: var(--spacing-lg);
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-lg);
-}
-
-.link {
-  cursor: pointer;
-  color: var(--theme-textSecondary);
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all var(--transition-fast);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-sm);
-}
-
-.link:hover {
-  color: var(--theme-primary);
-  background: var(--theme-surfaceBackground);
-}
-
-.primary-link {
-  color: var(--theme-primary);
-  font-weight: 600;
-}
-
 /* Tablet and Desktop */
 @media (min-width: 768px) {
-  .login-container {
-    padding: var(--spacing-2xl);
+  .min-h-screen {
     background-image: url('../image/background2.jpg');
-  }
-  
-  .login-card {
-    padding: var(--spacing-2xl) var(--spacing-xl);
-  }
-  
-  .title {
-    font-size: 56px;
-  }
-  
-  .subtitle {
-    font-size: 16px;
-  }
-}
-
-/* Small mobile optimization */
-@media (max-width: 375px) {
-  .login-card {
-    padding: var(--spacing-lg);
-  }
-  
-  .title {
-    font-size: 40px;
-    letter-spacing: 6px;
-  }
-  
-  .theme-switcher-position {
-    top: var(--spacing-md);
-    right: var(--spacing-md);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 </style>
