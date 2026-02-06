@@ -209,6 +209,7 @@ watch(
   padding: 0 10px 10px 20px;
   min-height: 60vh;
   overflow-y: auto;
+  transition: background-color var(--transition-normal);
 }
 
 .product-detail-content {
@@ -221,10 +222,11 @@ watch(
 
 .image-section {
   padding: 20px;
-  background: #fafafa;
-  border-radius: 8px 0 0 8px;
+  background: var(--theme-surfaceBackground);
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
   display: flex;
   flex-direction: column;
+  transition: background-color var(--transition-normal);
 }
 
 .main-image {
@@ -233,10 +235,12 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  border-radius: 8px;
+  background: var(--theme-cardBackground);
+  border-radius: var(--radius-md);
   overflow: hidden;
   flex-shrink: 0;
+  border: 1px solid var(--theme-borderLight);
+  transition: all var(--transition-normal);
 }
 
 .main-image img {
@@ -252,24 +256,25 @@ watch(
   gap: 20px;
   min-height: 0;
   flex: 1;
-  /* overflow: auto; */
   overflow-y: auto;
 }
 
 .basic-info {
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--theme-border);
   padding-bottom: 16px;
   flex-shrink: 0;
+  transition: border-color var(--transition-normal);
 }
 
 .product-title {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 12px;
-  color: #333;
+  color: var(--theme-textPrimary);
   line-height: 1.4;
   word-wrap: break-word;
   word-break: break-word;
+  transition: color var(--transition-normal);
 }
 
 .price-section {
@@ -282,6 +287,10 @@ watch(
   font-size: 24px;
   font-weight: bold;
   color: #ff4d4f;
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .attributes {
@@ -291,6 +300,20 @@ watch(
 
 :deep(.ant-descriptions-item-label) {
   font-weight: 500;
+  color: var(--theme-textSecondary);
+  background: var(--theme-surfaceBackground);
+  transition: all var(--transition-normal);
+}
+
+:deep(.ant-descriptions-item-content) {
+  color: var(--theme-textPrimary);
+  background: var(--theme-cardBackground);
+  transition: all var(--transition-normal);
+}
+
+:deep(.ant-descriptions-bordered .ant-descriptions-item-label),
+:deep(.ant-descriptions-bordered .ant-descriptions-item-content) {
+  border-color: var(--theme-border);
 }
 
 .description-section {
@@ -306,22 +329,24 @@ watch(
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 12px;
-  color: #333;
+  color: var(--theme-textPrimary);
   flex-shrink: 0;
+  transition: color var(--transition-normal);
 }
 
 .description-content {
-  background: #f8f9fa;
-  border-radius: 6px;
+  background: var(--theme-surfaceBackground);
+  border-radius: var(--radius-md);
   line-height: 1.6;
-  color: #666;
+  color: var(--theme-textSecondary);
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  /* overflow: hidden; */
   overflow-y: auto;
   padding: 12px;
+  border: 1px solid var(--theme-borderLight);
+  transition: all var(--transition-normal);
 }
 
 .description-text {
@@ -332,8 +357,10 @@ watch(
   overflow-wrap: break-word;
   line-height: 1.6;
   padding: 8px;
-  background: white;
-  border-radius: 4px;
+  background: var(--theme-cardBackground);
+  border-radius: var(--radius-sm);
+  color: var(--theme-textPrimary);
+  transition: all var(--transition-normal);
 }
 
 /* 自定义描述文本的滚动条 */
@@ -342,17 +369,18 @@ watch(
 }
 
 .description-text::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 2px;
+  background: var(--theme-surfaceBackground);
+  border-radius: var(--radius-sm);
 }
 
 .description-text::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 2px;
+  background: var(--theme-border);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
 }
 
 .description-text::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: var(--theme-textTertiary);
 }
 
 .action-buttons {
@@ -360,21 +388,40 @@ watch(
   gap: 12px;
   margin-top: auto;
   padding-top: 20px;
-  border-top: 1px solid #f0f0f0;
-
-  background: white;
+  border-top: 1px solid var(--theme-border);
+  background: var(--theme-cardBackground);
+  transition: all var(--transition-normal);
 }
 
 .contact-btn {
   flex: 1;
   height: 44px;
   font-size: 16px;
+  background: var(--theme-gradient);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  font-weight: 500;
+  box-shadow: var(--theme-shadow);
+  transition: all var(--transition-normal);
+}
+
+.contact-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--theme-shadowMedium);
+  opacity: 0.9;
+}
+
+.contact-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--theme-shadow);
 }
 
 .contact-btn:disabled {
-  background-color: #d9d9d9;
-  border-color: #d9d9d9;
-  color: #999;
+  background: var(--theme-border);
+  color: var(--theme-textTertiary);
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 .loading-container {
@@ -384,7 +431,8 @@ watch(
 
 .loading-container p {
   margin-top: 12px;
-  color: #999;
+  color: var(--theme-textTertiary);
+  transition: color var(--transition-normal);
 }
 
 /* 响应式设计 - 平板 */
@@ -414,7 +462,7 @@ watch(
   }
 
   .image-section {
-    border-radius: 8px 8px 0 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     padding: 16px;
   }
 
@@ -442,7 +490,7 @@ watch(
 
   .description-section {
     margin: 12px 0;
-    min-height: 100px; /* 确保在小屏幕上也有最小高度 */
+    min-height: 100px;
   }
 
   .section-title {
@@ -457,20 +505,17 @@ watch(
 
   .description-text {
     font-size: 14px;
-    /* max-height: 150px; 在小屏幕上适当减小最大高度 */
     padding: 6px;
   }
 
   .action-buttons {
     gap: 8px;
     padding-top: 16px;
-    /* position: sticky;
-    bottom: 0; */
-    background: white;
+    background: var(--theme-cardBackground);
   }
 
   .contact-btn {
-    height: 40px;
+    height: 44px;
     font-size: 14px;
   }
 }
@@ -502,7 +547,7 @@ watch(
   }
 
   .contact-btn {
-    height: 38px;
+    height: 44px;
   }
 }
 
@@ -516,7 +561,7 @@ watch(
 /* 当描述内容很少时的样式 */
 .description-text:empty::before {
   content: '暂无详细描述';
-  color: #999;
+  color: var(--theme-textTertiary);
   font-style: italic;
 }
 </style>
@@ -530,7 +575,33 @@ watch(
 .detail-modal-wrap .ant-modal-content {
   display: flex;
   flex-direction: column;
-  /* max-height: 90vh; */
+  background: var(--theme-cardBackground);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--theme-shadowHeavy);
+  transition: all var(--transition-normal);
+}
+
+.detail-modal-wrap .ant-modal-header {
+  background: var(--theme-cardBackground);
+  border-bottom: 1px solid var(--theme-border);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  transition: all var(--transition-normal);
+}
+
+.detail-modal-wrap .ant-modal-title {
+  color: var(--theme-textPrimary);
+  font-weight: 600;
+  transition: color var(--transition-normal);
+}
+
+.detail-modal-wrap .ant-modal-close {
+  color: var(--theme-textSecondary);
+  transition: color var(--transition-fast);
+}
+
+.detail-modal-wrap .ant-modal-close:hover {
+  color: var(--theme-textPrimary);
+  background: var(--theme-surfaceBackground);
 }
 
 .detail-modal-wrap .ant-modal-body {
@@ -538,6 +609,7 @@ watch(
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  background: var(--theme-cardBackground);
 }
 
 /* 移动端 Modal 样式调整 */
@@ -546,17 +618,16 @@ watch(
     width: 85vw !important;
     max-width: 85vw;
     margin: 10px auto;
-    /* max-height: 90vh; */
   }
 
   .detail-modal-wrap .ant-modal-content {
-    border-radius: 12px;
-    /* max-height: 90vh; */
+    border-radius: var(--radius-lg);
   }
 
   .detail-modal-wrap .ant-modal-header {
     padding: 12px 16px;
     flex-shrink: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }
 
   .detail-modal-wrap .ant-modal-title {
@@ -566,10 +637,14 @@ watch(
   .detail-modal-wrap .ant-modal-close {
     top: 12px;
     right: 16px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .detail-modal-wrap .ant-modal-body {
-    /* max-height: calc(90vh - 55px); */
     overflow-y: auto;
   }
 }
@@ -583,7 +658,11 @@ watch(
   }
 
   .detail-modal-wrap .ant-modal-content {
-    border-radius: 8px;
+    border-radius: var(--radius-md);
+  }
+
+  .detail-modal-wrap .ant-modal-header {
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
   }
 }
 </style>

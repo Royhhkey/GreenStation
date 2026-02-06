@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+  <div class="min-h-screen" style="background: var(--theme-surfaceGradient)">
     <!-- 搜索组件 -->
     <Myserach :categories="categories" @search="handleSearch" />
 
@@ -22,12 +22,18 @@
               <a-card
                 :body-style="{ padding: '0' }"
                 hoverable
-                class="product-card h-full bg-white rounded-xl shadow-sm border border-gray-100 transition-all duration-300 cursor-pointer overflow-hidden group hover:shadow-xl hover:-translate-y-1"
+                class="product-card h-full rounded-xl transition-all duration-300 cursor-pointer overflow-hidden group"
+                :style="{ 
+                  background: 'var(--theme-cardBackground)',
+                  border: '1px solid var(--theme-border)',
+                  boxShadow: '0 4px 6px -1px var(--theme-shadow), 0 2px 4px -1px var(--theme-shadow)'
+                }"
                 @click="viewItemDetail(item)"
               >
                 <!-- 图片区域 -->
                 <div
-                  class="relative w-full aspect-[4/3] overflow-hidden bg-gray-100"
+                  class="relative w-full aspect-[4/3] overflow-hidden"
+                  :style="{ background: 'var(--theme-surfaceBackground)' }"
                 >
                   <img
                     :src="item.image"
@@ -38,7 +44,8 @@
                   />
                   <!-- 分类标签 -->
                   <div
-                    class="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm"
+                    class="absolute top-3 left-3 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm"
+                    :style="{ background: 'var(--theme-gradient)' }"
                   >
                     {{ getCategoryLabel(item.categoryId) }}
                   </div>
@@ -52,7 +59,10 @@
                 <div class="p-4 space-y-3">
                   <!-- 标题 -->
                   <h4
-                    class="text-[15px] md:text-base font-semibold text-gray-900 line-clamp-2 leading-snug min-h-[2.5rem] group-hover:text-blue-600 transition-colors"
+                    class="text-[15px] md:text-base font-semibold line-clamp-2 leading-snug min-h-[2.5rem] transition-colors"
+                    :style="{ 
+                      color: 'var(--theme-textPrimary)',
+                    }"
                     :title="item.title"
                   >
                     {{ item.title }}
@@ -61,15 +71,17 @@
                   <!-- 价格和时间 -->
                   <div class="flex items-center justify-between">
                     <div class="flex items-baseline gap-1">
-                      <span class="text-xs text-gray-400 font-normal">¥</span>
+                      <span class="text-xs font-normal" :style="{ color: 'var(--theme-textTertiary)' }">¥</span>
                       <span
-                        class="text-xl md:text-2xl font-bold text-red-500 leading-none"
+                        class="text-xl md:text-2xl font-bold leading-none"
+                        :style="{ color: '#ff4d4f' }"
                       >
                         {{ item.price }}
                       </span>
                     </div>
                     <span
-                      class="text-xs text-gray-400 flex items-center gap-1"
+                      class="text-xs flex items-center gap-1"
+                      :style="{ color: 'var(--theme-textTertiary)' }"
                     >
                       <ClockCircleOutlined class="text-[10px]" />
                       {{ formatTime(item.createTime) }}
@@ -77,10 +89,10 @@
                   </div>
 
                   <!-- 操作按钮 -->
-                  <div class="flex gap-2 pt-2 border-t border-gray-100">
+                  <div class="flex gap-2 pt-2" :style="{ borderTop: '1px solid var(--theme-borderLight)' }">
                     <a-button
                       size="small"
-                      class="flex-1 h-9 text-xs font-medium border-gray-200 hover:border-blue-400 hover:text-blue-500 transition-colors"
+                      class="flex-1 h-9 text-xs font-medium transition-colors modern-btn-outline"
                       @click.stop="viewItemDetail(item)"
                     >
                       <template #icon><ReadOutlined /></template>
@@ -89,7 +101,7 @@
                     <a-button
                       type="primary"
                       size="small"
-                      class="flex-1 h-9 text-xs font-medium bg-gradient-to-r from-blue-500 to-blue-600 border-0 hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-md transition-all"
+                      class="flex-1 h-9 text-xs font-medium border-0 shadow-sm hover:shadow-md transition-all modern-btn-primary"
                       @click.stop="contactSeller(item)"
                     >
                       <template #icon><MessageOutlined /></template>
@@ -446,24 +458,53 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Custom button styles with theme support */
+.modern-btn-outline {
+  border: 2px solid var(--theme-border);
+  color: var(--theme-textPrimary);
+  background: transparent;
+}
+
+.modern-btn-outline:hover {
+  border-color: var(--theme-primary);
+  color: var(--theme-primary);
+  background: var(--theme-surfaceBackground);
+}
+
+.modern-btn-primary {
+  background: var(--theme-gradient);
+  color: white;
+}
+
+.modern-btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Product card hover effect */
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px var(--theme-shadowMedium), 0 4px 6px -2px var(--theme-shadowMedium) !important;
+}
+
 /* 自定义滚动条样式 */
 .items-container::-webkit-scrollbar {
   width: 8px;
 }
 
 .items-container::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--theme-surfaceBackground);
   border-radius: 4px;
 }
 
 .items-container::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--theme-border);
   border-radius: 4px;
-  transition: background 0.2s;
+  transition: background var(--transition-fast);
 }
 
 .items-container::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--theme-textTertiary);
 }
 
 /* 商品卡片动画优化 */
@@ -471,14 +512,14 @@ onMounted(() => {
   will-change: transform;
 }
 
-/* 响应式调整 */
+/* 响应式调整 - Mobile First */
 @media (max-width: 768px) {
   .items-container {
     padding: 12px 16px;
   }
 
   .product-card {
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
 }
 

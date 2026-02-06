@@ -88,22 +88,36 @@ const beforeUpload = (file) => {
 
 <style scoped>
 .chat-input-area {
-  border: 1px solid #333;
-  border-radius: 15px;
-  background: white;
+  border: 1px solid var(--theme-border);
+  border-radius: var(--radius-lg);
+  background: var(--theme-cardBackground);
   padding: 0;
+  box-shadow: var(--theme-shadowMedium);
+  transition: var(--transition-normal);
 }
 
 .input-tools {
   padding: 8px 16px;
   display: flex;
   gap: 8px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--theme-borderLight);
+}
+
+.tool-btn {
+  color: var(--theme-textSecondary);
+  transition: var(--transition-fast);
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.tool-btn:hover {
+  color: var(--theme-primary);
+  background: var(--theme-surfaceBackground);
 }
 
 .image-preview-area {
   padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--theme-borderLight);
 }
 
 .preview-images {
@@ -116,9 +130,10 @@ const beforeUpload = (file) => {
   position: relative;
   width: 60px;
   height: 60px;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  border: 1px solid #e8e8e8;
+  border: 1px solid var(--theme-border);
+  box-shadow: var(--theme-shadow);
 }
 
 .preview-item img {
@@ -133,14 +148,19 @@ const beforeUpload = (file) => {
   right: 2px;
   background: rgba(0, 0, 0, 0.6);
   border-radius: 50%;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
+  transition: var(--transition-fast);
+}
+
+.preview-actions:hover {
+  background: rgba(0, 0, 0, 0.8);
 }
 
 .input-container {
@@ -152,44 +172,55 @@ const beforeUpload = (file) => {
 
 .message-input {
   flex: 1;
-  border-radius: 6px;
-  border: 1px solid #e8e8e8;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--theme-border);
   resize: none;
+  min-height: 44px;
+  background: var(--theme-surfaceBackground);
+  color: var(--theme-textPrimary);
+  transition: var(--transition-fast);
 }
 
 .message-input:focus {
-  border-color: #1890ff;
+  border-color: var(--theme-primary);
   box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  outline: none;
+}
+
+.message-input::placeholder {
+  color: var(--theme-textTertiary);
 }
 
 .send-btn {
-  background: #07c160;
-  border-color: #07c160;
-  width: 36px;
-  height: 36px;
+  background: var(--theme-primary);
+  border-color: var(--theme-primary);
+  width: 44px;
+  height: 44px;
+  transition: var(--transition-fast);
 }
 
 .send-btn:hover {
-  background: #06ae56;
-  border-color: #06ae56;
+  background: var(--theme-primaryHover);
+  border-color: var(--theme-primaryHover);
+  transform: scale(1.05);
 }
 
 .send-btn:disabled {
-  background: #f0f0f0;
-  border-color: #d9d9d9;
-  color: #bfbfbf;
+  background: var(--theme-surfaceBackground);
+  border-color: var(--theme-border);
+  color: var(--theme-textTertiary);
 }
 
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   .input-tools,
   .image-preview-area,
   .input-container {
-    padding: 8px 12px;
+    padding: 12px 20px;
   }
 
   .preview-item {
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
   }
 }
 </style>

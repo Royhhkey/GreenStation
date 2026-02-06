@@ -284,7 +284,171 @@ watch(
 </script>
 
 <style scoped>
+/* Product Modal - Theme-aware Design */
+:deep(.ant-modal) {
+  border-radius: var(--radius-lg);
+}
+
+:deep(.ant-modal-header) {
+  background: var(--theme-surfaceGradient);
+  border-bottom: 1px solid var(--theme-border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+:deep(.ant-modal-title) {
+  color: var(--theme-textPrimary);
+  font-weight: 600;
+}
+
+:deep(.ant-modal-content) {
+  background: var(--theme-cardBackground);
+  box-shadow: 0 12px 48px var(--theme-shadowHeavy);
+  border-radius: var(--radius-lg);
+}
+
+:deep(.ant-modal-body) {
+  padding: var(--spacing-lg);
+}
+
+:deep(.ant-form-item-label > label) {
+  color: var(--theme-textPrimary);
+  font-weight: 600;
+}
+
+:deep(.ant-input),
+:deep(.ant-input-number),
+:deep(.ant-select-selector),
+:deep(.ant-input-number-input) {
+  border: 2px solid var(--theme-border);
+  border-radius: var(--radius-md);
+  background: var(--theme-cardBackground);
+  color: var(--theme-textPrimary);
+  transition: all var(--transition-normal);
+}
+
+:deep(.ant-input:hover),
+:deep(.ant-input-number:hover),
+:deep(.ant-select-selector:hover),
+:deep(.ant-input-number:hover .ant-input-number-input) {
+  border-color: var(--theme-primary);
+}
+
+:deep(.ant-input:focus),
+:deep(.ant-input-number-focused),
+:deep(.ant-select-focused .ant-select-selector),
+:deep(.ant-input-number-focused .ant-input-number-input) {
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 4px rgba(24, 144, 255, 0.1);
+}
+
+:deep(.ant-input-number-handler-wrap) {
+  border-left: 1px solid var(--theme-border);
+  background: var(--theme-surfaceBackground);
+}
+
+:deep(.ant-upload.ant-upload-select-picture-card) {
+  border: 2px dashed var(--theme-border);
+  border-radius: var(--radius-md);
+  background: var(--theme-surfaceBackground);
+  transition: all var(--transition-normal);
+}
+
+:deep(.ant-upload.ant-upload-select-picture-card:hover) {
+  border-color: var(--theme-primary);
+  background: var(--theme-cardBackground);
+}
+
+:deep(.ant-upload-list-picture-card .ant-upload-list-item) {
+  border: 2px solid var(--theme-border);
+  border-radius: var(--radius-md);
+  background: var(--theme-cardBackground);
+}
+
+:deep(.ant-upload-list-picture-card .ant-upload-list-item:hover) {
+  border-color: var(--theme-primary);
+}
+
+:deep(.ant-select-arrow) {
+  color: var(--theme-textSecondary);
+}
+
+:deep(.ant-select-dropdown) {
+  background: var(--theme-cardBackground);
+  box-shadow: 0 8px 24px var(--theme-shadowMedium);
+  border-radius: var(--radius-md);
+}
+
+:deep(.ant-select-item) {
+  color: var(--theme-textPrimary);
+  transition: all var(--transition-fast);
+}
+
+:deep(.ant-select-item-option-selected) {
+  background: var(--theme-surfaceBackground);
+  color: var(--theme-primary);
+  font-weight: 600;
+}
+
+:deep(.ant-select-item-option-active) {
+  background: var(--theme-surfaceBackground);
+}
+
 .category-item {
   max-width: 60%;
+}
+
+/* Textarea */
+:deep(.ant-input[type="textarea"]) {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Modal Footer */
+:deep(.ant-modal-footer) {
+  border-top: 1px solid var(--theme-border);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--theme-surfaceBackground);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+:deep(.ant-btn) {
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: all var(--transition-normal);
+}
+
+:deep(.ant-btn-primary) {
+  background: var(--theme-primary);
+  border-color: var(--theme-primary);
+  box-shadow: 0 2px 8px var(--theme-shadow);
+}
+
+:deep(.ant-btn-primary:hover) {
+  background: var(--theme-primaryHover);
+  border-color: var(--theme-primaryHover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--theme-shadowMedium);
+}
+
+:deep(.ant-btn-default) {
+  border-color: var(--theme-border);
+  color: var(--theme-textPrimary);
+}
+
+:deep(.ant-btn-default:hover) {
+  border-color: var(--theme-primary);
+  color: var(--theme-primary);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  :deep(.ant-modal) {
+    max-width: calc(100vw - 32px);
+    margin: var(--spacing-md);
+  }
+
+  .category-item {
+    max-width: 100%;
+  }
 }
 </style>

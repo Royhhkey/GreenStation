@@ -130,27 +130,128 @@ const save = () => {
 </script>
 
 <style scoped>
+/* User Info Card - Theme-aware Design */
 .info-card-title-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  border-radius: 12px 12px 0 0;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .info-card {
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 12px var(--theme-shadow);
+  border: 1px solid var(--theme-border);
+  transition: all var(--transition-normal);
+}
+
+.info-card:hover {
+  box-shadow: 0 4px 16px var(--theme-shadowMedium);
+}
+
+:deep(.ant-card) {
+  background: var(--theme-cardBackground);
+  border-color: var(--theme-border);
+  transition: all var(--transition-normal);
+}
+
+:deep(.ant-card-head) {
+  background: var(--theme-surfaceGradient);
+  border-bottom-color: var(--theme-border);
+  color: var(--theme-textPrimary);
+}
+
+:deep(.ant-card-head-title) {
+  color: var(--theme-textPrimary);
+  font-weight: 600;
+}
+
+:deep(.ant-card-body) {
+  background: var(--theme-cardBackground);
+  color: var(--theme-textPrimary);
+}
+
+:deep(.ant-descriptions) {
+  background: transparent;
+}
+
+:deep(.ant-descriptions-item-label) {
+  color: var(--theme-textSecondary);
+  font-weight: 600;
+  background: var(--theme-surfaceBackground);
+}
+
+:deep(.ant-descriptions-item-content) {
+  color: var(--theme-textPrimary);
+  background: var(--theme-cardBackground);
+}
+
+:deep(.ant-descriptions-bordered .ant-descriptions-item-label),
+:deep(.ant-descriptions-bordered .ant-descriptions-item-content) {
+  border-color: var(--theme-border);
+}
+
+:deep(.ant-descriptions-row:hover .ant-descriptions-item-label) {
+  background: var(--theme-cardBackground);
+}
+
+:deep(.ant-descriptions-row:hover .ant-descriptions-item-content) {
+  background: var(--theme-surfaceBackground);
 }
 
 :deep(.ant-input) {
-  border-color: #1890ff;
-  border-radius: 8px;
-  padding: 8px;
+  border: 2px solid var(--theme-border);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm);
+  background: var(--theme-cardBackground);
+  color: var(--theme-textPrimary);
+  transition: all var(--transition-normal);
+}
+
+:deep(.ant-input:hover) {
+  border-color: var(--theme-primary);
 }
 
 :deep(.ant-input:focus) {
-  border-color: #40a9ff;
-  box-shadow: 0 0 0 2px rgba(64, 169, 255, 0.2);
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+:deep(.ant-btn) {
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  transition: all var(--transition-normal);
+}
+
+:deep(.ant-btn-primary) {
+  background: var(--theme-primary);
+  border-color: var(--theme-primary);
+}
+
+:deep(.ant-btn-primary:hover) {
+  background: var(--theme-primaryHover);
+  border-color: var(--theme-primaryHover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px var(--theme-shadow);
+}
+
+:deep(.ant-btn-default) {
+  border-color: var(--theme-border);
+  color: var(--theme-textPrimary);
+}
+
+:deep(.ant-btn-default:hover) {
+  border-color: var(--theme-primary);
+  color: var(--theme-primary);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .info-card-title-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
 }
 </style>

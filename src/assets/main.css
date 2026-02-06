@@ -2,38 +2,241 @@
 @tailwind components;
 @tailwind utilities;
 
-/* @import './base.css'; */
+/* Theme CSS Variables - Will be set dynamically by theme store */
+:root {
+  /* Primary Colors */
+  --theme-primary: #1890ff;
+  --theme-primaryHover: #40a9ff;
+  --theme-primaryActive: #096dd9;
+  --theme-secondary: #52c41a;
+  
+  /* Background Colors */
+  --theme-background: #ffffff;
+  --theme-surfaceBackground: #f8f9fa;
+  --theme-cardBackground: #ffffff;
+  
+  /* Text Colors */
+  --theme-textPrimary: #262626;
+  --theme-textSecondary: #595959;
+  --theme-textTertiary: #8c8c8c;
+  
+  /* Border Colors */
+  --theme-border: #e8e8e8;
+  --theme-borderLight: #f0f0f0;
+  
+  /* Shadows */
+  --theme-shadow: rgba(0, 0, 0, 0.08);
+  --theme-shadowMedium: rgba(0, 0, 0, 0.12);
+  --theme-shadowHeavy: rgba(0, 0, 0, 0.16);
+  
+  /* Gradients */
+  --theme-gradient: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  --theme-surfaceGradient: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Spacing (Mobile-first) */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+}
 
-/* #app {
-  max-width: 1280px;
+/* Global Base Styles - Mobile First */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  background: var(--theme-background);
+  color: var(--theme-textPrimary);
+  transition: background var(--transition-normal), color var(--transition-normal);
+  min-height: 100vh;
+}
+
+#app {
+  min-height: 100vh;
+  transition: background var(--transition-normal);
+}
+
+/* Smooth Theme Transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: var(--transition-normal);
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Remove transition for transform and other properties that shouldn't transition on theme change */
+*:not(a):not(button):not(.theme-transition) {
+  transition-property: background-color, border-color, color, fill, stroke;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--theme-surfaceBackground);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--theme-border);
+  border-radius: var(--radius-full);
+  transition: background var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-textTertiary);
+}
+
+/* Mobile-First Utility Classes */
+.container-mobile {
+  width: 100%;
+  padding: 0 var(--spacing-md);
   margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+@media (min-width: 768px) {
+  .container-mobile {
+    max-width: 768px;
+    padding: 0 var(--spacing-lg);
   }
 }
 
 @media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
+  .container-mobile {
+    max-width: 1024px;
+    padding: 0 var(--spacing-xl);
   }
+}
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+@media (min-width: 1280px) {
+  .container-mobile {
+    max-width: 1280px;
   }
-} */
+}
+
+/* Card Styles */
+.theme-card {
+  background: var(--theme-cardBackground);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 
+    0 4px 6px -1px var(--theme-shadow),
+    0 2px 4px -1px var(--theme-shadow);
+  transition: all var(--transition-normal);
+}
+
+.theme-card:hover {
+  box-shadow: 
+    0 10px 15px -3px var(--theme-shadowMedium),
+    0 4px 6px -2px var(--theme-shadowMedium);
+  transform: translateY(-2px);
+}
+
+/* Button Styles */
+.theme-button {
+  background: var(--theme-gradient);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: 0 2px 4px var(--theme-shadow);
+}
+
+.theme-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px var(--theme-shadowMedium);
+}
+
+.theme-button:active {
+  transform: translateY(0);
+}
+
+/* Input Styles */
+.theme-input {
+  background: var(--theme-background);
+  border: 2px solid var(--theme-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--theme-textPrimary);
+  font-size: 14px;
+  transition: all var(--transition-normal);
+}
+
+.theme-input:focus {
+  outline: none;
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+}
+
+/* Mobile Touch Improvements */
+@media (max-width: 768px) {
+  button, a, input, select, textarea {
+    min-height: 44px; /* iOS recommended minimum */
+    min-width: 44px;
+  }
+  
+  /* Larger tap targets for mobile */
+  .nav-item, .menu-item {
+    min-height: 48px;
+    padding: var(--spacing-md);
+  }
+}
+
+/* Prevent text selection on buttons */
+button {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Loading Animation */
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.skeleton {
+  animation: shimmer 1.2s ease-in-out infinite;
+  background: linear-gradient(
+    to right,
+    var(--theme-surfaceBackground) 0%,
+    var(--theme-borderLight) 50%,
+    var(--theme-surfaceBackground) 100%
+  );
+  background-size: 936px 100%;
+}

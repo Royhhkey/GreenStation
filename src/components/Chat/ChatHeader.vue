@@ -37,27 +37,36 @@ const backToList = () => {
 
 <style scoped>
 .chat-header {
-  padding: 8px 16px;
-  border-bottom: 1px solid #e8e8e8;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--theme-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: var(--theme-gradient);
+  box-shadow: var(--theme-shadow);
   position: sticky;
+  transition: var(--transition-normal);
 }
 
 .back-button {
   display: flex;
   align-items: center;
   cursor: pointer;
-  color: #666;
+  color: var(--theme-textPrimary);
   font-size: 14px;
   flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.back-button:hover {
+  color: var(--theme-primary);
 }
 
 .back-button :deep(.anticon) {
-  font-size: 16px;
+  font-size: 18px;
   margin-right: 4px;
 }
 
@@ -72,7 +81,7 @@ const backToList = () => {
 .user-info .name {
   font-size: 16px;
   font-weight: 600;
-  color: #000;
+  color: var(--theme-textPrimary);
 }
 
 .user-info {
@@ -87,19 +96,34 @@ const backToList = () => {
 }
 
 .connection-status {
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 4px 12px;
+  border-radius: var(--radius-md);
   font-size: 12px;
   white-space: nowrap;
+  transition: var(--transition-fast);
 }
 
 .connection-status.connected {
-  background: #52c41a;
+  background: var(--theme-primary);
   color: white;
 }
 
 .connection-status.disconnected {
-  background: #faad14;
+  background: var(--theme-textTertiary);
   color: white;
+}
+
+@media (min-width: 768px) {
+  .chat-header {
+    padding: 16px 24px;
+  }
+
+  .user-info .name {
+    font-size: 18px;
+  }
+
+  .connection-status {
+    font-size: 13px;
+  }
 }
 </style>
